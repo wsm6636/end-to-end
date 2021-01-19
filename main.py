@@ -49,7 +49,6 @@ def main():
     ###
     # l=="1": Single ECU Analysis; args: -l1 -u_ -g_ -n_ -r_ -s_
     # Create task sets, cause-effect chains, do TDA, do Davare, do 2019-Marco, do our analysis, do Kloda, save Data
-    # TODO: right now, all tasks have phase 0. Do we want to change that? Or is it good for comparison?
     ###
     # Required arguments : l = "1", u = 50 utilization, r = 10 number of runs, n = "run0" name of the run.
     if args.l == 1:
