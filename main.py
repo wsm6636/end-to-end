@@ -58,11 +58,10 @@ def main():
             # WATERS
             ###
             profile = [0.03 / 0.85, 0.02 / 0.85, 0.02 / 0.85, 0.25 / 0.85, 0.25 / 0.85, 0.03 / 0.85, 0.2 / 0.85,
-                       0.01 / 0.85,
-                       0.04 / 0.85] # describes some statistical distribution for task set generation; from table 3 of waters free benchmark paper
+                       0.01 / 0.85, 0.04 / 0.85] # describes some statistical distribution for task set generation; from table 3 of waters free benchmark paper
             scaling_flag = True
             runs = 1
-            threshold = 0.1 # cummulative utilization threshold 0.1 percent
+            threshold = 0.1 # cummulative utilization threshold 0.1 percent, i.e., maximal difference between actual utilization and required utilization
             min_uti = args.u/100.0 # utilization -- why min?
             angel_synchronous_tasks = False
             number_of_cylinders = 4
