@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Main module for the Evaluation.
+"""Evaluation for the paper 'Timing Analysis of Asynchronized Distributed
+Cause-Effect Chains' (2021).
 
 It includes (1) local analysis (2) global analysis and (3) plotting of the
 results.

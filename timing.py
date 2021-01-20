@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""Measure timing behavior for the single ECU case.
-"""
+"""Measure timing behavior for the single ECU case."""
 
 import gc  # garbage collector
 import argparse
