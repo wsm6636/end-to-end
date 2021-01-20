@@ -25,8 +25,9 @@ def main():
     # Argument Parser
     ###
     parser = argparse.ArgumentParser()
+
     # which part of code should be executed:
-    parser.add_argument("-l", type=int, default=0)
+    parser.add_argument("-j", type=int, default=0)
     # utilization in 0 to 100 [percent]:
     parser.add_argument("-u", type=float, default=50)
     # task generation (0: WATERS Benchmark, 1: UUnifast):
@@ -41,11 +42,11 @@ def main():
     args = parser.parse_args()
     del parser
 
-    if args.l == 1:
+    if args.j == 1:
         """Single ECU analysis.
 
         Required arguments:
-        -l1
+        -j1
         -u : utilization
         -g : task generation setting
         -r : number of runs
@@ -231,11 +232,11 @@ def main():
     ###
     # l=="2": Interconnected analysis; args: -l2 -u_ -g_
     # Load data
-    elif args.l == 2:
+    elif args.j == 2:
         """Interconnected ECU analysis.
 
         Required arguments:
-        -l2
+        -j2
         -u : utilization (for loading)
         -g : task generation setting (for loading)
 
@@ -326,14 +327,11 @@ def main():
                 + "_g=" + str(gen_setting) + ".npz",
                 chains_inter=chains_inter, chains_single_ECU=chains_single_ECU)
 
-    ###
-    # l=="3": draw plots; args: -l3 -g_
-    ###
-    elif args.l == 3:
+    elif args.j == 3:
         """Evaluation.
 
         Required arguments:
-        -l3
+        -j3
         -g : task generation setting (for loading)
         """
         # Variables.

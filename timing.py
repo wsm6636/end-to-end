@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Measure timing behavior.
+"""Measure timing behavior for the single ECU case.
 """
 
 import gc  # garbage collector
