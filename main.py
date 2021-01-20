@@ -84,7 +84,7 @@ def main():
             threshold = 0.1
 
             # Create task sets from the generator.
-            print("Create task sets.")
+            print("\tCreate task sets.")
             task_sets_waters = []
             while len(task_sets_waters) < args.r:
                 task_sets_gen = waters.gen_tasksets(
@@ -92,12 +92,12 @@ def main():
                         'sporadic')
                 task_sets_waters.append(task_sets_gen[0])
 
-            # Transform tasks into framework structure.
+            # Transform tasks to fit framework structure.
             trans1 = trans.Transformer("1", task_sets_waters, 10000000)
             task_sets = trans1.transform_tasks(False)
 
             # Create cause effect chains.
-            print("Create cause-effect chains")
+            print("\tCreate cause-effect chains")
             ce_chains = waters.gen_ce_chains(task_sets, False)
 
         if args.g == 1:
@@ -105,7 +105,7 @@ def main():
             print("UUnifast benchmark.")
 
             # Create task sets from the generator.
-            print("Create task sets.")
+            print("\tCreate task sets.")
 
             # # Generate log-uniformly distributed task sets:
             # task_sets_generator = uunifast.gen_tasksets(
@@ -114,17 +114,19 @@ def main():
             # Generate log-uniformly distributed task sets with predefined
             # periods:
             periods = [1, 2, 5, 10, 20, 50, 100, 200, 500, 1000]
+            # Interval from where the generator pulls log-uniformly.
             min_pull = 1
             max_pull = 2000
+
             task_sets_uunifast = uunifast.gen_tasksets_pred(
                     50, args.r, min_pull, max_pull, args.u/100.0, periods)
 
-            # Transform tasks into framework structure.
+            # Transform tasks to fit framework structure.
             trans2 = trans.Transformer("2", task_sets_uunifast, 10000000)
             task_sets = trans2.transform_tasks(False)
 
             # Create cause-effect chains.
-            print("Create cause-effect chains")
+            print("\tCreate cause-effect chains")
             ce_chains = uunifast.gen_ce_chains(task_sets)
             # ce_chains contains one set of cause effect chains for each task
             # set in task_sets.
@@ -136,7 +138,7 @@ def main():
         analyzer = a.Analyzer("0")
 
         # TDA for each task set.
-        print("\tTDA.")
+        print("TDA.")
         for idxx in range(len(task_sets)):
             try:
                 # TDA.
@@ -154,38 +156,39 @@ def main():
                 continue
 
         # End-to-End Analyses.
-        print("\tTest: Davare.")
+        print("Test: Davare.")
         analyzer.davare(ce_chains)
 
-        print("\tTest: Duerr Reaction Time.")
+        print("Test: Duerr Reaction Time.")
         analyzer.reaction_sporadic(ce_chains)
 
-        print("\tTest: Duerr Data Age.")
+        print("Test: Duerr Data Age.")
         analyzer.age_sporadic(ce_chains)
 
         ###
         # Second analyses (Simulation, Our, Kloda).
         ###
-        print("Second analyses (Simulation, Our, Kloda).")
+        print("=Second analyses (Simulation, Our, Kloda).=")
         i = 0
         for task_set in task_sets:
-            print("Task set ", i+1)
+            print("=Task set ", i+1)
 
             # Event-based simulation.
-            print("\tSimulation.")
+            print("Simulation.")
             simulator = es.eventSimulator(len(task_set), task_set)
+
             # Determination of the variables used to compute the stop condition of the simulation
             max_e2e_latency = max(ce_chains[i], key=lambda chain: chain.e2e_latency).e2e_latency
             max_phase = max(task_set, key=lambda task: task.phase).phase
             max_period = max(task_set, key=lambda task: task.period).period
             hyper_period = analyzer.determine_hyper_period(task_set)
             period_lowest_priority_task = task_set[-1].period
-            print("\t\tno of tasks: ", len(task_set))
-            print("\t\thyperperiod: ", hyper_period)
+            print("\tNumber of tasks: ", len(task_set))
+            print("\tHyperperiod: ", hyper_period)
             no_of_jobs = 0
             for task in task_set:
                 no_of_jobs += (((2 * hyper_period + max_phase + max_period) / task.period) + max_e2e_latency / task.period)
-            print("\t\tno of jobs to schedule:", no_of_jobs)
+            print("\tNumber of jobs to schedule:", no_of_jobs)
             # Stop condition is the max number of jobs from the lowest priority task; Note: this is just an estimation of the right end of both testing intervals plus job chain length; Since the schedule repeats, we can make this estimation
             simulator.dispatcher(int(math.ceil((2 * hyper_period + max_phase # interval to be scheduled
                                                 + max_period + max_e2e_latency) # for convinience # TODO maybe one additional max_period ?
@@ -198,20 +201,18 @@ def main():
             #    task.jobs = schedule[task]
             # Analyze the cause-effect chains
             for chain in ce_chains[i]:
-                # OUR RESULTS
-                # print("\t\tCASES20: max age")
-                print("\t\tOUR: max age")
+                print("Test: Our Data Age.")
                 analyzer.max_age_OUR(schedule, task_set, chain, max_phase, hyper_period, shortened=False)
                 analyzer.max_age_OUR(schedule, task_set, chain, max_phase, hyper_period, shortened=True)
-                print("\t\tOUR: reaction")
+                print("Test: Our Reaction Time.")
                 analyzer.reaction_OUR(schedule, task_set, chain, max_phase, hyper_period)
 
-                # Kloda analysis, assuming synchronous releases
-                print("\t\tKloda for synchr")
+                # Kloda analysis, assuming synchronous releases.
+                print("Test: Kloda.")
                 for release_time_first_task_in_chain in range(0, max(1, hyper_period), chain.chain[0].period):
                     kloda = analyzer.kloda(chain.chain, release_time_first_task_in_chain, beginning=True)
                     if chain.kloda < kloda:
-                        chain.kloda = kloda # Kloda
+                        chain.kloda = kloda
                 # Note: additional period of the first task is already in the computation of kloda
 
                 ###
@@ -219,7 +220,7 @@ def main():
                     breakpoint()
             i += 1
         # Save data (task_sets, chains and schedules)
-        print("save data")
+        print("=Save data.=")
         np.savez("output/1single/task_set_u=" + str(args.u) + "_n="+ args.n + "_g=" + str(args.g) + ".npz", task_sets=task_sets, chains=ce_chains)
 
     ###
