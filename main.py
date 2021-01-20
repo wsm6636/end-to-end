@@ -42,7 +42,7 @@ def main():
     del parser
 
     if args.l == 1:
-        """ Single ECU analysis.
+        """Single ECU analysis.
 
         Required arguments:
         -l1
@@ -231,102 +231,181 @@ def main():
     ###
     # l=="2": Interconnected analysis; args: -l2 -u_ -g_
     # Load data
-    elif args.l==2:
-        utilization=args.u
-        no_interconn_cechains = 10000
-        chains_single_ECU=[]
-        chains_interconnected = []
+    elif args.l == 2:
+        """Interconnected ECU analysis.
+
+        Required arguments:
+        -l2
+        -u : utilization (for loading)
+        -g : task generation setting (for loading)
+
+        Load data, create interconnected chains and then do the analysis by
+        Davare, Duerr and Our.
+        """
+
+        # Variables.
+        utilization = args.u
+        gen_setting = args.g
+        number_interconn_ce_chains = 10000
+
+        ###
+        # Load data.
+        ###
+        print("=Load data.=")
+        chains_single_ECU = []
         for i in range(1, 101):
             name_of_the_run = "run" + str(i)
-            data = np.load("output/1single/task_set_u=" + str(utilization) + "_n="+ name_of_the_run + "_g=" + str(args.g) + ".npz", allow_pickle=True)
+            data = np.load(
+                    "output/1single/task_set_u=" + str(utilization)
+                    + "_n=" + name_of_the_run
+                    + "_g=" + str(gen_setting)
+                    + ".npz", allow_pickle=True)
             for chain_set in data.f.chains:
                 for chain in chain_set:
-                    order = ""
-                    prev_id = None
                     chains_single_ECU.append(chain)
+
+            # Close data file and run the garbage collector.
             data.close()
             del data
             gc.collect()
-        print("Finished loading chains")
 
-        # create interconnected cause-effect chains
-        print("create interconnected chains")
-        for j in range(0, no_interconn_cechains):
-            chain_all = []
-            i_chain_all = []
-            com_tasks = comm.generate_communication_taskset(20, 10, 1000, True) # generate communication tasks
+        ###
+        # Interconnected cause-effect chain generation.
+        ###
+        print("=Interconnected cause-effect chain generation.=")
+        chains_inter = []
+        for j in range(0, number_interconn_ce_chains):
+            chain_all = []  # sequence of all tasks (from chains + comm tasks)
+            i_chain_all = []  # sequence of chains and comm_tasks
+
+            # Generate communication tasks.
+            com_tasks = comm.generate_communication_taskset(20, 10, 1000, True)
+
+            # Fill chain_all and i_chain_all.
             k = 0
-            for chain in list(np.random.choice(chains_single_ECU, 5, replace=False)):
+            for chain in list(np.random.choice(
+                    chains_single_ECU, 5, replace=False)):  # randomly choose 5
                 i_chain_all.append(chain)
                 for task in chain.chain:
                     chain_all.append(task)
-                if k < 4:
+                if k < 4:  # communication tasks are only added in between
                     chain_all.append(com_tasks[k])
                     i_chain_all.append(com_tasks[k])
                 k += 1
-            chains_interconnected.append(c.CauseEffectChain(0, chain_all, i_chain_all)) # Creates a chain ch with ch.chain = (tasks) and ch.interconnected=(chain,task,chain,task,chain)
-            if j%100==0:
+
+            chains_inter.append(c.CauseEffectChain(0, chain_all, i_chain_all))
+
+            # End user notification
+            if j % 100 == 0:
                 print("\t", j)
 
-        # Do Analyses for chains_interconnected; no kloda since we assume that clocks are not synchronized
-        print("do analyses")
+        ###
+        # Analyses (Davare, Duerr, Our).
+        # Kloda is not included, since it is only for synchronized clocks.
+        ###
+        print("=Analyses (Davare, Duerr, Our).=")
         analyzer = a.Analyzer("0")
-        analyzer.age_interconnected(chains_interconnected) # OUR
-        analyzer.reaction_interconnected(chains_interconnected) # OUR
-        analyzer.davare([chains_interconnected])
-        analyzer.reaction_sporadic([chains_interconnected])
-        analyzer.age_sporadic([chains_interconnected])
-        # breakpoint()
-        # Save chains
-        print("save chains utilization: " + str(utilization))
-        np.savez("./output/2interconn/chains_" + "u=" + str(utilization) + "_g=" + str(args.g) + ".npz", chains_interconnected=chains_interconnected, chains_single_ECU=chains_single_ECU)
-        return
 
+        print("Test: Davare.")
+        analyzer.davare([chains_inter])
+
+        print("Test: Duerr.")
+        analyzer.reaction_sporadic([chains_inter])
+        analyzer.age_sporadic([chains_inter])
+
+        print("Test: Our.")
+        analyzer.age_interconnected(chains_inter)
+        analyzer.reaction_interconnected(chains_inter)
+
+        ###
+        # Save data.
+        ###
+        print("=Save data.=")
+        np.savez(
+                "./output/2interconn/chains_" + "u=" + str(utilization)
+                + "_g=" + str(gen_setting) + ".npz",
+                chains_inter=chains_inter, chains_single_ECU=chains_single_ECU)
 
     ###
     # l=="3": draw plots; args: -l3 -g_
     ###
     elif args.l == 3:
+        """Evaluation.
+
+        Required arguments:
+        -l3
+        -g : task generation setting (for loading)
         """
-            Evaluation
-        """
-        # Load data
+        # Variables.
+        gen_setting = args.g
+        utilizations = [50.0, 60.0, 70.0, 80.0, 90.0]
+
+        ###
+        # Load data.
+        ###
+        print("=Load data.=")
         chains_single_ECU = []
-        chains_interconnected = []
-        for i in [50.0, 60.0, 70.0, 80.0, 90.0]:
-            data = np.load("output/2interconn/chains_" + "u=" + str(i) + "_g=" + str(args.g) + ".npz", allow_pickle=True)
-            # Single ECU
+        chains_inter = []
+        for ut in utilizations:
+            data = np.load(
+                    "output/2interconn/chains_" + "u=" + str(ut)
+                    + "_g=" + str(args.g) + ".npz", allow_pickle=True)
+
+            # Single ECU.
             for chain in data.f.chains_single_ECU:
                 chains_single_ECU.append(chain)
-                #if chain.jj_age < chain.sim_age or chain.kloda < chain.sim_age:
-                    #breakpoint()
-            # Interconnected
-            for chain in data.f.chains_interconnected:
-                chains_interconnected.append(chain)
-            # Close the data file and run the garbage collector
+
+            # Interconnected.
+            for chain in data.f.chains_inter:
+                chains_inter.append(chain)
+
+            # Close data file and run the garbage collector.
             data.close()
             del data
             gc.collect()
 
-        # Plotting
+        ###
+        # Draw plots.
+        ###
+        print("=Draw plots.=")
+
         myeva = eva.Evaluation()
 
-        # Single ECU Plot
-        myeva.davare_boxplot_age(chains_single_ECU, "output/3plots/davare_single_ecu_age" + "_g=" + str(args.g) + ".pdf", xaxis_label="", ylabel="Latency reduction [%]")
-        myeva.davare_boxplot_reaction(chains_single_ECU, "output/3plots/davare_single_ecu_reaction" + "_g=" + str(args.g) + ".pdf", xaxis_label="", ylabel="Latency reduction [%]")
+        # Single ECU Plot.
+        myeva.davare_boxplot_age(
+                chains_single_ECU,
+                "output/3plots/davare_single_ecu_age"
+                + "_g=" + str(args.g) + ".pdf",
+                xaxis_label="", ylabel="Latency reduction [%]")
+        myeva.davare_boxplot_reaction(
+                chains_single_ECU,
+                "output/3plots/davare_single_ecu_reaction"
+                + "_g=" + str(args.g) + ".pdf",
+                xaxis_label="", ylabel="Latency reduction [%]")
 
-        # Interconnected ECU Plot
-        myeva.davare_boxplot_age_interconnected(chains_interconnected, "output/3plots/davare_interconnected_age" + "_g=" + str(args.g) + ".pdf", xaxis_label="", ylabel="Latency reduction [%]")
-        myeva.davare_boxplot_reaction_interconnected(chains_interconnected, "output/3plots/davare_interconnected_reaction" + "_g=" + str(args.g) + ".pdf", xaxis_label="", ylabel="Latency reduction [%]")
+        # Interconnected ECU Plot.
+        myeva.davare_boxplot_age_interconnected(
+                chains_inter,
+                "output/3plots/davare_interconnected_age"
+                + "_g=" + str(args.g) + ".pdf",
+                xaxis_label="", ylabel="Latency reduction [%]")
+        myeva.davare_boxplot_reaction_interconnected(
+                chains_inter,
+                "output/3plots/davare_interconnected_reaction"
+                + "_g=" + str(args.g) + ".pdf",
+                xaxis_label="", ylabel="Latency reduction [%]")
 
-        # # Heatmap
-        # myeva.heatmap_improvement_disorder_age(chains_single_ECU, "output/3plots/heatmap" + "_sim_age"+ "_g=" + str(args.g) + ".pdf", yaxis_label="")
-        # myeva.heatmap_improvement_disorder_react(chains_single_ECU, "output/3plots/heatmap" + "_sim_react"+ "_g=" + str(args.g) + ".pdf", yaxis_label="")
-
-        return
-
-    else:
-        pass
+        # Heatmap.
+        myeva.heatmap_improvement_disorder_age(
+                chains_single_ECU,
+                "output/3plots/heatmap" + "_sim_age"
+                + "_g=" + str(args.g) + ".pdf",
+                yaxis_label="")
+        myeva.heatmap_improvement_disorder_react(
+                chains_single_ECU,
+                "output/3plots/heatmap" + "_sim_react"
+                + "_g=" + str(args.g) + ".pdf",
+                yaxis_label="")
 
 
 if __name__ == '__main__':
