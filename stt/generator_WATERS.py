@@ -163,7 +163,7 @@ def sample_runnable_acet(period, amount = 1, scalingFlag=True):
             return list(0.001 * np.random.uniform(0.37, 0.46, amount))
 
 
-def generate_taskset_util_number(number_of_sets = 100, util_max = 1.0, period_pdf = [0.03, 0.02, 0.02, 0.25, 0.40, 0.03, 0.2, 0.01, 0.04], scalingFlag = False, threshold = 0.1, cylinder = 4, mode = 'sporadic'):
+def gen_tasksets(number_of_sets = 100, util_max = 1.0, period_pdf = [0.03, 0.02, 0.02, 0.25, 0.40, 0.03, 0.2, 0.01, 0.04], scalingFlag = False, threshold = 0.1, cylinder = 4, mode = 'sporadic'):
     while True:
         taskset = []
         dist = stats.rv_discrete(name='periods', values = ([1,2,5,10,20,50,100,200,1000], period_pdf))
@@ -312,10 +312,11 @@ def generate_taskset_util_number(number_of_sets = 100, util_max = 1.0, period_pd
 """ cause effect chains
 """
 
-def generate_cause_effect_chains_waters15(transformed_task_sets, sort): # WATERS
+
+def gen_ce_chains(transformed_task_sets, sort): # WATERS
     distribution_involved_activation_patterns = stats.rv_discrete(values=([1, 2, 3], [0.7, 0.2, 0.1]))
     distribution_number_of_tasks = stats.rv_discrete(values=([2, 3, 4, 5], [0.3, 0.4, 0.2, 0.1]))
-    cause_effect_chain_sets = []
+    ce_chains = []
 
     for task_set in transformed_task_sets:
         cause_effect_chain_set = []
@@ -344,5 +345,5 @@ def generate_cause_effect_chains_waters15(transformed_task_sets, sort): # WATERS
                     cec_chain.append(task)
             if chain:
                 cause_effect_chain_set.append(c.CauseEffectChain(number_of_cause_effect_chains, cec_chain))
-        cause_effect_chain_sets.append(cause_effect_chain_set)
-    return cause_effect_chain_sets
+        ce_chains.append(cause_effect_chain_set)
+    return ce_chains

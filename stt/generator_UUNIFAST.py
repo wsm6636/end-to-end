@@ -9,7 +9,7 @@ import random
 
 # main functions
 
-def generate_tasksets(num_tasks, num_tasksets, min_period, max_period, utilization, min_scale=1, max_scale=1, rounded = False):
+def gen_tasksets(num_tasks, num_tasksets, min_period, max_period, utilization, min_scale=1, max_scale=1, rounded = False):
     tasksets_periods = generate_periods_loguniform(num_tasks, num_tasksets, min_period, max_period, rounded)
     tasksets_utilizations = generate_utilizations_uniform(num_tasks, num_tasksets, utilization)
     tasksets = []
@@ -22,7 +22,7 @@ def generate_tasksets(num_tasks, num_tasksets, min_period, max_period, utilizati
         tasksets.append(taskset)
     return tasksets
 
-def generate_tasksets_predefined(num_tasks, num_tasksets, min_period, max_period, utilization, round_down_set, min_scale=1, max_scale=1):
+def gen_tasksets_pred(num_tasks, num_tasksets, min_period, max_period, utilization, round_down_set, min_scale=1, max_scale=1):
     # Note: max_period has to be higher than the highest entry in round_down_set to also get periods for the highest value
     tasksets_periods = generate_periods_loguniform_discrete(num_tasks, num_tasksets, min_period, max_period, round_down_set)
     tasksets_utilizations = generate_utilizations_uniform(num_tasks, num_tasksets, utilization)
@@ -89,9 +89,9 @@ def generate_periods_loguniform_discrete(num_tasks, num_tasksets, min_period, ma
 
 # main function
 
-def generate_cause_effect_chains_from_transformed_task_sets(transformed_task_sets): # UUNIFAST
+def gen_ce_chains(transformed_task_sets): # UUNIFAST
     dis_number_tasks_in_cause_effect_chain = stats.rv_discrete(values=([2, 3, 4, 5], [0.3, 0.4, 0.2, 0.1]))
-    cause_effect_chain_sets = []
+    ce_chains = []
     for task_set in transformed_task_sets:
         cause_effect_chain_set = []
         for i in range(int(np.random.randint(30, 60))):
@@ -113,8 +113,8 @@ def generate_cause_effect_chains_from_transformed_task_sets(transformed_task_set
                     chain.append(task)
             if len(chain) > 1:
                 cause_effect_chain_set.append(c.CauseEffectChain(i, chain))
-        cause_effect_chain_sets.append(cause_effect_chain_set)
-    return cause_effect_chain_sets
+        ce_chains.append(cause_effect_chain_set)
+    return ce_chains
 
 # help function
 

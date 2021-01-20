@@ -1,141 +1,181 @@
-#!/usr/local/python
-"""The tikz schedule drawer generates a schedule by given inputs and provides a latex file as output.
+#!/usr/bin/env python3
+"""Main module for the Evaluation.
 
-:Filename: main.py
-:Author: Marco Dürr (marco.duerr@tu-dortmund.de)
-:Date: 15.06.18
+It includes (1) local analysis (2) global analysis and (3) plotting of the
+results.
 """
 
-import gc
-import stt.task as t
-# import stt.scheduler as s
-import stt.analyser as a
-import stt.generator_WATERS as g
+import gc  # garbage collector
+# import stt.task as t
+import stt.analyzer as a
+import stt.generator_WATERS as waters
 import stt.chain as c
 import stt.transformer as trans
-from stt.niklas import generate_cause_effect_chains_waters15
-# from stt.niklas import generate_distributed_chain
-# from stt.niklas import generate_cause_effect_chains_from_transformed_task_sets
-import stt.communication as communication
+import stt.communication as comm
 import csv
 import argparse
 import stt.evaluation as eva
-import stt.generator_UUNIFAST as gm
+import stt.generator_UUNIFAST as uunifast
 import stt.eventSimulator as es
 import math
 import numpy as np
 
 
-
 def main():
-    # Argumenten Uebergabe
+    """Main Function."""
+    ###
+    # Argument Parser
+    ###
     parser = argparse.ArgumentParser()
-    parser.add_argument("-l", type=int, default=0)  # which part of code should be executed
-    parser.add_argument("-u", type=float, default=50)  # utilization in 0 to 100 [percent] !!!!
-    parser.add_argument("-g", type=int, default=0)  # task generation. 0: WATERS Benchmark, 1: UUnifast
+    # which part of code should be executed:
+    parser.add_argument("-l", type=int, default=0)
+    # utilization in 0 to 100 [percent]:
+    parser.add_argument("-u", type=float, default=50)
+    # task generation (0: WATERS Benchmark, 1: UUnifast):
+    parser.add_argument("-g", type=int, default=0)
+
     # only for l==1:
-    parser.add_argument("-n", type=str, default="run0")  # name of the run
-    parser.add_argument("-r", type=int, default=1)  # number of task sets to generate
-    parser.add_argument("-s", type=int, default=0)  # sample scenario. 0: Scenario A, 1: Scenario B
+    # name of the run:
+    parser.add_argument("-n", type=str, default="run0")
+    # number of task sets to generate:
+    parser.add_argument("-r", type=int, default=1)
+
     args = parser.parse_args()
     del parser
+
+    ###
     # Global Variables
+    ###
     task_sets = []
-    task_sets_communication = []
     schedules = []
-    cause_effect_chain_sets = {"all": [], "ordered": [], "unordered": []}
-    cause_effect_chains_interconnected = {"all": [], "ordered": [], "unordered": []}
+    ce_chains = {"all": [], "ordered": [], "unordered": []}
 
-    ###
-    # l=="1": Single ECU Analysis; args: -l1 -u_ -g_ -n_ -r_ -s_
-    # Create task sets, cause-effect chains, do TDA, do Davare, do 2019-Marco, do our analysis, do Kloda, save Data
-    ###
-    # Required arguments : l = "1", u = 50 utilization, r = 10 number of runs, n = "run0" name of the run.
     if args.l == 1:
-        print("generate task sets")
-        if args.g ==0:
-            ###
-            # WATERS
-            ###
-            profile = [0.03 / 0.85, 0.02 / 0.85, 0.02 / 0.85, 0.25 / 0.85, 0.25 / 0.85, 0.03 / 0.85, 0.2 / 0.85,
-                       0.01 / 0.85, 0.04 / 0.85] # describes some statistical distribution for task set generation; from table 3 of waters free benchmark paper
-            scaling_flag = True
-            runs = 1
-            threshold = 0.1 # cummulative utilization threshold 0.1 percent, i.e., maximal difference between actual utilization and required utilization
-            min_uti = args.u/100.0 # utilization -- why min?
-            number_of_cylinders = 4
-            angle_mode = 'sporadic'
-            task_sets_generator = []
-            while len(task_sets_generator) < args.r:
-                # Create several task sets from generator
-                task_sets_gen = g.generate_taskset_util_number(runs, min_uti, profile, scaling_flag,
-                                                               threshold / 100.0,
-                                                               number_of_cylinders,
-                                                               angle_mode)
-                task_sets_generator.append(task_sets_gen[0])
-            # Transform tasks and cause-effect chains into framework structure
-            trans1 = trans.Transformer("transformer1", task_sets_generator, 10000000)
-            # Transform tasks into framework model, create CAN message task
-            task_sets = trans1.transform_tasks(False) # we created all tasks to have bcet=0, we do not use this value in any analysis # False=synchronous, True=asynchronous
-            cause_effect_chain_sets = g.generate_cause_effect_chains_waters15(task_sets, False)
+        """ Single ECU analysis.
 
-        if args.g ==1:
-            ###
-            # UUnifast by KHCHEN
-            ###
-            # task_sets_generator = gm.generate_tasksets(5, args.r, 1, 100, args.u, rounded=True)
-            task_sets_generator = gm.generate_tasksets_predefined(50, args.r, 1, 2000, args.u/100.0, [1,2,5,10,20,50,100,200,500,1000])
-            # Transform tasks and cause-effect chains into framework structure
-            trans2 = trans.Transformer("transformer2", task_sets_generator, 10000000)
-            # Transform tasks into framework model
-            task_sets = trans2.transform_tasks(False) # we created all tasks to have bcet=0, we do not use this value in any analysis
-            # Create cause-effect chains w.r.t the task sets
-            # breakpoint()
-            print("create cause-effect chains")
-            cause_effect_chain_sets = gm.generate_cause_effect_chains_from_transformed_task_sets(task_sets)
+        Required arguments:
+        -l1
+        -u : utilization
+        -g : task generation setting
+        -r : number of runs
+        -n : name of the run
 
+        Create task sets and cause-effect chains, use TDA, Davare, Duerr, our
+        analysis, Kloda, and save the Data
         """
-        First Analyses (TDA, Sporadic End-to-End)
-        """
-        # Create an analyzer to determine response times with TDA
-        analyzer = a.Analyser("0")
-        # TDA for each task set
+
+        ###
+        # Task set and cause-effect chain generation.
+        ###
+        print("=Task set and cause-effect chain generation.=")
+        if args.g == 0:
+            # WATERS benchmark
+            print("WATERS benchmark.")
+
+            # Statistical distribution for task set generation from table 3 of
+            # WATERS free benchmark paper.
+            profile = [0.03 / 0.85, 0.02 / 0.85, 0.02 / 0.85, 0.25 / 0.85,
+                       0.25 / 0.85, 0.03 / 0.85, 0.2 / 0.85, 0.01 / 0.85,
+                       0.04 / 0.85]
+            # Required utilization:
+            req_uti = args.u/100.0
+            # Maximal difference between required utilization and actual
+            # utilization is set to 0.1 percent:
+            threshold = 0.1
+
+            # Create task sets from the generator.
+            print("Create task sets.")
+            task_sets_waters = []
+            while len(task_sets_waters) < args.r:
+                task_sets_gen = waters.gen_tasksets(
+                        1, req_uti, profile, True, threshold / 100.0, 4,
+                        'sporadic')
+                task_sets_waters.append(task_sets_gen[0])
+
+            # Transform tasks into framework structure.
+            trans1 = trans.Transformer("1", task_sets_waters, 10000000)
+            task_sets = trans1.transform_tasks(False)
+
+            # Create cause effect chains.
+            print("Create cause-effect chains")
+            ce_chains = waters.gen_ce_chains(task_sets, False)
+
+        if args.g == 1:
+            # UUnifast benchmark.
+            print("UUnifast benchmark.")
+
+            # Create task sets from the generator.
+            print("Create task sets.")
+
+            # # Generate log-uniformly distributed task sets:
+            # task_sets_generator = uunifast.gen_tasksets(
+            #         5, args.r, 1, 100, args.u, rounded=True)
+
+            # Generate log-uniformly distributed task sets with predefined
+            # periods:
+            periods = [1, 2, 5, 10, 20, 50, 100, 200, 500, 1000]
+            min_pull = 1
+            max_pull = 2000
+            task_sets_uunifast = uunifast.gen_tasksets_pred(
+                    50, args.r, min_pull, max_pull, args.u/100.0, periods)
+
+            # Transform tasks into framework structure.
+            trans2 = trans.Transformer("2", task_sets_uunifast, 10000000)
+            task_sets = trans2.transform_tasks(False)
+
+            # Create cause-effect chains.
+            print("Create cause-effect chains")
+            ce_chains = uunifast.gen_ce_chains(task_sets)
+            # ce_chains contains one set of cause effect chains for each task
+            # set in task_sets.
+
+        ###
+        # First analyses (TDA, Davare, Duerr).
+        ###
+        print("=First analyses (TDA, Davare, Duerr).=")
+        analyzer = a.Analyzer("0")
+
+        # TDA for each task set.
+        print("\tTDA.")
         for idxx in range(len(task_sets)):
-            # If TDA fails, remove task and chain set and continue
             try:
-                # TDA
+                # TDA.
                 i = 1
                 for task in task_sets[idxx]:
-                    # Compute the worse case response time of the current task by TDA
                     task.rt = analyzer.tda(task, task_sets[idxx][:(i - 1)])
-                    if task.rt > task.deadline or task.rt == 0:
-                        # breakpoint()
-                        raise ValueError("TDA Result: WCRT bigger than deadline or 0!")
+                    if task.rt > task.deadline:
+                        raise ValueError(
+                                "TDA Result: WCRT bigger than deadline!")
                     i += 1
-            except ValueError: # if WCRT is bigger than deadline, then this task is removed from task set and cause effect chains
+            except ValueError:
+                # If TDA fails, remove task and chain set and continue.
                 task_sets.remove(task_sets[idxx])
-                cause_effect_chain_sets.remove(cause_effect_chain_sets[idxx])
-                # breakpoint()
+                ce_chains.remove(ce_chains[idxx])
                 continue
-        # Sporadic End-to-End Analyses
-        print("test: davare")
-        analyzer.davare(cause_effect_chain_sets)  # e2e_latency
-        print("test: reaction CASES19")
-        analyzer.reaction_sporadic(cause_effect_chain_sets)  # jj_react
-        print("test: age CASES19")
-        analyzer.age_sporadic(cause_effect_chain_sets)  # jj_age
-        """
-        Second Analyses (Simulation, Job Chains)
-        """
-        print("SIM TESTS")
+
+        # End-to-End Analyses.
+        print("\tTest: Davare.")
+        analyzer.davare(ce_chains)
+
+        print("\tTest: Duerr Reaction Time.")
+        analyzer.reaction_sporadic(ce_chains)
+
+        print("\tTest: Duerr Data Age.")
+        analyzer.age_sporadic(ce_chains)
+
+        ###
+        # Second analyses (Simulation, Our, Kloda).
+        ###
+        print("Second analyses (Simulation, Our, Kloda).")
         i = 0
         for task_set in task_sets:
-            print("\ttask set ", i+1)
-            print("\tsimulate")
-            # Event-based simulator
+            print("Task set ", i+1)
+
+            # Event-based simulation.
+            print("\tSimulation.")
             simulator = es.eventSimulator(len(task_set), task_set)
             # Determination of the variables used to compute the stop condition of the simulation
-            max_e2e_latency = max(cause_effect_chain_sets[i], key=lambda chain: chain.e2e_latency).e2e_latency
+            max_e2e_latency = max(ce_chains[i], key=lambda chain: chain.e2e_latency).e2e_latency
             max_phase = max(task_set, key=lambda task: task.phase).phase
             max_period = max(task_set, key=lambda task: task.period).period
             hyper_period = analyzer.determine_hyper_period(task_set)
@@ -157,11 +197,9 @@ def main():
             # for task in task_set:
             #    task.jobs = schedule[task]
             # Analyze the cause-effect chains
-            for chain in cause_effect_chain_sets[i]:
+            for chain in ce_chains[i]:
                 # OUR RESULTS
                 # print("\t\tCASES20: max age")
-                # res0 = analyzer.max_age_CASES(schedule, chain, max_phase, hyper_period, args.s, extended=True) # CASES20 - our analysis
-                # res0b = analyzer.max_age_CASES(schedule, chain, max_phase, hyper_period, args.s, extended=False) # CASES20 - our analysis
                 print("\t\tOUR: max age")
                 analyzer.max_age_OUR(schedule, task_set, chain, max_phase, hyper_period, shortened=False)
                 analyzer.max_age_OUR(schedule, task_set, chain, max_phase, hyper_period, shortened=True)
@@ -182,7 +220,7 @@ def main():
             i += 1
         # Save data (task_sets, chains and schedules)
         print("save data")
-        np.savez("output/1single/task_set_u=" + str(args.u) + "_n="+ args.n + "_g=" + str(args.g) + ".npz", task_sets=task_sets, chains=cause_effect_chain_sets)
+        np.savez("output/1single/task_set_u=" + str(args.u) + "_n="+ args.n + "_g=" + str(args.g) + ".npz", task_sets=task_sets, chains=ce_chains)
 
     ###
     # l=="2": Interconnected analysis; args: -l2 -u_ -g_
@@ -210,7 +248,7 @@ def main():
         for j in range(0, no_interconn_cechains):
             chain_all = []
             i_chain_all = []
-            com_tasks = communication.generate_communication_taskset(20, 10, 1000, True) # generate communication tasks
+            com_tasks = comm.generate_communication_taskset(20, 10, 1000, True) # generate communication tasks
             k = 0
             for chain in list(np.random.choice(chains_single_ECU, 5, replace=False)):
                 i_chain_all.append(chain)
@@ -226,7 +264,7 @@ def main():
 
         # Do Analyses for chains_interconnected; no kloda since we assume that clocks are not synchronized
         print("do analyses")
-        analyzer = a.Analyser("0")
+        analyzer = a.Analyzer("0")
         analyzer.age_interconnected(chains_interconnected) # OUR
         analyzer.reaction_interconnected(chains_interconnected) # OUR
         analyzer.davare([chains_interconnected])
