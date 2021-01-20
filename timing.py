@@ -6,7 +6,7 @@ import stt.generator_WATERS as g
 import stt.chain as c
 import stt.transformer as trans
 from stt.niklas import generate_cause_effect_chains_waters15
-from stt.niklas import generate_distributed_chain
+# from stt.niklas import generate_distributed_chain
 from stt.niklas import generate_cause_effect_chains_from_transformed_task_sets
 import stt.communication as communication
 import csv
