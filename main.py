@@ -6,19 +6,17 @@ results.
 """
 
 import gc  # garbage collector
-# import stt.task as t
-import stt.analyzer as a
-import stt.generator_WATERS as waters
-import stt.chain as c
-import stt.transformer as trans
-import stt.communication as comm
-import csv
 import argparse
-import stt.evaluation as eva
-import stt.generator_UUNIFAST as uunifast
-import stt.eventSimulator as es
 import math
 import numpy as np
+import stt.chain as c
+import stt.communication as comm
+import stt.generator_WATERS as waters
+import stt.generator_UUNIFAST as uunifast
+import stt.transformer as trans
+import stt.eventSimulator as es
+import stt.analyzer as a
+import stt.evaluation as eva
 
 
 def main():
@@ -42,13 +40,6 @@ def main():
 
     args = parser.parse_args()
     del parser
-
-    ###
-    # Global Variables
-    ###
-    task_sets = []
-    schedules = []
-    ce_chains = {"all": [], "ordered": [], "unordered": []}
 
     if args.l == 1:
         """ Single ECU analysis.
@@ -169,59 +160,73 @@ def main():
         # Second analyses (Simulation, Our, Kloda).
         ###
         print("=Second analyses (Simulation, Our, Kloda).=")
-        i = 0
+        i = 0  # task set counter
+        schedules = []
         for task_set in task_sets:
             print("=Task set ", i+1)
 
             # Event-based simulation.
             print("Simulation.")
+
             simulator = es.eventSimulator(len(task_set), task_set)
 
-            # Determination of the variables used to compute the stop condition of the simulation
-            max_e2e_latency = max(ce_chains[i], key=lambda chain: chain.e2e_latency).e2e_latency
+            # Determination of the variables used to compute the stop condition
+            # of the simulation
+            max_e2e_latency = max(ce_chains[i], key=lambda chain:
+                                  chain.e2e_latency).e2e_latency
             max_phase = max(task_set, key=lambda task: task.phase).phase
             max_period = max(task_set, key=lambda task: task.period).period
             hyper_period = analyzer.determine_hyper_period(task_set)
-            period_lowest_priority_task = task_set[-1].period
+
+            sched_interval = (
+                    2 * hyper_period + max_phase  # interval from paper
+                    + max_e2e_latency  # upper bound job chain length
+                    + max_period)  # for convenience
+
+            # Information for end user.
             print("\tNumber of tasks: ", len(task_set))
             print("\tHyperperiod: ", hyper_period)
-            no_of_jobs = 0
+            number_of_jobs = 0
             for task in task_set:
-                no_of_jobs += (((2 * hyper_period + max_phase + max_period) / task.period) + max_e2e_latency / task.period)
-            print("\tNumber of jobs to schedule:", no_of_jobs)
-            # Stop condition is the max number of jobs from the lowest priority task; Note: this is just an estimation of the right end of both testing intervals plus job chain length; Since the schedule repeats, we can make this estimation
-            simulator.dispatcher(int(math.ceil((2 * hyper_period + max_phase # interval to be scheduled
-                                                + max_period + max_e2e_latency) # for convinience # TODO maybe one additional max_period ?
-                                                / period_lowest_priority_task )))
-            # Simulate
-            schedule = simulator.e2e_result() # Note: the schedule is created without early completion
-            #breakpoint()
+                number_of_jobs += sched_interval/task.period
+            print("\tNumber of jobs to schedule: ", number_of_jobs)
+
+            # Stop condition: Number of jobs of lowest priority task.
+            simulator.dispatcher(
+                    int(math.ceil(sched_interval/task_set[-1].period)))
+
+            # Simulation without early completion.
+            schedule = simulator.e2e_result()
             schedules.append(schedule)
-            # for task in task_set:
-            #    task.jobs = schedule[task]
-            # Analyze the cause-effect chains
+
+            # Analyses.
             for chain in ce_chains[i]:
                 print("Test: Our Data Age.")
-                analyzer.max_age_OUR(schedule, task_set, chain, max_phase, hyper_period, shortened=False)
-                analyzer.max_age_OUR(schedule, task_set, chain, max_phase, hyper_period, shortened=True)
+                analyzer.max_age_OUR(schedule, task_set, chain, max_phase,
+                                     hyper_period, shortened=False)
+                analyzer.max_age_OUR(schedule, task_set, chain, max_phase,
+                                     hyper_period, shortened=True)
+
                 print("Test: Our Reaction Time.")
-                analyzer.reaction_OUR(schedule, task_set, chain, max_phase, hyper_period)
+                analyzer.reaction_OUR(schedule, task_set, chain, max_phase,
+                                      hyper_period)
 
                 # Kloda analysis, assuming synchronous releases.
                 print("Test: Kloda.")
-                for release_time_first_task_in_chain in range(0, max(1, hyper_period), chain.chain[0].period):
-                    kloda = analyzer.kloda(chain.chain, release_time_first_task_in_chain, beginning=True)
-                    if chain.kloda < kloda:
-                        chain.kloda = kloda
-                # Note: additional period of the first task is already in the computation of kloda
+                analyzer.kloda(chain, hyper_period)
 
-                ###
+                # Test.
                 if chain.kloda < chain.sim_react:
                     breakpoint()
             i += 1
-        # Save data (task_sets, chains and schedules)
+
+        ###
+        # Save data.
+        ###
         print("=Save data.=")
-        np.savez("output/1single/task_set_u=" + str(args.u) + "_n="+ args.n + "_g=" + str(args.g) + ".npz", task_sets=task_sets, chains=ce_chains)
+        np.savez("output/1single/task_set_u=" + str(args.u) + "_n=" + args.n
+                 + "_g=" + str(args.g) + ".npz", task_sets=task_sets,
+                 chains=ce_chains)
 
     ###
     # l=="2": Interconnected analysis; args: -l2 -u_ -g_

@@ -356,7 +356,17 @@ class Analyzer:
             interconnected_age += chain.interconnected[len(chain.interconnected)-1].sim_age
             chain.interconnected_age = interconnected_age
 
-    def kloda(self, chain, release_time_producer, beginning=True):
+    def kloda(self, chain, hyperperiod):
+        """Kloda analysis for synchronous releases."""
+        for release_first_task_in_chain in range(0, max(1, hyper_period),
+                                                 chain.chain[0].period):
+            kloda = self.kloda_rec(chain.chain, release_first_task_in_chain,
+                                   beginning=True)
+            if chain.kloda < kloda:
+                chain.kloda = kloda
+
+
+    def kloda_rec(self, chain, release_time_producer, beginning=True):
         """Recursive function to compute the reaction time by klodas analysis.
         Note: the additional period is already added with the beginning=True option.
         """
@@ -372,4 +382,4 @@ class Analyzer:
         if producer_task.priority > consumer_task.priority or consumer_task.message: # message is an identifier for the communication task (=ECU change)
             q = producer_task.rt
         release_time_consumer = math.ceil((release_time_producer + q) / consumer_task.period) * consumer_task.period
-        return add + release_time_consumer - release_time_producer + self.kloda(chain_minus_one, release_time_consumer, beginning=False)
+        return add + release_time_consumer - release_time_producer + self.kloda_rec(chain_minus_one, release_time_consumer, beginning=False)
