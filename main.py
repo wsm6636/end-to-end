@@ -8,9 +8,9 @@
 
 import gc
 import stt.task as t
-import stt.scheduler as s
+# import stt.scheduler as s
 import stt.analyser as a
-import stt.generator as g
+import stt.generator_WATERS as g
 import stt.chain as c
 import stt.transformer as trans
 from stt.niklas import generate_cause_effect_chains_waters15
@@ -20,7 +20,7 @@ import stt.communication as communication
 import csv
 import argparse
 import stt.evaluation as eva
-import stt.generator_marco as gm
+import stt.generator_UUNIFAST as gm
 import stt.eventSimulator as es
 import math
 import numpy as np
@@ -63,14 +63,13 @@ def main():
             runs = 1
             threshold = 0.1 # cummulative utilization threshold 0.1 percent, i.e., maximal difference between actual utilization and required utilization
             min_uti = args.u/100.0 # utilization -- why min?
-            angel_synchronous_tasks = False
             number_of_cylinders = 4
             angle_mode = 'sporadic'
             task_sets_generator = []
             while len(task_sets_generator) < args.r:
                 # Create several task sets from generator
                 task_sets_gen = g.generate_taskset_util_number(runs, min_uti, profile, scaling_flag,
-                                                               threshold / 100.0, angel_synchronous_tasks,
+                                                               threshold / 100.0,
                                                                number_of_cylinders,
                                                                angle_mode)
                 task_sets_generator.append(task_sets_gen[0])

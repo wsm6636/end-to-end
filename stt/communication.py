@@ -1,3 +1,7 @@
+"""
+Creation of communication tasks.
+"""
+
 import numpy as np
 import random
 import math
@@ -5,12 +9,12 @@ import stt.task as task
 
 CAN_BUS = {
 	'MESSAGE_BIT' : 130,
-	'BANDWIDTH_MBPS' : 1,
-	'MAX_NODES' : 5
+	'BANDWIDTH_MBPS' : 1 #,
+	#'MAX_NODES' : 5
 	}
 
 
-def non_preemptive_response_time(taskset):
+def non_preemptive_response_time(taskset): # help function
 	def time_demand_analysis_task(pivot, lower_prio_tasks=[], higher_prio_tasks=[], blocking=False):
 		blocked = max(task.wcet for task in lower_prio_tasks) if lower_prio_tasks else 0
 		probe = blocked + pivot.wcet + sum((task.wcet for task in higher_prio_tasks))
@@ -29,7 +33,7 @@ def non_preemptive_response_time(taskset):
 		task.rt = rt
 
 
-def generate_communication_candidate_taskset(num_tasks, min_period, max_period, rounded=False):
+def generate_communication_candidate_taskset(num_tasks, min_period, max_period, rounded=False): # help function
 	taskset = []
 	wcet = (float(CAN_BUS['MESSAGE_BIT'])/CAN_BUS['BANDWIDTH_MBPS'])/10**3
 	periods = np.exp(
@@ -42,7 +46,7 @@ def generate_communication_candidate_taskset(num_tasks, min_period, max_period, 
 	return taskset
 
 
-def generate_communication_taskset(num_tasks, min_period, max_period, rounded=False, max_trials=100):
+def generate_communication_taskset(num_tasks, min_period, max_period, rounded=False, max_trials=100): # main function
 	taskset = generate_communication_candidate_taskset(num_tasks, min_period, max_period, rounded)
 	taskset = sorted(taskset, key=lambda x: x.priority)
 	trials = 0

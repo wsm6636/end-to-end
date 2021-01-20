@@ -61,13 +61,12 @@ class eventSimulator:
             self.delta = self.delta - elapsedTime
 
     """
-    The status table for the simulator
-    per col with 5 rows:
-    workload of task
-    # of release
-    # of misses
-    # of deadlines = this should be less than release
-    flag for init the first execution of job
+    The status table for the simulator with 5 rows per column:
+    0. workload of task
+    1. # of release
+    2. # of misses
+    3. # of deadlines = this should be less than release
+    4. flag for init the first execution of job
     """
 
     def tableReport(self):

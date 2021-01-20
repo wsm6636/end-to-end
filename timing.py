@@ -2,7 +2,7 @@ import gc
 import stt.task as t
 import stt.scheduler as s
 import stt.analyser as a
-import stt.generator as g
+import stt.generator_WATERS as g
 import stt.chain as c
 import stt.transformer as trans
 from stt.niklas import generate_cause_effect_chains_waters15
@@ -12,7 +12,7 @@ import stt.communication as communication
 import csv
 import argparse
 import stt.evaluation as eva
-import stt.generator_marco as gm
+import stt.generator_UUNIFAST as gm
 import stt.eventSimulator as es
 import math
 import numpy as np
