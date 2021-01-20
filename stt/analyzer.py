@@ -356,7 +356,7 @@ class Analyzer:
             interconnected_age += chain.interconnected[len(chain.interconnected)-1].sim_age
             chain.interconnected_age = interconnected_age
 
-    def kloda(self, chain, hyperperiod):
+    def kloda(self, chain, hyper_period):
         """Kloda analysis for synchronous releases."""
         for release_first_task_in_chain in range(0, max(1, hyper_period),
                                                  chain.chain[0].period):
@@ -364,6 +364,7 @@ class Analyzer:
                                    beginning=True)
             if chain.kloda < kloda:
                 chain.kloda = kloda
+        return chain.kloda
 
 
     def kloda_rec(self, chain, release_time_producer, beginning=True):
