@@ -15,7 +15,7 @@ import stt.chain as c
 import stt.transformer as trans
 from stt.niklas import generate_cause_effect_chains_waters15
 # from stt.niklas import generate_distributed_chain
-from stt.niklas import generate_cause_effect_chains_from_transformed_task_sets
+# from stt.niklas import generate_cause_effect_chains_from_transformed_task_sets
 import stt.communication as communication
 import csv
 import argparse
@@ -77,7 +77,7 @@ def main():
             trans1 = trans.Transformer("transformer1", task_sets_generator, 10000000)
             # Transform tasks into framework model, create CAN message task
             task_sets = trans1.transform_tasks(False) # we created all tasks to have bcet=0, we do not use this value in any analysis # False=synchronous, True=asynchronous
-            cause_effect_chain_sets = generate_cause_effect_chains_waters15(task_sets, False)
+            cause_effect_chain_sets = g.generate_cause_effect_chains_waters15(task_sets, False)
 
         if args.g ==1:
             ###
@@ -92,7 +92,7 @@ def main():
                 # Create cause-effect chains w.r.t the task sets
                 # breakpoint()
                 print("create cause-effect chains")
-                cause_effect_chain_sets = generate_cause_effect_chains_from_transformed_task_sets(task_sets)
+                cause_effect_chain_sets = gm.generate_cause_effect_chains_from_transformed_task_sets(task_sets)
 
         """
         First Analyses (TDA, Sporadic End-to-End)

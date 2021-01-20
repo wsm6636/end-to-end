@@ -3,6 +3,7 @@ import numpy as np
 import random
 from scipy.stats import exponweib
 import math
+import stt.chain as c
 
 
 class task (dict):
@@ -12,6 +13,9 @@ class task (dict):
         dict.__setitem__(self, "deadline", float (deadline))
         dict.__setitem__(self, "id", 0 )
 
+
+"""task sets
+"""
 
 def sample_runnable_acet(period, amount = 1, scalingFlag=True):
     # Parameters fitted with data from WATERS 'Real World Automotive Benchmarks For Free'
@@ -304,3 +308,41 @@ def generate_taskset_util_number(number_of_sets = 100, util_max = 1.0, period_pd
             if len(task_set) < 2:
                 sets.remove(task_set)
         return sets
+
+""" cause effect chains
+"""
+
+def generate_cause_effect_chains_waters15(transformed_task_sets, sort): # WATERS
+    distribution_involved_activation_patterns = stats.rv_discrete(values=([1, 2, 3], [0.7, 0.2, 0.1]))
+    distribution_number_of_tasks = stats.rv_discrete(values=([2, 3, 4, 5], [0.3, 0.4, 0.2, 0.1]))
+    cause_effect_chain_sets = []
+
+    for task_set in transformed_task_sets:
+        cause_effect_chain_set = []
+        for number_of_cause_effect_chains in range(int(np.random.randint(30, 60))): # 30 to 60 cause-effect chains
+            chain = []
+            involved_activation_patterns = list(np.random.choice(list(set(map(lambda task: task.period, task_set))),
+                                                                 size=int(
+                                                                     distribution_involved_activation_patterns.rvs()),
+                                                                 replace=False))
+            if sort:
+                involved_activation_patterns.sort()
+            else:
+                np.random.shuffle(involved_activation_patterns)
+
+            for period in involved_activation_patterns:
+                tasks_with_period = [task for task in task_set if task.period == period]
+                try:
+                    chain.append(
+                        np.random.choice(tasks_with_period, size=distribution_number_of_tasks.rvs(), replace=False))
+                except ValueError:
+                    chain = []
+                    break
+            cec_chain = []
+            for chain_part in chain:
+                for task in chain_part:
+                    cec_chain.append(task)
+            if chain:
+                cause_effect_chain_set.append(c.CauseEffectChain(number_of_cause_effect_chains, cec_chain))
+        cause_effect_chain_sets.append(cause_effect_chain_set)
+    return cause_effect_chain_sets

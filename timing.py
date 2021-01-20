@@ -5,9 +5,9 @@ import stt.analyser as a
 import stt.generator_WATERS as g
 import stt.chain as c
 import stt.transformer as trans
-from stt.niklas import generate_cause_effect_chains_waters15
+# from stt.niklas import generate_cause_effect_chains_waters15
 # from stt.niklas import generate_distributed_chain
-from stt.niklas import generate_cause_effect_chains_from_transformed_task_sets
+# from stt.niklas import generate_cause_effect_chains_from_transformed_task_sets
 import stt.communication as communication
 import csv
 import argparse
@@ -46,7 +46,7 @@ for util in [50,60,70,80,90]:
     # Create cause-effect chains w.r.t the task sets
     # breakpoint()
     print("create cause-effect chains")
-    cause_effect_chain_sets = generate_cause_effect_chains_from_transformed_task_sets(task_sets)
+    cause_effect_chain_sets = gm.generate_cause_effect_chains_from_transformed_task_sets(task_sets)
 
 
     # Create an analyzer to determine response times with TDA
