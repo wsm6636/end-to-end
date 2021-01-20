@@ -63,42 +63,42 @@ class Transformer:
             transformed_task_sets.append(transformed_task_set)
         return transformed_task_sets
 
-    def transform_ce_chains_random(self):
-        # Initialization of the cause-effect chain sets
-        chain_sets = []
-        # loop for all chain sets
-        for j in range(len(self.chain_set_random)):
-            # Initialization of the transformed chain_set for one task_set
-            chain_set = []
-            # loop for all chains in a single task set
-            for k in range(len(self.chain_set_random[j])):
-                chain = []
-                # loop for tasks in a cause-effect chain
-                for l in range(len(self.chain_set_random[j][k])):
-                    for task in self.task_set[j]:
-                        if task.id == str(self.chain_set_random[j][k][l]['id']):
-                            chain.append(task)
-                if len(chain) > 1:
-                    chain_set.append(cec.CauseEffectChain(str(j), chain))
-            chain_sets.append(chain_set)
-        return chain_sets
+    # def transform_ce_chains_random(self):
+    #     # Initialization of the cause-effect chain sets
+    #     chain_sets = []
+    #     # loop for all chain sets
+    #     for j in range(len(self.chain_set_random)):
+    #         # Initialization of the transformed chain_set for one task_set
+    #         chain_set = []
+    #         # loop for all chains in a single task set
+    #         for k in range(len(self.chain_set_random[j])):
+    #             chain = []
+    #             # loop for tasks in a cause-effect chain
+    #             for l in range(len(self.chain_set_random[j][k])):
+    #                 for task in self.task_set[j]:
+    #                     if task.id == str(self.chain_set_random[j][k][l]['id']):
+    #                         chain.append(task)
+    #             if len(chain) > 1:
+    #                 chain_set.append(cec.CauseEffectChain(str(j), chain))
+    #         chain_sets.append(chain_set)
+    #     return chain_sets
 
-    def transform_ce_chains_order(self):
-        # Initialization of the cause-effect chain sets
-        chain_sets = []
-        # loop for all chain sets
-        for j in range(len(self.chain_set_order)):
-            # Initialization of the transformed chain_set for one task_set
-            chain_set = []
-            # loop for all chains in a single task set
-            for k in range(len(self.chain_set_order[j])):
-                chain = []
-                # loop for tasks in a cause-effect chain
-                for l in range(len(self.chain_set_order[j][k])):
-                    for task in self.task_set[j]:
-                        if task.id == str(self.chain_set_order[j][k][l]['id']):
-                            chain.append(task)
-                if len(chain) > 1:
-                    chain_set.append(cec.CauseEffectChain(str(j), chain))
-            chain_sets.append(chain_set)
-        return chain_sets
+    # def transform_ce_chains_order(self):
+    #     # Initialization of the cause-effect chain sets
+    #     chain_sets = []
+    #     # loop for all chain sets
+    #     for j in range(len(self.chain_set_order)):
+    #         # Initialization of the transformed chain_set for one task_set
+    #         chain_set = []
+    #         # loop for all chains in a single task set
+    #         for k in range(len(self.chain_set_order[j])):
+    #             chain = []
+    #             # loop for tasks in a cause-effect chain
+    #             for l in range(len(self.chain_set_order[j][k])):
+    #                 for task in self.task_set[j]:
+    #                     if task.id == str(self.chain_set_order[j][k][l]['id']):
+    #                         chain.append(task)
+    #             if len(chain) > 1:
+    #                 chain_set.append(cec.CauseEffectChain(str(j), chain))
+    #         chain_sets.append(chain_set)
+    #     return chain_sets

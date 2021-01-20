@@ -62,7 +62,7 @@ def generate_utilizations_uniform(num_tasks, num_tasksets, utilization):
             utilizations.append(cumulative_utilization - cumulative_utilization_next)
             cumulative_utilization = cumulative_utilization_next
         utilizations.append(cumulative_utilization_next)
-        #print(sum(utilizations))
+        # print(sum(utilizations))
         return utilizations
     return [uunifast(num_tasks, utilization) for i in range(num_tasksets)]
 

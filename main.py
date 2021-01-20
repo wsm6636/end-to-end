@@ -30,13 +30,13 @@ import numpy as np
 def main():
     # Argumenten Uebergabe
     parser = argparse.ArgumentParser()
-    parser.add_argument("-l", type=int, default=0) # which part of code should be executed
-    parser.add_argument("-u", type=float, default=50) # utilization in 0 to 100 [percent] !!!!
-    parser.add_argument("-g", type=int, default=0) # task generation. 0: WATERS Benchmark, 1: UUnifast
+    parser.add_argument("-l", type=int, default=0)  # which part of code should be executed
+    parser.add_argument("-u", type=float, default=50)  # utilization in 0 to 100 [percent] !!!!
+    parser.add_argument("-g", type=int, default=0)  # task generation. 0: WATERS Benchmark, 1: UUnifast
     # only for l==1:
-    parser.add_argument("-n", type=str, default="run0") # name of the run
-    parser.add_argument("-r", type=int, default=1) # number of task sets to generate
-    parser.add_argument("-s", type=int, default=0) # sample scenario. 0: Scenario A, 1: Scenario B
+    parser.add_argument("-n", type=str, default="run0")  # name of the run
+    parser.add_argument("-r", type=int, default=1)  # number of task sets to generate
+    parser.add_argument("-s", type=int, default=0)  # sample scenario. 0: Scenario A, 1: Scenario B
     args = parser.parse_args()
     del parser
     # Global Variables
@@ -83,16 +83,16 @@ def main():
             ###
             # UUnifast by KHCHEN
             ###
-                # task_sets_generator = gm.generate_tasksets(5, args.r, 1, 100, args.u, rounded=True)
-                task_sets_generator = gm.generate_tasksets_predefined(50, args.r, 1, 2000, args.u/100.0, [1,2,5,10,20,50,100,200,500,1000])
-                # Transform tasks and cause-effect chains into framework structure
-                trans2 = trans.Transformer("transformer2", task_sets_generator, 10000000)
-                # Transform tasks into framework model
-                task_sets = trans2.transform_tasks(False) # we created all tasks to have bcet=0, we do not use this value in any analysis
-                # Create cause-effect chains w.r.t the task sets
-                # breakpoint()
-                print("create cause-effect chains")
-                cause_effect_chain_sets = gm.generate_cause_effect_chains_from_transformed_task_sets(task_sets)
+            # task_sets_generator = gm.generate_tasksets(5, args.r, 1, 100, args.u, rounded=True)
+            task_sets_generator = gm.generate_tasksets_predefined(50, args.r, 1, 2000, args.u/100.0, [1,2,5,10,20,50,100,200,500,1000])
+            # Transform tasks and cause-effect chains into framework structure
+            trans2 = trans.Transformer("transformer2", task_sets_generator, 10000000)
+            # Transform tasks into framework model
+            task_sets = trans2.transform_tasks(False) # we created all tasks to have bcet=0, we do not use this value in any analysis
+            # Create cause-effect chains w.r.t the task sets
+            # breakpoint()
+            print("create cause-effect chains")
+            cause_effect_chain_sets = gm.generate_cause_effect_chains_from_transformed_task_sets(task_sets)
 
         """
         First Analyses (TDA, Sporadic End-to-End)
@@ -119,11 +119,11 @@ def main():
                 continue
         # Sporadic End-to-End Analyses
         print("test: davare")
-        analyzer.davare(cause_effect_chain_sets) # e2e_latency
+        analyzer.davare(cause_effect_chain_sets)  # e2e_latency
         print("test: reaction CASES19")
-        analyzer.reaction_sporadic(cause_effect_chain_sets) #jj_react
+        analyzer.reaction_sporadic(cause_effect_chain_sets)  # jj_react
         print("test: age CASES19")
-        analyzer.age_sporadic(cause_effect_chain_sets) #jj_age
+        analyzer.age_sporadic(cause_effect_chain_sets)  # jj_age
         """
         Second Analyses (Simulation, Job Chains)
         """
