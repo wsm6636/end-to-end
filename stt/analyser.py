@@ -557,8 +557,8 @@ class Analyser:
                 if isinstance(chain.interconnected[i], stt.task.Task):
                     interconnected_age += chain.interconnected[i].period + chain.interconnected[i].rt
                 else:
-                    interconnected_age += chain.interconnected[i].sim_sh_age
-            interconnected_age += chain.interconnected[len(chain.interconnected)-1].sim_age
+                    interconnected_age += chain.interconnected[i].sim_age
+            interconnected_age += chain.interconnected[len(chain.interconnected)-1].sim_sh_age
             chain.interconnected_age = interconnected_age
 
     def kloda(self, chain, release_time_producer, beginning=True):
