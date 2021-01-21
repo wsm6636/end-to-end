@@ -10,14 +10,14 @@
 
 ########################################
 # Afterwards, start interconnected ECU analysis with:
-# 	for i in {50..90..10}; do  screen -dmS g0util_$i python3 main.py -l2 -u=$i -g0; done
-# 	for i in {50..90..10}; do  screen -dmS g1util_$i python3 main.py -l2 -u=$i -g1; done
+# 	for i in {50..90..10}; do  screen -dmS g0util_$i python3 main.py -j2 -u=$i -g0; done
+# 	for i in {50..90..10}; do  screen -dmS g1util_$i python3 main.py -j2 -u=$i -g1; done
 ########################################
 
 ########################################
 # In the end, draw the pots with:
-# 	screen -dmS l3g0 python3 main.py -l3 -g0
-# 	screen -dmS l3g1 python3 main.py -l3 -g1
+# 	screen -dmS j3g0 python3 main.py -j3 -g0
+# 	screen -dmS j3g1 python3 main.py -j3 -g1
 ########################################
 
 # g=0 r=10 with different utilization
@@ -29,7 +29,7 @@ do
 	echo "start screens 1 - 50"
 	for i in {1..50}
 	do
-	   screen -dmS ascr$i python3 main.py -l1 -u=$util -g0 -r10 -n="run$i"
+	   screen -dmS ascr$i python3 main.py -j1 -u=$util -g0 -r10 -n="run$i"
 	done
 
 	while screen -list | grep -q ascr.*
@@ -43,7 +43,7 @@ do
 	echo "start screens 51 - 100"
 	for i in {51..100}
 	do
-	   screen -dmS ascr$i python3 main.py -l1 -u=$util -g0 -r10 -n="run$i"
+	   screen -dmS ascr$i python3 main.py -j1 -u=$util -g0 -r10 -n="run$i"
 	done
 
 	while screen -list | grep -q ascr.*
@@ -63,7 +63,7 @@ do
 	echo "start screens 1 - 50"
 	for i in {1..50}
 	do
-	   screen -dmS ascr$i python3 main.py -l1 -u=$util -g1 -r10 -n="run$i"
+	   screen -dmS ascr$i python3 main.py -j1 -u=$util -g1 -r10 -n="run$i"
 	done
 
 	while screen -list | grep -q ascr.*
@@ -77,7 +77,7 @@ do
 	echo "start screens 51 - 100"
 	for i in {51..100}
 	do
-	   screen -dmS ascr$i python3 main.py -l1 -u=$util -g1 -r10 -n="run$i"
+	   screen -dmS ascr$i python3 main.py -j1 -u=$util -g1 -r10 -n="run$i"
 	done
 
 	while screen -list | grep -q ascr.*
