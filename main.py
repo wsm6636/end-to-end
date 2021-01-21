@@ -48,7 +48,7 @@ def main():
 
         Required arguments:
         -j1
-        -u : utilization
+        -u : utilization [%]
         -g : task generation setting
         -r : number of runs
         -n : name of the run
@@ -93,7 +93,7 @@ def main():
             print("\tCreate cause-effect chains")
             ce_chains = waters.gen_ce_chains(task_sets, False)
 
-        if args.g == 1:
+        elif args.g == 1:
             # UUnifast benchmark.
             print("UUnifast benchmark.")
 
@@ -123,6 +123,10 @@ def main():
             ce_chains = uunifast.gen_ce_chains(task_sets)
             # ce_chains contains one set of cause effect chains for each task
             # set in task_sets.
+
+        else:
+            print("Choose a benchmark")
+            return
 
         ###
         # First analyses (TDA, Davare, Duerr).
@@ -191,7 +195,7 @@ def main():
             number_of_jobs = 0
             for task in task_set:
                 number_of_jobs += sched_interval/task.period
-            print("\tNumber of jobs to schedule: ", number_of_jobs)
+            print("\tNumber of jobs to schedule: ", "%.2f" % number_of_jobs)
 
             # Stop condition: Number of jobs of lowest priority task.
             simulator.dispatcher(
