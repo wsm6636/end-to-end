@@ -1,90 +1,50 @@
-"""
-End-to-End (e2e) Analysis.
-"""
+"""End-to-End (e2e) Analysis."""
+
 import math
 import stt.task
 import stt.augmented_job_chain as aug
 
+
 class Analyzer:
 
-    id = None # unique identifier
-    # schedule_exe = None
-    # trace_length = None
-    # task = None
-    # chain = None
-    # chains = []
-    # job_chain_age = []
-    # job_chain_reaction = []
-    # job_chain_current = []
-    # key = None
-    # flag = False
+    id = None  # unique identifier
 
     def __init__(self, e_id):
-        """Creates an analyzer represented by ID.
-        """
+        """Creates an analyzer represented by ID."""
         self.id = e_id
-
-    # @staticmethod
-    # def sort_task_set_by_priority(task_set):
-    #     return sorted(task_set, key=lambda task: task.priority)
-
-    # @staticmethod
-    # def sort_task_set_by_period(task_set):
-    #     return sorted(task_set, key=lambda task: task.period)
-
-    # @staticmethod
-    # def set_priority_task_set(task_set):
-    #     i = 0
-    #     for task in task_set:
-    #         task.priority = i
-    #         i += 1
-
-    # @staticmethod
-    # def determine_blocking_time(task_set):
-    #     i = 0
-    #     for task in task_set:
-    #         task.blocking_time = max(task_set[i:], key=lambda blocking_task: blocking_task.wcet)
-    #         i += 1
 
     @staticmethod
     def determine_hyper_period(task_set):
+        """Determine the hyperperiod of task_set."""
+        # Collect periods.
         periods = []
         for task in task_set:
             if task.period not in periods:
                 periods.append(task.period)
+        # Compute least common multiple = hyperperiod.
         lcm = periods[0]
         for i in periods[1:]:
             lcm = int(lcm * i / math.gcd(lcm, i))
-            # print(lcm)
         return lcm
 
-    # def tda_task_set(self, task_sets, preemptive):
-    #     for task_set in task_sets:
-    #         i = 1
-    #         for task in task_set:
-    #             # Compute the worse case response time of the current task
-    #             if preemptive:
-    #                 task.rt = self.tda(task, task_set[:(i - 1)])
-    #             else:
-    #                 task.rt = self.tda_blocking(task, task_set[:(i - 1)])
-    #             if task.rt > task.deadline or task.rt == 0:
-    #                 raise ValueError("TDA Result: WCRT bigger than deadline!")
-    #             i += 1
-
     @staticmethod
-    def workload(period, c, t): # workload function for TDA
-        return c * math.ceil(float(t) / period)
+    def workload(period, wcet, time):
+        """Workload function for TDA.
+
+        Help function for tda().
+        """
+        return wcet * math.ceil(float(time) / period)
 
     def tda(self, task, hp_tasks):
-        """Implementation of TDA to calculate worst case response time
-           source: https://github.com/kuanhsunchen/MissRateSimulator/blob/master/TDA.py
+        """Implementation of TDA to calculate worst-case response time.
 
-            :return: WCRT
-            """
-        c = task.wcet
-        r = c
+        Source:
+        https://github.com/kuanhsunchen/MissRateSimulator/blob/master/TDA.py
+        """
+        c = task.wcet  # WCET
+        r = c  # WCRT
         while True:
-            i = 0
+            i = 0  # interference
             for itask in hp_tasks:
                 i = i + self.workload(itask.period, itask.wcet, r)
 
@@ -93,95 +53,91 @@ class Analyzer:
             else:
                 return r
 
-    def tda_blocking(self, task, hp_tasks):
-        """Implementation of TDA to calculate worst case response time
-           source: https://github.com/kuanhsunchen/MissRateSimulator/blob/master/TDA.py
+    ###
+    # Our analyses from 'Timing Analysis of Asynchronized Distributed
+    # Cause-Effect Chains' (2021).
+    ###
 
-            :return: WCRT
-            """
-        c = task.wcet
-        r = c
-        b = task.blocking_time
-        while True:
-            i = 0
-            for itask in hp_tasks:
-                i = i + b + self.workload(itask.period, itask.wcet, r)
+    def max_age_our(self, schedule, task_set, chain, max_phase, hyper_period,
+                    shortened=False):
+        """ Result of our maximum data age time analysis.
 
-            if r < i + c + b:
-                r = i + c + b
-            else:
-                return r
-
-
-    def max_age_OUR(self, schedule, task_set, chain, max_phase, hyper_period, shortened = False):
-        """ Result of our maximum reaction time analysis.
-            We construct all immediate forward augmented job chains and then
-            choose the maximal length of them.
+        We construct all immediate backward augmented job chains and then
+        choose the maximal length of them.
         """
-        # compute maximal first read
+        # Compute maximal first read.
         first_jobs = []
         for task in task_set:
             first_jobs.append(schedule.get(task)[0])
         max_first_read = max(first_jobs, key=lambda first_job: first_job[0])[0]
 
-        # construct all valid immediate forward augmented job chains
-        candidates = [] # all valid imm fw augmented job chains
+        # Construct all valid immediate backward augmented job chains.
+        candidates = []
 
-        # for loop position for immediate forward augmented job chain
-        position = 0
+        # Position for the last job in the chain.
+        position = -1
         while True:
-            position +=1 # we start with position = 1 (=2nd job)
+            # We start with position = 0 (1st job).
+            position += 1
 
-            if len(schedule.get(chain.chain[-1])) < position: # checking for mistakes
+            # Checking for mistakes.
+            if len(schedule.get(chain.chain[-1])) < position:
                 breakpoint()
 
-            actuation = schedule.get(chain.chain[-1])[position][1]
+            # Last job in the job chain:
+            next_job = schedule.get(chain.chain[-1])[position]
+
+            # Find actuation.
             if shortened:
-                next_job = schedule.get(chain.chain[-1])[position]
+                actuation = schedule.get(chain.chain[-1])[position][1]
             else:
-                next_job = schedule.get(chain.chain[-1])[position-1]
+                actuation = schedule.get(chain.chain[-1])[position+1][1]
 
-            # construct augmented job chain
-            job_chain = self.imm_bw_jc(next_job, chain.length - 1, schedule, chain, key=0)
+            # Construct augmented job chain with help function.
+            job_chain = self.imm_bw_jc(next_job, chain.length-1, schedule,
+                                       chain, key=0)
 
-            if job_chain is None: # job chain is incomplete
+            # Handle incomplete job chains.
+            if job_chain is None:
                 continue
 
-            # define external activity
+            # Define external activity.
             ext_activity = job_chain[0][0]
-            # find job after ext_activity
+
+            # Find first job after ext_activity
             job_after_ext_activity = None
             flag = False
             for job in schedule.get(chain.chain[0]):
                 if job[0] > ext_activity:
                     flag = True
                     break
-            if flag == False: # no event after ext_activity could be found
+            if flag is False:  # no event after ext_activity could be found
                 breakpoint()
             else:
                 job_after_ext_activity = job
 
-            # check if valid
+            # Check if the augmented job chain is valid.
             if job_after_ext_activity[0] > max_first_read:
                 pass
             else:
                 continue
 
-            # check if external activity before max_phase + 2 hyperperiod
+            # End condition.
             if ext_activity < max_phase + 2*hyper_period:
                 pass
             else:
                 break
 
-            # add augmented job chain to candidates
-            candidates.append(aug.aug_job_chain(job_chain=job_chain, ext_activity=ext_activity, actuation=actuation))
+            # Add augmented job chain to candidates.
+            candidates.append(aug.aug_job_chain(
+                    job_chain=job_chain,
+                    ext_activity=ext_activity,
+                    actuation=actuation))
 
-            # Maybe we need to check here if next ext_activity will be above phi + 2 H to prevent bugs?
-
-        # compare length of candidates
+        # Compare length of candidates.
         max_length = max(candidates, key=lambda cand: cand.length()).length()
 
-        # results
+        # Results.
         if shortened:
             chain.sim_sh_age = max_length
         else:
@@ -189,71 +145,91 @@ class Analyzer:
         return max_length
 
     def imm_bw_jc(self, current_job, c_len, schedule, chain, key=0):
-        """ Compute immediate forward job chain recursively
+        """ Compute immediate forward job chain recursively.
+
+        Used as help function for max_age_our(). Returns None if the job chain
+        is incomplete.
         """
-        if key == 0: # initial case
-            res = self.imm_bw_jc(current_job, c_len, schedule, chain, key = key+1)
-            if res is None:
+        # Initial case.
+        if key == 0:
+            res = self.imm_bw_jc(current_job, c_len, schedule, chain,
+                                 key=key+1)
+            if res is None:  # incomplete job chain
                 return None
             else:
-                return res + [current_job] # build from right to left
+                return res + [current_job]  # build from right to left
 
-        elif key <= c_len: # adding one job
+        # Intermediate cases. Adding one job.
+        elif key <= c_len:
             flag_found = False
-            for next_job in schedule.get(chain.chain[-key-1])[::-1]: # search in reversed schedule and reversed order for backward
-                if current_job[0] >= next_job[1]: # condition to add the next job to the list.
+            # Search in reversed schedule for next job.
+            for next_job in schedule.get(chain.chain[-key-1])[::-1]:
+                if current_job[0] >= next_job[1]:  # condition for next job
                     flag_found = True
                     break
-            if flag_found == False: # incomplete (this job could not be found)
-                return None
+            # Case: No job was found.
+            if flag_found is False:
+                return None  # indicate incomplete job chain
+            # Case: Job was found.
             else:
-                res = self.imm_bw_jc(next_job, c_len, schedule, chain, key = key+1)
-                if res is None: # incomplete (one of the next jobs could not be found)
+                res = self.imm_bw_jc(next_job, c_len, schedule, chain,
+                                     key=key+1)
+                if res is None:  # incomplete job chain.
                     return None
                 else:
-                    return res + [next_job] # build from right to left
+                    return res + [next_job]  # build from right to left
 
-        else: # final case
+        # Final case.(key > c_len)
+        else:
             return []
 
-
-    def reaction_OUR(self, schedule, task_set, chain, max_phase, hyper_period):
+    def reaction_our(self, schedule, task_set, chain, max_phase, hyper_period):
         """ Result of our maximum reaction time analysis.
-            We construct all immediate forward augmented job chains and then
-            choose the maximal length of them.
+
+        We construct all immediate forward augmented job chains and then
+        choose the maximal length of them.
         """
-        # compute maximal first read
+        # Compute maximal first read.
         first_jobs = []
         for task in task_set:
             first_jobs.append(schedule.get(task)[0])
         max_first_read = max(first_jobs, key=lambda first_job: first_job[0])[0]
 
-        # construct all valid immediate forward augmented job chains
-        candidates = [] # all valid imm fw augmented job chains
+        # Construct all valid immediate forward augmented job chains.
+        candidates = []
 
-        # for loop position for immediate forward augmented job chain
-        position = -1
+        # Position for the first job in the chain.
+        position = 0
         while True:
-            position +=1 # we start with position = 0
-            if len(schedule.get(chain.chain[0])) < position+1: # checking for mistakes
-                breakpoint()
-            ext_activity = schedule.get(chain.chain[0])[position][0]
-            next_job = schedule.get(chain.chain[0])[position+1]
+            # We start with position = 1 (2nd job) because we need one previous
+            # job for the definition of external activity.
+            position += 1
 
-            # check if valid
+            # Checking for mistakes.
+            if len(schedule.get(chain.chain[0])) < position:
+                breakpoint()
+
+            # First job in the job chain.
+            next_job = schedule.get(chain.chain[0])[position]
+
+            # External activity.
+            ext_activity = schedule.get(chain.chain[0])[position-1][0]
+
+            # Check if valid
             if next_job[0] > max_first_read:
                 pass
             else:
                 continue
 
-            # check if external activity before max_phase + 2 hyperperiod
+            # End condition.
             if ext_activity < max_phase + 2*hyper_period:
                 pass
             else:
                 break
 
-            # compute immediate forward augmented job chain; if incomplete, PROBLEM
-            job_chain = self.imm_fw_jc(next_job, chain.length - 1, schedule, chain, key=0)
+            # Construct augmented job chain with help function.
+            job_chain = self.imm_fw_jc(next_job, chain.length-1, schedule,
+                                       chain, key=0)
 
             # compute actuation
             actuation = job_chain[-1][1]
@@ -273,6 +249,8 @@ class Analyzer:
 
     def imm_fw_jc(self, current_job, c_len, schedule, chain, key=0):
         """ Compute immediate forward job chain recursively
+
+        Used as help function for reaction_our().
         """
         if key == 0: # initial case
             return [current_job] + self.imm_fw_jc(current_job, c_len, schedule, chain, key = key+1)
@@ -286,6 +264,36 @@ class Analyzer:
         else: # final case
             return []
 
+    def reaction_inter_our(self, chain_set):
+        """End-to-End analysis for interconnected cause-effect chains as described in our paper.
+        """
+        for chain in chain_set:
+            interconnected_react = 0
+            for i in range(0, len(chain.interconnected)):
+                if isinstance(chain.interconnected[i], stt.task.Task):
+                    interconnected_react += chain.interconnected[i].period + chain.interconnected[i].rt
+                else:
+                    interconnected_react += chain.interconnected[i].sim_react
+            chain.interconnected_react = interconnected_react
+
+    def max_age_inter_our(self, chain_set):
+        """End-to-End analysis for interconnected cause-effect chains as described in our paper.
+        """
+        for chain in chain_set:
+            interconnected_age = 0
+            for i in range(0, len(chain.interconnected)-1):
+                if isinstance(chain.interconnected[i], stt.task.Task):
+                    interconnected_age += chain.interconnected[i].period + chain.interconnected[i].rt
+                else:
+                    interconnected_age += chain.interconnected[i].sim_sh_age
+            interconnected_age += chain.interconnected[len(chain.interconnected)-1].sim_age
+            chain.interconnected_age = interconnected_age
+
+
+    ###
+    # Davare analysis from 'Period Optimization for Hard Real-time Distributed
+    # Automotive Systems' (2007).
+    ###
 
     def davare(self, chain_sets):
         """ Analysis End-to-End latency for job chain of the exact schedule with the method from Davare.
@@ -298,6 +306,11 @@ class Analyzer:
                     # Compute the latency for the current task and store it in the last element of 'end_latency'
                     latency += task.period + task.rt
                 chain.e2e_latency = latency
+
+    ###
+    # Duerr analysis from 'End-to-End Timing Analysis of Sporadic Cause-Effect
+    # Chains in Distributed Systems' (2019).
+    ###
 
     def reaction_sporadic(self, chain_sets):
         """ Analysis End-to-End latency for job chain of the exact schedule with the method from Marco-2019 paper.
@@ -315,18 +328,6 @@ class Analyzer:
                     latency += max(task.rt, next_task.period + part2)
                 chain.jj_react = latency
 
-    def reaction_interconnected(self, chain_set):
-        """End-to-End analysis for interconnected cause-effect chains as described in our paper.
-        """
-        for chain in chain_set:
-            interconnected_react = 0
-            for i in range(0, len(chain.interconnected)):
-                if isinstance(chain.interconnected[i], stt.task.Task):
-                    interconnected_react += chain.interconnected[i].period + chain.interconnected[i].rt
-                else:
-                    interconnected_react += chain.interconnected[i].sim_react
-            chain.interconnected_react = interconnected_react
-
     def age_sporadic(self, chain_sets):
         """ Analysis End-to-End latency for job chain of the exact schedule with the method from Marco-2019 paper.
             This method triggers the recursive function, beginning from the first task in the chain to the last.
@@ -343,18 +344,10 @@ class Analyzer:
                     latency += task.period + part2
                 chain.jj_age = latency
 
-    def age_interconnected(self, chain_set):
-        """End-to-End analysis for interconnected cause-effect chains as described in our paper.
-        """
-        for chain in chain_set:
-            interconnected_age = 0
-            for i in range(0, len(chain.interconnected)-1):
-                if isinstance(chain.interconnected[i], stt.task.Task):
-                    interconnected_age += chain.interconnected[i].period + chain.interconnected[i].rt
-                else:
-                    interconnected_age += chain.interconnected[i].sim_sh_age
-            interconnected_age += chain.interconnected[len(chain.interconnected)-1].sim_age
-            chain.interconnected_age = interconnected_age
+    ###
+    # Kloda analysis from 'Latency analysis for data chains of real-time
+    # periodic tasks' (2018).
+    ###
 
     def kloda(self, chain, hyper_period):
         """Kloda analysis for synchronous releases."""
@@ -369,6 +362,7 @@ class Analyzer:
 
     def kloda_rec(self, chain, release_time_producer, beginning=True):
         """Recursive function to compute the reaction time by klodas analysis.
+
         Note: the additional period is already added with the beginning=True option.
         """
         add = 0

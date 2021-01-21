@@ -144,13 +144,13 @@ for util in [50, 60, 70, 80, 90]:
         # Analyses.
         for chain in ce_chains[i]:
             print("Test: Our Data Age.")
-            analyzer.max_age_OUR(schedule, task_set, chain, max_phase,
+            analyzer.max_age_our(schedule, task_set, chain, max_phase,
                                  hyper_period, shortened=False)
-            # analyzer.max_age_OUR(schedule, task_set, chain, max_phase,
+            # analyzer.max_age_our(schedule, task_set, chain, max_phase,
             #                      hyper_period, shortened=True)
 
             print("Test: Our Reaction Time.")
-            analyzer.reaction_OUR(schedule, task_set, chain, max_phase,
+            analyzer.reaction_our(schedule, task_set, chain, max_phase,
                                   hyper_period)
 
             # # Kloda analysis, assuming synchronous releases.
