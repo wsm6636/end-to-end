@@ -308,13 +308,15 @@ class Analyzer:
         interconnected.
         """
         for chain in chain_set:
-            interconnected_age = 0
+            interconnected_age = 0  # total data age
             for i in range(0, len(chain.interconnected)-1):
+                # Case: i is a communication task.
                 if isinstance(chain.interconnected[i], stt.task.Task):
                     interconnected_age += chain.interconnected[i].period + chain.interconnected[i].rt
+                # Case: i is a cause-effect chain.
                 else:
-                    interconnected_age += chain.interconnected[i].sim_sh_age
-            interconnected_age += chain.interconnected[len(chain.interconnected)-1].sim_age
+                    interconnected_age += chain.interconnected[i].sim_sh_age ### !!!!!
+            interconnected_age += chain.interconnected[len(chain.interconnected)-1].sim_age ### !!!!!
             chain.interconnected_age = interconnected_age
 
 
