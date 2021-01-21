@@ -428,8 +428,11 @@ class Analyzer:
 
         # Intermediate cases. Compute difference between producer and consumer.
         q = 0
-        if (producer_task.priority > consumer_task.priority  # reversed prio
-                or consumer_task.message):  # indicate processor change # TODO does that ever happen? This seems not to be what we use the message for.
+        # Case: Producer has lower priority than consumer, i.e., the priority
+        # value is higher. Note: we do not implement a processor change since
+        # we consider only the single ECU case.
+        if (producer_task.priority > consumer_task.priority
+                or consumer_task.message):  # indicate processor change # TODO check if we can remove this.
             q = producer_task.rt
         rel_consumer = (math.ceil((rel_producer + q) / consumer_task.period)
                         * consumer_task.period)
