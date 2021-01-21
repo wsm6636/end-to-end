@@ -1,69 +1,43 @@
-"""Representation of a CauseEffectChain.
-
-:Filename: chain.py
-:Author: Marco Dürr (marco.duerr@tu-dortmund.de)
-:Date: 28.09.18?
-"""
+"""Representation of cause-effect chains."""
 
 
 class CauseEffectChain:
-    """Class CauseEffectChain
+    """Cause-effect chain."""
+    id = ""  # unique identifier
 
-        **Global Variables**
-            :cvar id: Unique identifier.
-            :type id: String
-            :cvar chain: Irreflexive set of tasks that form the cause-effect chain.
-            :type chain: Set
-
-        **Usage**
-            >>> import stt.chain
-            >>> myCEC = chain.CauseEffectChain("t1", 0, 1, 3, 10, 10)
-
-        TODO: explain how ce-chains and interconnected ce-chains are stored.
-    """
-    id = ""
+    # List of all tasks in the chain
     chain = []
-    age_rt_last_job = 0
-    age_rt_first_job = 0
-    react_rt_last_job = 0
-    react_rt_first_job = 0
+    # List of local cause-effect chains and communication tasks. (Only in the
+    # interconnected case.)
     interconnected = []
-    length = 0
-    periods = 0
-    e2e_latency = 0
-    jj_age = 0
-    jj_react = 0
-    sim_age = 0
-    sim_react = 0
-    sim_sh_age = 0
-    sim_ext_age = 0
-    interconnected_age = 0
-    interconnected_react = 0
-    kloda = 0
-    deadline = 0
-    disorder = None
 
-    def __init__(self, cec_id, cec_chain, interconnected=[]):
-        self.id = cec_id
-        self.chain = cec_chain
-        self.length = len(cec_chain)
-        self.disorder = None
-        periods = []
-        for chain in cec_chain:
-            if chain.period not in periods:
-                periods.append(chain.period)
-        self.periods = len(periods)
-        for period in periods:
-            self.deadline += period
+    # Analysis results: (Are added during the analysis.)
+    e2e_latency = 0  # Davare
+    jj_age = 0  # Duerr max data age
+    jj_react = 0  # Duerr max reaction time
+    sim_age = 0  # Our max data age
+    sim_react = 0  # Our max reaction time
+    sim_sh_age = 0  # Our reduced max data age
+    interconnected_age = 0  # Our max data age for interconnected
+    interconnected_react = 0  # Our max reaction time for interconnected
+    kloda = 0  # Kloda
+
+    def __init__(self, id, chain, interconnected=[]):
+        """Initialize a cause-effect chain."""
+        self.id = id
+        self.chain = chain
         self.interconnected = interconnected
+
+    def length(self):
+        """Compute the length of a cause-effect chain."""
+        return len(self.chain)
 
     @property
     def chain_disorder(self):
-        """
-        An disorder of a chain is the number of priority inversions along
+        """Compute the chain disorder. (Not explained in our paper.)
+
+        The disorder of a chain is the number of priority inversions along
         the data propagation path.
         """
-        if not self.disorder:
-            return sum(1 if self.chain[i].priority > self.chain[i+1].priority else 0  for i in range(len(self.chain)-1))
-        else:
-            return self.disorder
+        return sum(1 if self.chain[i].priority > self.chain[i+1].priority
+                   else 0 for i in range(len(self.chain)-1))

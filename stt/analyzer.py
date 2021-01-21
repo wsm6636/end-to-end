@@ -94,7 +94,7 @@ class Analyzer:
                 actuation = schedule.get(chain.chain[-1])[position+1][1]
 
             # Construct augmented job chain with help function.
-            job_chain = self.imm_bw_jc(next_job, chain.length-1, schedule,
+            job_chain = self.imm_bw_jc(next_job, chain.length()-1, schedule,
                                        chain, key=0)
 
             # Handle incomplete job chains.
@@ -229,7 +229,7 @@ class Analyzer:
                 break
 
             # Construct augmented job chain with help function.
-            job_chain = self.imm_fw_jc(next_job, chain.length-1, schedule,
+            job_chain = self.imm_fw_jc(next_job, chain.length()-1, schedule,
                                        chain, key=0)
 
             # Compute actuation.
