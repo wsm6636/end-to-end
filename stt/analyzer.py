@@ -129,7 +129,7 @@ class Analyzer:
                 break
 
             # Add augmented job chain to candidates.
-            candidates.append(aug.aug_job_chain(
+            candidates.append(aug.AugJobChain(
                     job_chain=job_chain,
                     ext_activity=ext_activity,
                     actuation=actuation))
@@ -236,7 +236,7 @@ class Analyzer:
             actuation = job_chain[-1][1]
 
             # Add augmented job chain to candidates.
-            candidates.append(aug.aug_job_chain(
+            candidates.append(aug.AugJobChain(
                     job_chain=job_chain,
                     ext_activity=ext_activity,
                     actuation=actuation))
