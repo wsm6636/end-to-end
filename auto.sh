@@ -79,7 +79,7 @@ done
 # start high-level screen with:
 # 	screen -dmS auto ./auto.sh
 # if permission denied:
-#	chmod +x test.sh 
+#	chmod +x auto.sh 
 #	ls -l
 
 # start l2 with:
