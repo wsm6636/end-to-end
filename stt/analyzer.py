@@ -135,7 +135,8 @@ class Analyzer:
                     actuation=actuation))
 
         # Compare length of candidates.
-        max_length = max(candidates, key=lambda cand: cand.length()).length()
+        max_cand = max(candidates, key=lambda cand: cand.length())
+        max_length = max_cand.length()
 
         # Results.
         if shortened:
@@ -179,7 +180,7 @@ class Analyzer:
                 else:
                     return res + [next_job]  # build from right to left
 
-        # Final case.(key > c_len)
+        # Final case. (key > c_len)
         else:
             return []
 
@@ -231,20 +232,21 @@ class Analyzer:
             job_chain = self.imm_fw_jc(next_job, chain.length-1, schedule,
                                        chain, key=0)
 
-            # compute actuation
+            # Compute actuation.
             actuation = job_chain[-1][1]
 
-            # add augmented job chain to candidates
-            candidates.append(aug.aug_job_chain(job_chain=job_chain, ext_activity=ext_activity, actuation=actuation))
+            # Add augmented job chain to candidates.
+            candidates.append(aug.aug_job_chain(
+                    job_chain=job_chain,
+                    ext_activity=ext_activity,
+                    actuation=actuation))
 
-
-        # compare length of candidates
+        # Compare length of candidates.
         max_cand = max(candidates, key=lambda cand: cand.length())
         max_length = max_cand.length()
 
-        # results
+        # Results.
         chain.sim_react = max_length
-        # return max_cand, max_length ###
         return max_length
 
     def imm_fw_jc(self, current_job, c_len, schedule, chain, key=0):
@@ -252,16 +254,30 @@ class Analyzer:
 
         Used as help function for reaction_our().
         """
-        if key == 0: # initial case
-            return [current_job] + self.imm_fw_jc(current_job, c_len, schedule, chain, key = key+1)
+        # Initial case.
+        if key == 0:
+            # Build from left to right:
+            return [current_job] + self.imm_fw_jc(current_job, c_len, schedule,
+                                                  chain, key=key+1)
 
-        elif key <= c_len: # adding one job
+        # Intermediate cases. Adding one job.
+        elif key <= c_len:
+            flag_found = False
+            # Search for next job.
             for next_job in schedule.get(chain.chain[key]):
-                if current_job[1] <= next_job[0]: # condition to add the next job to the list.
+                if current_job[1] <= next_job[0]:  # condition for next job
+                    flag_found = True
                     break
-            return [next_job] + self.imm_fw_jc(next_job, c_len, schedule, chain, key = key+1)
+            # Case: No job was found.
+            if flag_found is False:
+                print("ERROR")
+            # Case: Job was found.
+            else:
+                return [next_job] + self.imm_fw_jc(next_job, c_len, schedule,
+                                                   chain, key=key+1)
 
-        else: # final case
+        # Final case. (key > c_len)
+        else:
             return []
 
     def reaction_inter_our(self, chain_set):
