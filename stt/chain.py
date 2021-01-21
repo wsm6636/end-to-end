@@ -18,6 +18,8 @@ class CauseEffectChain:
         **Usage**
             >>> import stt.chain
             >>> myCEC = chain.CauseEffectChain("t1", 0, 1, 3, 10, 10)
+
+        TODO: explain how ce-chains and interconnected ce-chains are stored.
     """
     id = ""
     chain = []
@@ -39,7 +41,7 @@ class CauseEffectChain:
     interconnected_react = 0
     kloda = 0
     deadline = 0
-    disorder=None
+    disorder = None
 
     def __init__(self, cec_id, cec_chain, interconnected=[]):
         self.id = cec_id

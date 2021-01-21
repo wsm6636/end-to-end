@@ -281,19 +281,31 @@ class Analyzer:
             return []
 
     def reaction_inter_our(self, chain_set):
-        """End-to-End analysis for interconnected cause-effect chains as described in our paper.
+        """Maximum reaction time analysis for interconnected cause-effect
+        chains as described in our paper.
+
+        Input: chain_set is a list of cause-effect chains with entry at
+        interconnected.
         """
         for chain in chain_set:
-            interconnected_react = 0
+            interconnected_react = 0  # total reaction time
             for i in range(0, len(chain.interconnected)):
+                # Case: i is a communication task.
                 if isinstance(chain.interconnected[i], stt.task.Task):
-                    interconnected_react += chain.interconnected[i].period + chain.interconnected[i].rt
+                    interconnected_react += (chain.interconnected[i].period
+                                             + chain.interconnected[i].rt)
+                # Case: i is a cause-effect chain.
                 else:
                     interconnected_react += chain.interconnected[i].sim_react
+            # Store result.
             chain.interconnected_react = interconnected_react
 
     def max_age_inter_our(self, chain_set):
-        """End-to-End analysis for interconnected cause-effect chains as described in our paper.
+        """Maximum data age analysis for interconnected cause-effect chains as
+        described in our paper.
+
+        Input: chain_set is a list of cause-effect chains with entry at
+        interconnected.
         """
         for chain in chain_set:
             interconnected_age = 0
