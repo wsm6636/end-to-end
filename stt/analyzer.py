@@ -301,8 +301,8 @@ class Analyzer:
             chain.interconnected_react = interconnected_react
 
     def max_age_inter_our(self, chain_set):
-        """Our maximum data age analysis for interconnected cause-effect
-        chains.
+        """Our reduced maximum data age analysis for interconnected
+        cause-effect chains.
 
         Input: chain_set is a list of cause-effect chains with entry at
         interconnected.

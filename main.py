@@ -398,17 +398,17 @@ def main():
                 + "_g=" + str(args.g) + ".pdf",
                 xaxis_label="", ylabel="Latency reduction [%]")
 
-        # Heatmap.
-        myeva.heatmap_improvement_disorder_age(
-                chains_single_ECU,
-                "output/3plots/heatmap" + "_sim_age"
-                + "_g=" + str(args.g) + ".pdf",
-                yaxis_label="")
-        myeva.heatmap_improvement_disorder_react(
-                chains_single_ECU,
-                "output/3plots/heatmap" + "_sim_react"
-                + "_g=" + str(args.g) + ".pdf",
-                yaxis_label="")
+        # # Heatmap.
+        # myeva.heatmap_improvement_disorder_age(
+        #         chains_single_ECU,
+        #         "output/3plots/heatmap" + "_sim_age"
+        #         + "_g=" + str(args.g) + ".pdf",
+        #         yaxis_label="")
+        # myeva.heatmap_improvement_disorder_react(
+        #         chains_single_ECU,
+        #         "output/3plots/heatmap" + "_sim_react"
+        #         + "_g=" + str(args.g) + ".pdf",
+        #         yaxis_label="")
 
 
 if __name__ == '__main__':
