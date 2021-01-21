@@ -60,7 +60,7 @@ class Analyzer:
 
     def max_age_our(self, schedule, task_set, chain, max_phase, hyper_period,
                     shortened=False):
-        """ Result of our maximum data age time analysis.
+        """Our maximum data age time analysis.
 
         We construct all immediate backward augmented job chains and then
         choose the maximal length of them.
@@ -146,7 +146,7 @@ class Analyzer:
         return max_length
 
     def imm_bw_jc(self, current_job, c_len, schedule, chain, key=0):
-        """ Compute immediate forward job chain recursively.
+        """Compute immediate forward job chain recursively.
 
         Used as help function for max_age_our(). Returns None if the job chain
         is incomplete.
@@ -185,7 +185,7 @@ class Analyzer:
             return []
 
     def reaction_our(self, schedule, task_set, chain, max_phase, hyper_period):
-        """ Result of our maximum reaction time analysis.
+        """Our maximum reaction time analysis.
 
         We construct all immediate forward augmented job chains and then
         choose the maximal length of them.
@@ -250,7 +250,7 @@ class Analyzer:
         return max_length
 
     def imm_fw_jc(self, current_job, c_len, schedule, chain, key=0):
-        """ Compute immediate forward job chain recursively
+        """Compute immediate forward job chain recursively
 
         Used as help function for reaction_our().
         """
@@ -281,8 +281,8 @@ class Analyzer:
             return []
 
     def reaction_inter_our(self, chain_set):
-        """Maximum reaction time analysis for interconnected cause-effect
-        chains as described in our paper.
+        """Our maximum reaction time analysis for interconnected cause-effect
+        chains.
 
         Input: chain_set is a list of cause-effect chains with entry at
         interconnected.
@@ -301,24 +301,26 @@ class Analyzer:
             chain.interconnected_react = interconnected_react
 
     def max_age_inter_our(self, chain_set):
-        """Maximum data age analysis for interconnected cause-effect chains as
-        described in our paper.
+        """Our maximum data age analysis for interconnected cause-effect
+        chains.
 
         Input: chain_set is a list of cause-effect chains with entry at
         interconnected.
         """
         for chain in chain_set:
+            m = len(chain.interconnected)  # chain length
             interconnected_age = 0  # total data age
-            for i in range(0, len(chain.interconnected)-1):
+            for i in range(0, m-1):
                 # Case: i is a communication task.
                 if isinstance(chain.interconnected[i], stt.task.Task):
-                    interconnected_age += chain.interconnected[i].period + chain.interconnected[i].rt
+                    interconnected_age += (chain.interconnected[i].period
+                                           + chain.interconnected[i].rt)
                 # Case: i is a cause-effect chain.
                 else:
-                    interconnected_age += chain.interconnected[i].sim_sh_age ### !!!!!
-            interconnected_age += chain.interconnected[len(chain.interconnected)-1].sim_age ### !!!!!
+                    interconnected_age += chain.interconnected[i].sim_age
+            interconnected_age += chain.interconnected[m-1].sim_sh_age
+            # Store result.
             chain.interconnected_age = interconnected_age
-
 
     ###
     # Davare analysis from 'Period Optimization for Hard Real-time Distributed
@@ -326,52 +328,60 @@ class Analyzer:
     ###
 
     def davare(self, chain_sets):
-        """ Analysis End-to-End latency for job chain of the exact schedule with the method from Davare.
-            This method triggers the recursive function, beginning from the first task in the chain to the last.
+        """End-to-end latency analysis from Davare.
+
+        Input: chain_sets is a list of lists of chains.
         """
         for chain_set in chain_sets:
             for chain in chain_set:
+                # Compute the latency for chain.
                 latency = 0
                 for task in chain.chain:
-                    # Compute the latency for the current task and store it in the last element of 'end_latency'
                     latency += task.period + task.rt
+                # Store result.
                 chain.e2e_latency = latency
 
     ###
     # Duerr analysis from 'End-to-End Timing Analysis of Sporadic Cause-Effect
     # Chains in Distributed Systems' (2019).
     ###
-
+    # TODO: change name of jj_react, jj_age, and the functions
     def reaction_sporadic(self, chain_sets):
-        """ Analysis End-to-End latency for job chain of the exact schedule with the method from Marco-2019 paper.
-            This method triggers the recursive function, beginning from the first task in the chain to the last.
+        """Maximum reaction time analysis from Duerr.
+
+        Input: chain_sets is a list of lists of chains.
         """
         for chain_set in chain_sets:
             for chain in chain_set:
+                # Compute latency.
                 latency = chain.chain[-1].rt + chain.chain[0].period
                 for task, next_task in zip(chain.chain[:-1], chain.chain[1:]):
-                    # Compute the latency for the current task and store it in the last element of 'end_latency'
-                    if task.priority > next_task.priority or next_task.message or task.message:
+                    if (task.priority > next_task.priority
+                            or next_task.message or task.message):
                         part2 = task.rt
                     else:
                         part2 = 0
                     latency += max(task.rt, next_task.period + part2)
+                # Store result.
                 chain.jj_react = latency
 
     def age_sporadic(self, chain_sets):
-        """ Analysis End-to-End latency for job chain of the exact schedule with the method from Marco-2019 paper.
-            This method triggers the recursive function, beginning from the first task in the chain to the last.
+        """Maximum data age analysis from Duerr.
+
+        Input: chain_sets is a list of lists of chains.
         """
         for chain_set in chain_sets:
             for chain in chain_set:
+                # Compute latency.
                 latency = chain.chain[-1].rt
                 for task, next_task in zip(chain.chain[:-1], chain.chain[1:]):
-                    # Compute the latency for the current task and store it in the last element of 'end_latency'
-                    if task.priority > next_task.priority or next_task.message or task.message:
+                    if (task.priority > next_task.priority
+                            or next_task.message or task.message):
                         part2 = task.rt
                     else:
                         part2 = 0
                     latency += task.period + part2
+                # Store result.
                 chain.jj_age = latency
 
     ###
@@ -380,31 +390,48 @@ class Analyzer:
     ###
 
     def kloda(self, chain, hyper_period):
-        """Kloda analysis for synchronous releases."""
+        """Kloda analysis for the single ECU case with synchronous releases.
+
+        Input: chain is one cause-effect chain. hyper_period is the hyperperiod
+        of the underlying task set.
+        """
         for release_first_task_in_chain in range(0, max(1, hyper_period),
                                                  chain.chain[0].period):
+            # Compute latency for a given first job.
             kloda = self.kloda_rec(chain.chain, release_first_task_in_chain,
                                    beginning=True)
+            # Compare and store the results.
             if chain.kloda < kloda:
                 chain.kloda = kloda
         return chain.kloda
 
-
-    def kloda_rec(self, chain, release_time_producer, beginning=True):
+    def kloda_rec(self, chain, rel_producer, beginning=True):
         """Recursive function to compute the reaction time by klodas analysis.
 
-        Note: the additional period is already added with the beginning=True option.
+        Note: The additional period is already added with the beginning=True
+        option.
         """
         add = 0
+        # Additional period at the beginning. (This is only done for the
+        # initial case.)
         if beginning:
             add += chain[0].period
-        producer_task = chain[0]
+
+        producer_task = chain[0]  # producer
+
+        # Final case
         if len(chain) == 1:
             return producer_task.rt + add
-        chain_minus_one = chain[1::]
-        consumer_task = chain_minus_one[0]
+
+        rem_chain = chain[1::]  # remaining chain
+        consumer_task = rem_chain[0]  # consumer
+
+        # Intermediate cases. Compute difference between producer and consumer.
         q = 0
-        if producer_task.priority > consumer_task.priority or consumer_task.message: # message is an identifier for the communication task (=ECU change)
+        if (producer_task.priority > consumer_task.priority  # reversed prio
+                or consumer_task.message):  # indicate processor change # TODO does that ever happen? This seems not to be what we use the message for.
             q = producer_task.rt
-        release_time_consumer = math.ceil((release_time_producer + q) / consumer_task.period) * consumer_task.period
-        return add + release_time_consumer - release_time_producer + self.kloda_rec(chain_minus_one, release_time_consumer, beginning=False)
+        rel_consumer = (math.ceil((rel_producer + q) / consumer_task.period)
+                        * consumer_task.period)
+        return (add + rel_consumer - rel_producer
+                + self.kloda_rec(rem_chain, rel_consumer, beginning=False))
