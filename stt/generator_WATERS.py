@@ -31,18 +31,23 @@ def sample_runnable_acet(period, amount=1, scalingFlag=False):
     """
     # Parameters from WATERS 'Real World Automotive Benchmarks For Free'
     if period == 1:
+        # Pull scaling factor.
         scaling = np.random.uniform(1.3, 29.11, amount)  # between fmin fmax
+        # Pull samples with weibull distribution.
         dist = exponweib(1, 1.044, loc=0, scale=1.0/0.214)  # TODO where does that come from?
         samples = dist.rvs(size=amount)
         while True:
             outliers_detected = False
             for i in range(len(samples)):
+                # Check if they are in the range.
                 if samples[i] < 0.34 or samples[i] > 30.11:
                     outliers_detected = True
                     samples[i] = dist.rvs(size=1)
+            # Case: Some samples had to be pulled again.
             if outliers_detected:
-               continue
-            if scalingFlag:
+                continue
+            # Case: All samples are in the range.
+            if scalingFlag:  # scaling
                 return list(0.001 * samples*scaling)
             else:
                 return list(0.001 * samples)
@@ -58,7 +63,7 @@ def sample_runnable_acet(period, amount=1, scalingFlag=False):
                     outliers_detected = True
                     samples[i] = dist.rvs(size=1)
             if outliers_detected:
-               continue
+                continue
             if scalingFlag:
                 return list(0.001 * samples*scaling)
             else:
@@ -75,7 +80,7 @@ def sample_runnable_acet(period, amount=1, scalingFlag=False):
                     outliers_detected = True
                     samples[i] = dist.rvs(size=1)
             if outliers_detected:
-               continue
+                continue
             if scalingFlag:
                 return list(0.001 * samples*scaling)
             else:
@@ -92,7 +97,7 @@ def sample_runnable_acet(period, amount=1, scalingFlag=False):
                     outliers_detected = True
                     samples[i] = dist.rvs(size=1)
             if outliers_detected:
-               continue
+                continue
             if scalingFlag:
                 return list(0.001 * samples*scaling)
             else:
@@ -109,7 +114,7 @@ def sample_runnable_acet(period, amount=1, scalingFlag=False):
                     outliers_detected = True
                     samples[i] = dist.rvs(size=1)
             if outliers_detected:
-               continue
+                continue
             if scalingFlag:
                 return list(0.001 * samples*scaling)
             else:
@@ -117,7 +122,8 @@ def sample_runnable_acet(period, amount=1, scalingFlag=False):
 
     if period == 50:
         scaling = np.random.uniform(1.13, 7.76, amount)
-        dist = exponweib(1, 1.00324219159296302, loc=0, scale=1.0/0.05685450460)
+        dist = exponweib(1, 1.00324219159296302, loc=0,
+                         scale=1.0/0.05685450460)
         samples = dist.rvs(size=amount)
         while True:
             outliers_detected = False
@@ -126,7 +132,7 @@ def sample_runnable_acet(period, amount=1, scalingFlag=False):
                     outliers_detected = True
                     samples[i] = dist.rvs(size=1)
             if outliers_detected:
-               continue
+                continue
             if scalingFlag:
                 return list(0.001 * samples*scaling)
             else:
@@ -134,7 +140,8 @@ def sample_runnable_acet(period, amount=1, scalingFlag=False):
 
     if period == 100:
         scaling = np.random.uniform(1.02, 8.88, amount)
-        dist = exponweib(1, 1.00900736028318527, loc=0, scale=1.0/0.09448019812)
+        dist = exponweib(1, 1.00900736028318527, loc=0,
+                         scale=1.0/0.09448019812)
         samples = dist.rvs(size=amount)
         while True:
             outliers_detected = False
@@ -143,7 +150,7 @@ def sample_runnable_acet(period, amount=1, scalingFlag=False):
                     outliers_detected = True
                     samples[i] = dist.rvs(size=1)
             if outliers_detected:
-               continue
+                continue
             if scalingFlag:
                 return list(0.001 * samples*scaling)
             else:
@@ -151,7 +158,8 @@ def sample_runnable_acet(period, amount=1, scalingFlag=False):
 
     if period == 200:
         scaling = np.random.uniform(1.03, 4.9, amount)
-        dist = exponweib(1, 1.15710612360723798, loc=0, scale=1.0/0.3706045664)
+        dist = exponweib(1, 1.15710612360723798, loc=0,
+                         scale=1.0/0.3706045664)
         samples = dist.rvs(size=amount)
         while True:
             outliers_detected = False
@@ -160,21 +168,21 @@ def sample_runnable_acet(period, amount=1, scalingFlag=False):
                     outliers_detected = True
                     samples[i] = dist.rvs(size=1)
             if outliers_detected:
-               continue
+                continue
             if scalingFlag:
                 return list(0.001 * samples*scaling)
             else:
                 return list(0.001 * samples)
 
-    if period == 1000:
+    if period == 1000:  # TODO why is here no weibull ???
         scaling = np.random.uniform(1.84, 4.75, amount)
         if scalingFlag:
-            return list(0.001 * np.random.uniform(0.37, 0.46, amount) *scaling)
+            return list(0.001 * np.random.uniform(0.37, 0.46, amount)*scaling)
         else:
             return list(0.001 * np.random.uniform(0.37, 0.46, amount))
 
 
-def gen_tasksets(number_of_sets = 100, util_max = 1.0, period_pdf = [0.03, 0.02, 0.02, 0.25, 0.40, 0.03, 0.2, 0.01, 0.04], scalingFlag = False, threshold = 0.1, cylinder = 4, mode = 'sporadic'):
+def gen_tasksets(number_of_sets=100, util_max=1.0, period_pdf=[0.03, 0.02, 0.02, 0.25, 0.40, 0.03, 0.2, 0.01, 0.04], scalingFlag = False, threshold = 0.1, cylinder = 4, mode = 'sporadic'):
     while True:
         taskset = []
         dist = stats.rv_discrete(name='periods', values = ([1,2,5,10,20,50,100,200,1000], period_pdf))
