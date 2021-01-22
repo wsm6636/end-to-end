@@ -77,6 +77,7 @@ def main():
             threshold = 0.1
 
             # Create task sets from the generator.
+            # Each task is a dictionary.
             print("\tCreate task sets.")
             task_sets_waters = []
             while len(task_sets_waters) < args.r:
@@ -86,6 +87,7 @@ def main():
                 task_sets_waters.append(task_sets_gen[0])
 
             # Transform tasks to fit framework structure.
+            # Each task is an object of stt.task.Task.
             trans1 = trans.Transformer("1", task_sets_waters, 10000000)
             task_sets = trans1.transform_tasks(False)
 

@@ -6,26 +6,33 @@ from scipy import stats
 import numpy as np
 import random
 from scipy.stats import exponweib
-import math
 import stt.chain as c
 
 
+###
+# Task set generation.
+###
+
 class task (dict):
+    """A task according to our task model.
+    Used only for the purpose of task creation.
+    """
     def __init__(self, execution, period, deadline):
+        """Initialize a task."""
         dict.__setitem__(self, "execution", float(execution))
         dict.__setitem__(self, "period", float(period))
         dict.__setitem__(self, "deadline", float(deadline))
-        dict.__setitem__(self, "id", 0)
+        dict.__setitem__(self, "id", 0)  # task id  # TODO: remove ?
 
 
-"""task sets
-"""
-
-def sample_runnable_acet(period, amount = 1, scalingFlag=True):
-    # Parameters fitted with data from WATERS 'Real World Automotive Benchmarks For Free'
+def sample_runnable_acet(period, amount=1, scalingFlag=False):
+    """Create runnables according to the WATERS benchmark.
+    scalingFlag: make WCET out of ACET with scaling
+    """
+    # Parameters from WATERS 'Real World Automotive Benchmarks For Free'
     if period == 1:
-        scaling = np.random.uniform(1.3, 29.11, amount)
-        dist = exponweib(1, 1.044, loc=0, scale=1.0/0.214)
+        scaling = np.random.uniform(1.3, 29.11, amount)  # between fmin fmax
+        dist = exponweib(1, 1.044, loc=0, scale=1.0/0.214)  # TODO where does that come from?
         samples = dist.rvs(size=amount)
         while True:
             outliers_detected = False
