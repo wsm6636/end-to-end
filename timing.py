@@ -110,7 +110,7 @@ for util in [50, 60, 70, 80, 90]:
         # Event-based simulation.
         print("Simulation.")
 
-        simulator = es.eventSimulator(len(task_set), task_set)
+        simulator = es.eventSimulator(task_set)
 
         # Determination of the variables used to compute the stop condition
         # of the simulation

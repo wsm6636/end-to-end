@@ -1,23 +1,31 @@
-from __future__ import division
-import random
-import math
-import numpy as np
+"""Simulator to create the schedule."""
+from __future__ import division  # TODO remove?
+# import random
+# import math
+# import numpy as np
 import operator
 
 
 # for simulator initialization
 class eventSimulator:
-    def __init__(self, n, tasks):
+    """The event simulator."""
+    statusTable = []
+    eventList = []
+    tasks = []
+    n = 0  # number of tasks
+    h = -1  # index of the active task with the highest workload
+
+    def __init__(self, tasks):
+        """Initialize the event simulator.
+
+        We assume that the tasks are sorted by their priority (highest priority
+        first).
+        """
         self.statusTable = [[float(0.0) for x in range(5)] for y in range(n)]
         self.eventList = []
         # tasks = sorted(tasks, key=operator.attrgetter('priority'))
         # it is sorted already
         self.tasks = tasks
-        # print (self.tasks[0].priority)
-        # print (self.tasks[1].priority)
-        # print (self.tasks[2].priority)
-        # print (self.tasks[3].priority)
-        self.stampSIM = []
         self.h = -1
         self.n = len(tasks)
         # This is for sporadic
