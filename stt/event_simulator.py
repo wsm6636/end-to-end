@@ -293,5 +293,6 @@ class eventSimulator:
                     0, self.tasks[idx].phase, idx))
 
         # Sort eventList by remaining time.
+        # In case phase not 0 anymore, we need this one.
         self.eventList = sorted(
                 self.eventList, key=operator.attrgetter('delta'))
