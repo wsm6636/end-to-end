@@ -8,7 +8,9 @@ import operator
 
 # for simulator initialization
 class eventSimulator:
-    """The event simulator."""
+    """The event simulator with periodic job behavior and fixed execution
+    time.
+    """
     statusTable = []
     eventList = []
     tasks = []
@@ -23,27 +25,30 @@ class eventSimulator:
         """
         self.statusTable = [[float(0.0) for x in range(5)] for y in range(n)]
         self.eventList = []
+
+        # # Sorting:
         # tasks = sorted(tasks, key=operator.attrgetter('priority'))
-        # it is sorted already
+
         self.tasks = tasks
         self.h = -1
         self.n = len(tasks)
-        # This is for sporadic
-        # self.systemTick = float(0)
 
-        # This is for periodic with specific phases
+        # Search minimal phase.
         tmp = range(len(self.tasks))
-        tmp = tmp[::-1]
+        tmp = tmp[::-1]  # why do we do this?
         tmpMin = self.tasks[0].phase
         tmpMinIdx = 0
         for idx in tmp:
             if tmpMin > self.tasks[idx].phase:
                 tmpMin = self.tasks[idx].phase
                 tmpMinIdx = idx
+        # Store minimal phase.
         self.firstPhase = tmpMin
-        self.systemTick = float(0)
-        # print("system tick:"+str(self.systemTick))
         self.firstIdx = tmpMinIdx
+
+
+        self.systemTick = float(0)
+
 
         # Now the first task is decided with the lowest phase among all the tasks.
 
