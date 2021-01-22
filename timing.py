@@ -10,7 +10,7 @@ import stt.communication as comm
 import stt.generator_WATERS as waters
 import stt.generator_UUNIFAST as uunifast
 import stt.transformer as trans
-import stt.eventSimulator as es
+import stt.event_simulator as es
 import stt.analyzer as a
 import stt.evaluation as eva
 import random
