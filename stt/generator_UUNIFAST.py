@@ -8,6 +8,10 @@ import stt.chain as c
 import random
 
 
+###
+# Task set generation.
+###
+
 # Main functions.
 
 def gen_tasksets(num_tasks, num_tasksets, min_period, max_period, utilization,
@@ -153,34 +157,52 @@ def generate_utilizations_uniform(num_tasks, num_tasksets, utilization):
             # Compute remaining utilization.
             cumulative_utilization = cumulative_utilization_next
         utilizations.append(cumulative_utilization_next)
+        # Return list of utilizations.
         return utilizations
-
+    # Return one list of utilizations for each task set.
     return [uunifast(num_tasks, utilization) for i in range(num_tasksets)]
 
 
-def generate_periods_loguniform_discrete(num_tasks, num_tasksets, min_period, max_period, round_down_set): # Note: max_period has to be higher than the highest entry in round_down_set to also get periods for the highest value
-    # Create periods log-uniformly
-    period_sets = generate_periods_loguniform(num_tasks, num_tasksets, min_period, max_period, rounded=False)
-    # Round down to the entries of the set
+def generate_periods_loguniform_discrete(num_tasks, num_tasksets, min_period,
+                                         max_period, round_down_set):
+    """Generate log-uniformly distributed periods to create tasks.
+
+    Variables:
+    num_tasks: number of tasks per set
+    num_tasksets: number of sets
+    min_period: minimal period
+    max_period: maximal period
+    round_down_set: predefined periods
+    """
+    # Create periods log-uniformly.
+    period_sets = generate_periods_loguniform(
+            num_tasks, num_tasksets, min_period, max_period, rounded=False)
+    # Round down to the entries of round_down_set.
     rounded_period_sets = []
     round_down_set.sort(reverse=True)
     for i in range(len(period_sets)):
         rounded_period_sets.append([])
         for p in period_sets[i]:
             for r in round_down_set:
-                if p>=r:
-                    rp=r
+                if p >= r:
+                    rp = r
                     break
             rounded_period_sets[i].append(rp)
+    # Return the set of periods.
     return rounded_period_sets
 
 
-"""cause effect chains
-"""
+###
+# Cause-effect chain generation.
+###
 
-# main function
+# Main function
 
-def gen_ce_chains(transformed_task_sets): # UUNIFAST
+def gen_ce_chains(transformed_task_sets):
+    """Generate cause-effect chains for task sets.
+
+    Note: transformed_task_sets is from UUNIFAST benchmark.
+    """
     dis_number_tasks_in_cause_effect_chain = stats.rv_discrete(values=([2, 3, 4, 5], [0.3, 0.4, 0.2, 0.1]))
     ce_chains = []
     for task_set in transformed_task_sets:
