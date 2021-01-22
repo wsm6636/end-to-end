@@ -1,28 +1,62 @@
+"""Task set and cause-effect chain generation with UUNIFAST benchmark.
+
+From the paper: 'Measuring the performance of schedulability tests.' (2005).
+"""
 import numpy as np
-import math
 from scipy import stats
 import stt.chain as c
 import random
 
-"""task sets
-"""
 
-# main functions
+# Main functions.
 
-def gen_tasksets(num_tasks, num_tasksets, min_period, max_period, utilization, min_scale=1, max_scale=1, rounded = False):
-    tasksets_periods = generate_periods_loguniform(num_tasks, num_tasksets, min_period, max_period, rounded)
-    tasksets_utilizations = generate_utilizations_uniform(num_tasks, num_tasksets, utilization)
+def gen_tasksets(num_tasks, num_tasksets, min_period, max_period, utilization,
+                 rounded=False):
+    """Generate task sets.
+
+    Variables:
+    num_tasks: number of tasks per set
+    num_tasksets: number of sets
+    min_period: minimal period
+    max_period: maximal period
+    utilization: desired utilization
+    rounded:
+    """
+    # Create periods.
+    tasksets_periods = generate_periods_loguniform(
+            num_tasks, num_tasksets, min_period, max_period, rounded)
+    # Create utilizations.
+    tasksets_utilizations = generate_utilizations_uniform(
+            num_tasks, num_tasksets, utilization)
+    # Create tasksets by matching both of the above.
     tasksets = []
     for i in range(num_tasksets):
-        taskset =  []
+        taskset = []
         for j in range(num_tasks):
-            #task = {'execution' : tasksets_periods[i][j]*tasksets_utilizations[i][j], 'period' : tasksets_periods[i][j], 'inter_arrival_max' : tasksets_periods[i][j] * np.random.uniform(min_scale, max_scale)}
-            task = {'execution' : tasksets_periods[i][j]*tasksets_utilizations[i][j], 'period' : tasksets_periods[i][j], 'deadline': tasksets_periods[i][j]}
+            task = {
+                    'execution': (tasksets_periods[i][j]
+                                  * tasksets_utilizations[i][j]),
+                    'period': tasksets_periods[i][j],
+                    'deadline': tasksets_periods[i][j]
+                    }
             taskset.append(task)
         tasksets.append(taskset)
+
     return tasksets
 
-def gen_tasksets_pred(num_tasks, num_tasksets, min_period, max_period, utilization, round_down_set, min_scale=1, max_scale=1):
+
+def gen_tasksets_pred(num_tasks, num_tasksets, min_period, max_period,
+                      utilization, round_down_set):
+    """Generate task sets with predefined period values.
+
+    Variables:
+    num_tasks: number of tasks per set
+    num_tasksets: number of sets
+    min_period: minimal period
+    max_period: maximal period
+    utilization: desired utilization
+    round_down_set: predefined periods
+    """
     # Note: max_period has to be higher than the highest entry in round_down_set to also get periods for the highest value
     tasksets_periods = generate_periods_loguniform_discrete(num_tasks, num_tasksets, min_period, max_period, round_down_set)
     tasksets_utilizations = generate_utilizations_uniform(num_tasks, num_tasksets, utilization)
