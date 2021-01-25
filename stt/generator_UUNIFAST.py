@@ -1,4 +1,4 @@
-"""Task set and cause-effect chain generation with UUNIFAST benchmark.
+"""Task set generation with UUNIFAST benchmark.
 
 From the paper: 'Measuring the performance of schedulability tests.' (2005).
 """
@@ -190,50 +190,3 @@ def generate_periods_loguniform_discrete(num_tasks, num_tasksets, min_period,
             rounded_period_sets[i].append(rp)
     # Return the set of periods.
     return rounded_period_sets
-
-
-###
-# Cause-effect chain generation.
-###
-
-# Main function
-
-def gen_ce_chains(transformed_task_sets):
-    """Generate cause-effect chains for task sets.
-
-    Note: transformed_task_sets is from UUNIFAST benchmark.
-    """
-    dis_number_tasks_in_cause_effect_chain = stats.rv_discrete(values=([2, 3, 4, 5], [0.3, 0.4, 0.2, 0.1]))
-    ce_chains = []
-    for task_set in transformed_task_sets:
-        cause_effect_chain_set = []
-        for i in range(int(np.random.randint(30, 60))):
-            number_tasks_in_cause_effect_chain = dis_number_tasks_in_cause_effect_chain.rvs()
-            periods = generate_involved_activation_patterns(task_set)
-            np.random.shuffle(periods)
-            load = 0
-            chain = []
-            for period in periods:
-                runnables_with_periods = [task for task in task_set if task.period == period]
-                size = int(np.ceil(number_tasks_in_cause_effect_chain / len(periods)))
-                if load + size > number_tasks_in_cause_effect_chain:
-                    size = number_tasks_in_cause_effect_chain - load
-                else:
-                    load += size
-                if size > len(runnables_with_periods):
-                    break
-                for task in np.random.choice(runnables_with_periods, size=size, replace=False):
-                    chain.append(task)
-            if len(chain) > 1:
-                cause_effect_chain_set.append(c.CauseEffectChain(i, chain))
-        ce_chains.append(cause_effect_chain_set)
-    return ce_chains
-
-# help function
-
-def generate_involved_activation_patterns(task_set): # Help for UUNIFAST
-    dist_num_activation = stats.rv_discrete(values=([1, 2, 3], [0.7, 0.2, 0.1]))
-    return list(np.random.choice(
-        list(
-            set(
-                map(lambda task: task.period, task_set))), size=int(dist_num_activation.rvs()), replace=False))

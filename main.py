@@ -56,19 +56,18 @@ def main():
         Create task sets and cause-effect chains, use TDA, Davare, Duerr, our
         analysis, Kloda, and save the Data
         """
+        ###
+        # Task set and cause-effect chain generation.
+        ###
+        print("=Task set and cause-effect chain generation.=")
 
         try:
-
-            ###
-            # Task set and cause-effect chain generation.
-            ###
-            print("=Task set and cause-effect chain generation.=")
             if args.g == 0:
                 # WATERS benchmark
                 print("WATERS benchmark.")
 
-                # Statistical distribution for task set generation from table 3 of
-                # WATERS free benchmark paper.
+                # Statistical distribution for task set generation from table 3
+                # of WATERS free benchmark paper.
                 profile = [0.03 / 0.85, 0.02 / 0.85, 0.02 / 0.85, 0.25 / 0.85,
                            0.25 / 0.85, 0.03 / 0.85, 0.2 / 0.85, 0.01 / 0.85,
                            0.04 / 0.85]
@@ -91,10 +90,6 @@ def main():
                 # Each task is an object of stt.task.Task.
                 trans1 = trans.Transformer("1", task_sets_waters, 10000000)
                 task_sets = trans1.transform_tasks(False)
-
-                # Create cause effect chains.
-                print("\tCreate cause-effect chains")
-                ce_chains = waters.gen_ce_chains(task_sets, False)
 
             elif args.g == 1:
                 # UUnifast benchmark.
@@ -121,17 +116,18 @@ def main():
                 trans2 = trans.Transformer("2", task_sets_uunifast, 10000000)
                 task_sets = trans2.transform_tasks(False)
 
-                # Create cause-effect chains.
-                print("\tCreate cause-effect chains")
-                ce_chains = uunifast.gen_ce_chains(task_sets)
-                # ce_chains contains one set of cause effect chains for each task
-                # set in task_sets.
-
             else:
                 print("Choose a benchmark")
                 return
 
-        except:
+            # Create cause effect chains.
+            print("\tCreate cause-effect chains")
+            ce_chains = waters.gen_ce_chains(task_sets)
+            # ce_chains contains one set of cause effect chains for each
+            # task set in task_sets.
+
+        except Exception as e:
+            print(e)
             print("ERROR: task + ce creation")
             breakpoint()
 
@@ -142,7 +138,6 @@ def main():
         analyzer = a.Analyzer("0")
 
         try:
-
             # TDA for each task set.
             print("TDA.")
             for idxx in range(len(task_sets)):
@@ -180,13 +175,17 @@ def main():
             for task_set in task_sets:
                 print("=Task set ", i+1)
 
+                # Skip if there is no corresponding cause-effect chain.
+                if len(ce_chains[i]) == 0:
+                    continue
+
                 # Event-based simulation.
                 print("Simulation.")
 
                 simulator = es.eventSimulator(task_set)
 
-                # Determination of the variables used to compute the stop condition
-                # of the simulation
+                # Determination of the variables used to compute the stop
+                # condition of the simulation
                 max_e2e_latency = max(ce_chains[i], key=lambda chain:
                                       chain.davare).davare
                 max_phase = max(task_set, key=lambda task: task.phase).phase
@@ -204,7 +203,8 @@ def main():
                 number_of_jobs = 0
                 for task in task_set:
                     number_of_jobs += sched_interval/task.period
-                print("\tNumber of jobs to schedule: ", "%.2f" % number_of_jobs)
+                print("\tNumber of jobs to schedule: ",
+                      "%.2f" % number_of_jobs)
 
                 # Stop condition: Number of jobs of lowest priority task.
                 simulator.dispatcher(
@@ -234,19 +234,22 @@ def main():
                     if chain.kloda < chain.our_react:
                         breakpoint()
                 i += 1
-        except:
+        except Exception as e:
+            print(e)
             print("ERROR: analysis")
             breakpoint()
 
         ###
         # Save data.
         ###
+        print("=Save data.=")
+
         try:
-            print("=Save data.=")
-            np.savez("output/1single/task_set_u=" + str(args.u) + "_n=" + args.n
+            np.savez("output/1single/task_set_u="+str(args.u) + "_n=" + args.n
                      + "_g=" + str(args.g) + ".npz", task_sets=task_sets,
                      chains=ce_chains)
-        except:
+        except Exception as e:
+            print(e)
             print("ERROR: save")
             breakpoint()
     ###
