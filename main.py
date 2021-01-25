@@ -321,7 +321,7 @@ def main():
         analyzer.age_sporadic([chains_inter])
 
         print("Test: Our.")
-        analyzer.max_age_inter_our(chains_inter)
+        analyzer.max_age_inter_our(chains_inter, reduced=True)
         analyzer.reaction_inter_our(chains_inter)
 
         ###

@@ -288,19 +288,19 @@ class Analyzer:
         interconnected.
         """
         for chain in chain_set:
-            interconnected_react = 0  # total reaction time
+            inter_our_react = 0  # total reaction time
             for i in range(0, len(chain.interconnected)):
                 # Case: i is a communication task.
                 if isinstance(chain.interconnected[i], stt.task.Task):
-                    interconnected_react += (chain.interconnected[i].period
+                    inter_our_react += (chain.interconnected[i].period
                                              + chain.interconnected[i].rt)
                 # Case: i is a cause-effect chain.
                 else:
-                    interconnected_react += chain.interconnected[i].our_react
+                    inter_our_react += chain.interconnected[i].our_react
             # Store result.
-            chain.interconnected_react = interconnected_react
+            chain.inter_our_react = inter_our_react
 
-    def max_age_inter_our(self, chain_set):
+    def max_age_inter_our(self, chain_set, reduced=False):
         """Our reduced maximum data age analysis for interconnected
         cause-effect chains.
 
@@ -309,18 +309,24 @@ class Analyzer:
         """
         for chain in chain_set:
             m = len(chain.interconnected)  # chain length
-            interconnected_age = 0  # total data age
+            inter_our_red_age = 0  # total data age
             for i in range(0, m-1):
                 # Case: i is a communication task.
                 if isinstance(chain.interconnected[i], stt.task.Task):
-                    interconnected_age += (chain.interconnected[i].period
-                                           + chain.interconnected[i].rt)
+                    inter_our_red_age += (chain.interconnected[i].period
+                                          + chain.interconnected[i].rt)
                 # Case: i is a cause-effect chain.
                 else:
-                    interconnected_age += chain.interconnected[i].our_age
-            interconnected_age += chain.interconnected[m-1].our_red_age
+                    inter_our_red_age += chain.interconnected[i].our_age
+
+            # Handle the last cause-effect chain in the list.
+            if reduced:
+                inter_our_red_age += chain.interconnected[m-1].our_red_age
+            else:
+                inter_our_red_age += chain.interconnected[m-1].our_age
+
             # Store result.
-            chain.interconnected_age = interconnected_age
+            chain.inter_our_red_age = inter_our_red_age
 
     ###
     # Davare analysis from 'Period Optimization for Hard Real-time Distributed

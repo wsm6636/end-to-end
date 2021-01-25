@@ -142,7 +142,7 @@ class Evaluation:
 
         for chain in chains:
             duerr.append((1-(chain.duerr_age/chain.davare))*100)
-            our.append((1-(chain.interconnected_age/chain.davare))*100)
+            our.append((1-(chain.inter_our_red_age/chain.davare))*100)
 
         # Plotting.
         # Blue box configuration:
@@ -198,7 +198,7 @@ class Evaluation:
 
         for chain in chains:
             duerr.append((1-(chain.duerr_react/chain.davare))*100)
-            our.append((1-(chain.interconnected_react/chain.davare))*100)
+            our.append((1-(chain.inter_our_react/chain.davare))*100)
 
         # Plotting.
         # Blue box configuration:
