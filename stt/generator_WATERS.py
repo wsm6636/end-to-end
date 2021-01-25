@@ -187,7 +187,7 @@ def sample_runnable_acet(period, amount=1, scalingFlag=False):
 
 
 def gen_tasksets(
-        number_of_sets=100, util_req=1.0,
+        number_of_sets=100, util_req=0.5,
         period_pdf=[0.03, 0.02, 0.02, 0.25, 0.40, 0.03, 0.2, 0.01, 0.04],
         scalingFlag=True, threshold=0.1, cylinder=4):
     """Main function to generate task sets with the WATERS benchmark.
@@ -314,10 +314,7 @@ def gen_tasksets(
             util = 0.0
             i = 0
             for tasks in thisset:
-                if tasks['period'] == 0.5:
-                    util += tasks['execution']/tasks['deadline']
-                else:
-                    util += tasks['execution']/tasks['period']
+                util += tasks['execution']/tasks['period']
                 i = i + 1
                 if util > util_req:
                     break
@@ -329,32 +326,23 @@ def gen_tasksets(
                 initialSet = thisset[:i]
                 remainingTasks = thisset[i:]
                 tasks = remainingTasks[0]
-                if (tasks['period'] == 0.5):
-                    util -= tasks['execution']/tasks['deadline']
-                else:
-                    util -= tasks['execution']/tasks['period']
+                util -= tasks['execution']/tasks['period']
+
                 while (util < util_req):
                     tasks = remainingTasks[0]
-                    if (tasks['period'] == 0.5):
-                        if (util + tasks['execution']/tasks['deadline']
-                                <= util_req + threshold):
-                            util += tasks['execution']/tasks['deadline']
-                            initialSet.append(tasks)
-                        remainingTasks = remainingTasks[1:]
-
-                    else:
-                        if (util + tasks['execution']/tasks['period']
-                                <= util_req + threshold):
-                            util += tasks['execution']/tasks['period']
-                            initialSet.append(tasks)
-                        remainingTasks = remainingTasks[1:]
+                    if (util + tasks['execution']/tasks['period']
+                            <= util_req + threshold):
+                        util += tasks['execution']/tasks['period']
+                        initialSet.append(tasks)
+                    remainingTasks = remainingTasks[1:]
 
                 thisset = initialSet
             sets.append(thisset)
-        # Remove task sets that contain just one task
-        for task_set in sets:
-            if len(task_set) < 2:
-                sets.remove(task_set)
+
+        # # Remove task sets that contain just one task.
+        # for task_set in sets:
+        #     if len(task_set) < 2:
+        #         sets.remove(task_set)
         return sets
 
 
