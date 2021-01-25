@@ -351,8 +351,7 @@ class Analyzer:
     # Duerr analysis from 'End-to-End Timing Analysis of Sporadic Cause-Effect
     # Chains in Distributed Systems' (2019).
     ###
-    # TODO: change name of duerr_react, duerr_age, and the functions
-    def reaction_sporadic(self, chain_sets):
+    def reaction_duerr(self, chain_sets):
         """Maximum reaction time analysis from Duerr.
 
         Input: chain_sets is a list of lists of chains.
@@ -371,7 +370,7 @@ class Analyzer:
                 # Store result.
                 chain.duerr_react = latency
 
-    def age_sporadic(self, chain_sets):
+    def age_duerr(self, chain_sets):
         """Maximum data age analysis from Duerr.
 
         Input: chain_sets is a list of lists of chains.

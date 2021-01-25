@@ -90,10 +90,10 @@ for util in [50, 60, 70, 80, 90]:
     analyzer.davare(ce_chains)
 
     print("Test: Duerr Reaction Time.")
-    analyzer.reaction_sporadic(ce_chains)
+    analyzer.reaction_duerr(ce_chains)
 
     print("Test: Duerr Data Age.")
-    analyzer.age_sporadic(ce_chains)
+    analyzer.age_duerr(ce_chains)
 
     # Start timer.
     tick = time.time()

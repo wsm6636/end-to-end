@@ -158,10 +158,10 @@ def main():
         analyzer.davare(ce_chains)
 
         print("Test: Duerr Reaction Time.")
-        analyzer.reaction_sporadic(ce_chains)
+        analyzer.reaction_duerr(ce_chains)
 
         print("Test: Duerr Data Age.")
-        analyzer.age_sporadic(ce_chains)
+        analyzer.age_duerr(ce_chains)
 
         ###
         # Second analyses (Simulation, Our, Kloda).
@@ -317,8 +317,8 @@ def main():
         analyzer.davare([chains_inter])
 
         print("Test: Duerr.")
-        analyzer.reaction_sporadic([chains_inter])
-        analyzer.age_sporadic([chains_inter])
+        analyzer.reaction_duerr([chains_inter])
+        analyzer.age_duerr([chains_inter])
 
         print("Test: Our.")
         analyzer.max_age_inter_our(chains_inter, reduced=True)
