@@ -69,6 +69,8 @@ In the end the plots from Figure 6 and 7 of the paper can be foung in the folder
 * Marco ?
 * Niklas Ueter
 * Kuan-Hsun Chen
+* Georg
+* JJ
 
 ## License
 
