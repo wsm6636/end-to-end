@@ -87,7 +87,7 @@ def non_preemptive_response_time(taskset):
 
     # Compute WCRT of each task.
     for i, task in enumerate(taskset):
-        rt = tda_np(task, taskset[i+1:], taskset[:i], True)
+        rt = tda_np(task, taskset[i+1:], taskset[:i])
         if rt is False:  # tda_np failed
             return False
         elif rt > task.deadline:  # WCRT > deadline is not allowed
