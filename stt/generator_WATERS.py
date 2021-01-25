@@ -1,4 +1,4 @@
-"""Task set and cause-effect chain generation with WATERS benchmark.
+util_req"""Task set and cause-effect chain generation with WATERS benchmark.
 
 From the paper: 'Real world automotive benchmark for free' (WATERS 2015).
 """
@@ -34,7 +34,7 @@ def sample_runnable_acet(period, amount=1, scalingFlag=False):
         # Pull scaling factor.
         scaling = np.random.uniform(1.3, 29.11, amount)  # between fmin fmax
         # Pull samples with weibull distribution.
-        dist = exponweib(1, 1.044, loc=0, scale=1.0/0.214)  # TODO where does that come from?
+        dist = exponweib(1, 1.044, loc=0, scale=1.0/0.214)
         samples = dist.rvs(size=amount)
         while True:
             outliers_detected = False
@@ -51,6 +51,8 @@ def sample_runnable_acet(period, amount=1, scalingFlag=False):
                 return list(0.001 * samples*scaling)
             else:
                 return list(0.001 * samples)
+
+    # In the following same structure but different values.
 
     if period == 2:
         scaling = np.random.uniform(1.54, 19.04, amount)
@@ -174,7 +176,9 @@ def sample_runnable_acet(period, amount=1, scalingFlag=False):
             else:
                 return list(0.001 * samples)
 
-    if period == 1000:  # TODO why is here no weibull ???
+    if period == 1000:
+        # No weibull since the range from 0.37 to 0.46 is too short to be
+        # modeled by weibull properly.
         scaling = np.random.uniform(1.84, 4.75, amount)
         if scalingFlag:
             return list(0.001 * np.random.uniform(0.37, 0.46, amount)*scaling)
@@ -182,7 +186,22 @@ def sample_runnable_acet(period, amount=1, scalingFlag=False):
             return list(0.001 * np.random.uniform(0.37, 0.46, amount))
 
 
-def gen_tasksets(number_of_sets=100, util_max=1.0, period_pdf=[0.03, 0.02, 0.02, 0.25, 0.40, 0.03, 0.2, 0.01, 0.04], scalingFlag = False, threshold = 0.1, cylinder = 4, mode = 'sporadic'):
+def gen_tasksets(
+        number_of_sets=100, util_req=1.0,
+        period_pdf=[0.03, 0.02, 0.02, 0.25, 0.40, 0.03, 0.2, 0.01, 0.04],
+        scalingFlag=True, threshold=0.1, cylinder=4):
+    """Main function to generate task sets with the WATERS benchmark.
+
+    Variables:
+    number_of_sets: number of task sets
+    util_req: required utilization
+    period_pdf: statistical distribution
+    scalingFlag: make WCET out of ACET with scaling
+    threshold: accuracy of the required utilization
+    cylinder: specific value for WATERS
+
+    """
+
     while True:
         taskset = []
         dist = stats.rv_discrete(name='periods', values = ([1,2,5,10,20,50,100,200,1000], period_pdf))
@@ -292,10 +311,10 @@ def gen_tasksets(number_of_sets=100, util_max=1.0, period_pdf=[0.03, 0.02, 0.02,
                 else:
                     util += tasks['execution']/tasks['period']
                 i = i + 1
-                if util > util_max:
+                if util > util_req:
                     break
 
-            if(util <= util_max + threshold):
+            if(util <= util_req + threshold):
                 thisset = thisset[:i]
             else:
                 i = i - 1
@@ -306,16 +325,16 @@ def gen_tasksets(number_of_sets=100, util_max=1.0, period_pdf=[0.03, 0.02, 0.02,
                     util -= tasks['execution']/tasks['deadline']
                 else:
                     util -= tasks['execution']/tasks['period']
-                while (util < util_max):
+                while (util < util_req):
                     tasks = remainingTasks[0]
                     if (tasks['period'] == 0.5):
-                        if (util + tasks['execution']/tasks['deadline'] <= util_max + threshold):
+                        if (util + tasks['execution']/tasks['deadline'] <= util_req + threshold):
                             util += tasks['execution']/tasks['deadline']
                             initialSet.append(tasks)
                         remainingTasks = remainingTasks[1:]
 
                     else:
-                        if (util + tasks['execution']/tasks['period'] <= util_max + threshold):
+                        if (util + tasks['execution']/tasks['period'] <= util_req + threshold):
                             util += tasks['execution']/tasks['period']
                             initialSet.append(tasks)
                         remainingTasks = remainingTasks[1:]

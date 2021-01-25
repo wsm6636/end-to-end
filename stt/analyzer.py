@@ -430,7 +430,8 @@ class Analyzer:
         q = 0
         # Case: Producer has lower priority than consumer, i.e., the priority
         # value is higher. Note: We do not implement a processor change since
-        # we consider only the single ECU case.
+        # we consider only the single ECU case. (Kloda cannot be applied to
+        # asynchronized ECUs.)
         if (producer_task.priority > consumer_task.priority):
             q = producer_task.rt
         rel_consumer = (math.ceil((rel_producer + q) / consumer_task.period)

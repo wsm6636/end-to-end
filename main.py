@@ -82,8 +82,7 @@ def main():
             task_sets_waters = []
             while len(task_sets_waters) < args.r:
                 task_sets_gen = waters.gen_tasksets(
-                        1, req_uti, profile, True, threshold / 100.0, 4,
-                        'sporadic')
+                        1, req_uti, profile, True, threshold / 100.0, 4)
                 task_sets_waters.append(task_sets_gen[0])
 
             # Transform tasks to fit framework structure.
