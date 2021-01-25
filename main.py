@@ -57,77 +57,83 @@ def main():
         analysis, Kloda, and save the Data
         """
 
-        ###
-        # Task set and cause-effect chain generation.
-        ###
-        print("=Task set and cause-effect chain generation.=")
-        if args.g == 0:
-            # WATERS benchmark
-            print("WATERS benchmark.")
+        try:
 
-            # Statistical distribution for task set generation from table 3 of
-            # WATERS free benchmark paper.
-            profile = [0.03 / 0.85, 0.02 / 0.85, 0.02 / 0.85, 0.25 / 0.85,
-                       0.25 / 0.85, 0.03 / 0.85, 0.2 / 0.85, 0.01 / 0.85,
-                       0.04 / 0.85]
-            # Required utilization:
-            req_uti = args.u/100.0
-            # Maximal difference between required utilization and actual
-            # utilization is set to 1 percent:
-            threshold = 1.0
+            ###
+            # Task set and cause-effect chain generation.
+            ###
+            print("=Task set and cause-effect chain generation.=")
+            if args.g == 0:
+                # WATERS benchmark
+                print("WATERS benchmark.")
 
-            # Create task sets from the generator.
-            # Each task is a dictionary.
-            print("\tCreate task sets.")
-            task_sets_waters = []
-            while len(task_sets_waters) < args.r:
-                task_sets_gen = waters.gen_tasksets(
-                        1, req_uti, profile, True, threshold/100.0, 4)
-                task_sets_waters.append(task_sets_gen[0])
+                # Statistical distribution for task set generation from table 3 of
+                # WATERS free benchmark paper.
+                profile = [0.03 / 0.85, 0.02 / 0.85, 0.02 / 0.85, 0.25 / 0.85,
+                           0.25 / 0.85, 0.03 / 0.85, 0.2 / 0.85, 0.01 / 0.85,
+                           0.04 / 0.85]
+                # Required utilization:
+                req_uti = args.u/100.0
+                # Maximal difference between required utilization and actual
+                # utilization is set to 1 percent:
+                threshold = 1.0
 
-            # Transform tasks to fit framework structure.
-            # Each task is an object of stt.task.Task.
-            trans1 = trans.Transformer("1", task_sets_waters, 10000000)
-            task_sets = trans1.transform_tasks(False)
+                # Create task sets from the generator.
+                # Each task is a dictionary.
+                print("\tCreate task sets.")
+                task_sets_waters = []
+                while len(task_sets_waters) < args.r:
+                    task_sets_gen = waters.gen_tasksets(
+                            1, req_uti, profile, True, threshold/100.0, 4)
+                    task_sets_waters.append(task_sets_gen[0])
 
-            # Create cause effect chains.
-            print("\tCreate cause-effect chains")
-            ce_chains = waters.gen_ce_chains(task_sets, False)
+                # Transform tasks to fit framework structure.
+                # Each task is an object of stt.task.Task.
+                trans1 = trans.Transformer("1", task_sets_waters, 10000000)
+                task_sets = trans1.transform_tasks(False)
 
-        elif args.g == 1:
-            # UUnifast benchmark.
-            print("UUnifast benchmark.")
+                # Create cause effect chains.
+                print("\tCreate cause-effect chains")
+                ce_chains = waters.gen_ce_chains(task_sets, False)
 
-            # Create task sets from the generator.
-            print("\tCreate task sets.")
+            elif args.g == 1:
+                # UUnifast benchmark.
+                print("UUnifast benchmark.")
 
-            # # Generate log-uniformly distributed task sets:
-            # task_sets_generator = uunifast.gen_tasksets(
-            #         5, args.r, 1, 100, args.u, rounded=True)
+                # Create task sets from the generator.
+                print("\tCreate task sets.")
 
-            # Generate log-uniformly distributed task sets with predefined
-            # periods:
-            periods = [1, 2, 5, 10, 20, 50, 100, 200, 500, 1000]
-            # Interval from where the generator pulls log-uniformly.
-            min_pull = 1
-            max_pull = 2000
+                # # Generate log-uniformly distributed task sets:
+                # task_sets_generator = uunifast.gen_tasksets(
+                #         5, args.r, 1, 100, args.u, rounded=True)
 
-            task_sets_uunifast = uunifast.gen_tasksets_pred(
-                    50, args.r, min_pull, max_pull, args.u/100.0, periods)
+                # Generate log-uniformly distributed task sets with predefined
+                # periods:
+                periods = [1, 2, 5, 10, 20, 50, 100, 200, 500, 1000]
+                # Interval from where the generator pulls log-uniformly.
+                min_pull = 1
+                max_pull = 2000
 
-            # Transform tasks to fit framework structure.
-            trans2 = trans.Transformer("2", task_sets_uunifast, 10000000)
-            task_sets = trans2.transform_tasks(False)
+                task_sets_uunifast = uunifast.gen_tasksets_pred(
+                        50, args.r, min_pull, max_pull, args.u/100.0, periods)
 
-            # Create cause-effect chains.
-            print("\tCreate cause-effect chains")
-            ce_chains = uunifast.gen_ce_chains(task_sets)
-            # ce_chains contains one set of cause effect chains for each task
-            # set in task_sets.
+                # Transform tasks to fit framework structure.
+                trans2 = trans.Transformer("2", task_sets_uunifast, 10000000)
+                task_sets = trans2.transform_tasks(False)
 
-        else:
-            print("Choose a benchmark")
-            return
+                # Create cause-effect chains.
+                print("\tCreate cause-effect chains")
+                ce_chains = uunifast.gen_ce_chains(task_sets)
+                # ce_chains contains one set of cause effect chains for each task
+                # set in task_sets.
+
+            else:
+                print("Choose a benchmark")
+                return
+
+        except:
+            print("ERROR: task + ce creation")
+            breakpoint()
 
         ###
         # First analyses (TDA, Davare, Duerr).
@@ -135,106 +141,114 @@ def main():
         print("=First analyses (TDA, Davare, Duerr).=")
         analyzer = a.Analyzer("0")
 
-        # TDA for each task set.
-        print("TDA.")
-        for idxx in range(len(task_sets)):
-            try:
-                # TDA.
-                i = 1
-                for task in task_sets[idxx]:
-                    task.rt = analyzer.tda(task, task_sets[idxx][:(i - 1)])
-                    if task.rt > task.deadline:
-                        raise ValueError(
-                                "TDA Result: WCRT bigger than deadline!")
-                    i += 1
-            except ValueError:
-                # If TDA fails, remove task and chain set and continue.
-                task_sets.remove(task_sets[idxx])
-                ce_chains.remove(ce_chains[idxx])
-                continue
+        try:
 
-        # End-to-End Analyses.
-        print("Test: Davare.")
-        analyzer.davare(ce_chains)
+            # TDA for each task set.
+            print("TDA.")
+            for idxx in range(len(task_sets)):
+                try:
+                    # TDA.
+                    i = 1
+                    for task in task_sets[idxx]:
+                        task.rt = analyzer.tda(task, task_sets[idxx][:(i - 1)])
+                        if task.rt > task.deadline:
+                            raise ValueError(
+                                    "TDA Result: WCRT bigger than deadline!")
+                        i += 1
+                except ValueError:
+                    # If TDA fails, remove task and chain set and continue.
+                    task_sets.remove(task_sets[idxx])
+                    ce_chains.remove(ce_chains[idxx])
+                    continue
 
-        print("Test: Duerr Reaction Time.")
-        analyzer.reaction_duerr(ce_chains)
+            # End-to-End Analyses.
+            print("Test: Davare.")
+            analyzer.davare(ce_chains)
 
-        print("Test: Duerr Data Age.")
-        analyzer.age_duerr(ce_chains)
+            print("Test: Duerr Reaction Time.")
+            analyzer.reaction_duerr(ce_chains)
 
-        ###
-        # Second analyses (Simulation, Our, Kloda).
-        ###
-        print("=Second analyses (Simulation, Our, Kloda).=")
-        i = 0  # task set counter
-        schedules = []
-        for task_set in task_sets:
-            print("=Task set ", i+1)
+            print("Test: Duerr Data Age.")
+            analyzer.age_duerr(ce_chains)
 
-            # Event-based simulation.
-            print("Simulation.")
+            ###
+            # Second analyses (Simulation, Our, Kloda).
+            ###
+            print("=Second analyses (Simulation, Our, Kloda).=")
+            i = 0  # task set counter
+            schedules = []
+            for task_set in task_sets:
+                print("=Task set ", i+1)
 
-            simulator = es.eventSimulator(task_set)
+                # Event-based simulation.
+                print("Simulation.")
 
-            # Determination of the variables used to compute the stop condition
-            # of the simulation
-            max_e2e_latency = max(ce_chains[i], key=lambda chain:
-                                  chain.davare).davare
-            max_phase = max(task_set, key=lambda task: task.phase).phase
-            max_period = max(task_set, key=lambda task: task.period).period
-            hyper_period = analyzer.determine_hyper_period(task_set)
+                simulator = es.eventSimulator(task_set)
 
-            sched_interval = (
-                    2 * hyper_period + max_phase  # interval from paper
-                    + max_e2e_latency  # upper bound job chain length
-                    + max_period)  # for convenience
+                # Determination of the variables used to compute the stop condition
+                # of the simulation
+                max_e2e_latency = max(ce_chains[i], key=lambda chain:
+                                      chain.davare).davare
+                max_phase = max(task_set, key=lambda task: task.phase).phase
+                max_period = max(task_set, key=lambda task: task.period).period
+                hyper_period = analyzer.determine_hyper_period(task_set)
 
-            # Information for end user.
-            print("\tNumber of tasks: ", len(task_set))
-            print("\tHyperperiod: ", hyper_period)
-            number_of_jobs = 0
-            for task in task_set:
-                number_of_jobs += sched_interval/task.period
-            print("\tNumber of jobs to schedule: ", "%.2f" % number_of_jobs)
+                sched_interval = (
+                        2 * hyper_period + max_phase  # interval from paper
+                        + max_e2e_latency  # upper bound job chain length
+                        + max_period)  # for convenience
 
-            # Stop condition: Number of jobs of lowest priority task.
-            simulator.dispatcher(
-                    int(math.ceil(sched_interval/task_set[-1].period)))
+                # Information for end user.
+                print("\tNumber of tasks: ", len(task_set))
+                print("\tHyperperiod: ", hyper_period)
+                number_of_jobs = 0
+                for task in task_set:
+                    number_of_jobs += sched_interval/task.period
+                print("\tNumber of jobs to schedule: ", "%.2f" % number_of_jobs)
 
-            # Simulation without early completion.
-            schedule = simulator.e2e_result()
-            schedules.append(schedule)
+                # Stop condition: Number of jobs of lowest priority task.
+                simulator.dispatcher(
+                        int(math.ceil(sched_interval/task_set[-1].period)))
 
-            # Analyses.
-            for chain in ce_chains[i]:
-                print("Test: Our Data Age.")
-                analyzer.max_age_our(schedule, task_set, chain, max_phase,
-                                     hyper_period, shortened=False)
-                analyzer.max_age_our(schedule, task_set, chain, max_phase,
-                                     hyper_period, shortened=True)
+                # Simulation without early completion.
+                schedule = simulator.e2e_result()
+                schedules.append(schedule)
 
-                print("Test: Our Reaction Time.")
-                analyzer.reaction_our(schedule, task_set, chain, max_phase,
-                                      hyper_period)
+                # Analyses.
+                for chain in ce_chains[i]:
+                    print("Test: Our Data Age.")
+                    analyzer.max_age_our(schedule, task_set, chain, max_phase,
+                                         hyper_period, shortened=False)
+                    analyzer.max_age_our(schedule, task_set, chain, max_phase,
+                                         hyper_period, shortened=True)
 
-                # Kloda analysis, assuming synchronous releases.
-                print("Test: Kloda.")
-                analyzer.kloda(chain, hyper_period)
+                    print("Test: Our Reaction Time.")
+                    analyzer.reaction_our(schedule, task_set, chain, max_phase,
+                                          hyper_period)
 
-                # Test.
-                if chain.kloda < chain.our_react:
-                    breakpoint()
-            i += 1
+                    # Kloda analysis, assuming synchronous releases.
+                    print("Test: Kloda.")
+                    analyzer.kloda(chain, hyper_period)
+
+                    # Test.
+                    if chain.kloda < chain.our_react:
+                        breakpoint()
+                i += 1
+        except:
+            print("ERROR: analysis")
+            breakpoint()
 
         ###
         # Save data.
         ###
-        print("=Save data.=")
-        np.savez("output/1single/task_set_u=" + str(args.u) + "_n=" + args.n
-                 + "_g=" + str(args.g) + ".npz", task_sets=task_sets,
-                 chains=ce_chains)
-
+        try:
+            print("=Save data.=")
+            np.savez("output/1single/task_set_u=" + str(args.u) + "_n=" + args.n
+                     + "_g=" + str(args.g) + ".npz", task_sets=task_sets,
+                     chains=ce_chains)
+        except:
+            print("ERROR: save")
+            breakpoint()
     ###
     # l=="2": Interconnected analysis; args: -l2 -u_ -g_
     # Load data

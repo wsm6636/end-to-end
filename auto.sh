@@ -6,6 +6,8 @@
 # Start this shell script with
 # 	screen -dmS auto ./auto.sh
 # We use the screen command to parallelize the execution.
+# 'screen -ls' shows all current screens
+# 'killall screen' aborts all current screens. 
 ########################################
 
 ###
@@ -23,7 +25,7 @@ do
 	echo "start screens 1 - 50"
 	for i in {1..50}
 	do
-	   screen -dmS ascr$i python3 main.py -j1 -u=$util -g0 -r10 -n="run$i"
+	   screen -dmS ascr$i python3.7 main.py -j1 -u=$util -g0 -r10 -n="run$i"
 	done
 
 	while screen -list | grep -q ascr.*
@@ -37,7 +39,7 @@ do
 	echo "start screens 51 - 100"
 	for i in {51..100}
 	do
-	   screen -dmS ascr$i python3 main.py -j1 -u=$util -g0 -r10 -n="run$i"
+	   screen -dmS ascr$i python3.7 main.py -j1 -u=$util -g0 -r10 -n="run$i"
 	done
 
 	while screen -list | grep -q ascr.*
@@ -57,7 +59,7 @@ do
 	echo "start screens 1 - 50"
 	for i in {1..50}
 	do
-	   screen -dmS ascr$i python3 main.py -j1 -u=$util -g1 -r10 -n="run$i"
+	   screen -dmS ascr$i python3.7 main.py -j1 -u=$util -g1 -r10 -n="run$i"
 	done
 
 	while screen -list | grep -q ascr.*
@@ -71,7 +73,7 @@ do
 	echo "start screens 51 - 100"
 	for i in {51..100}
 	do
-	   screen -dmS ascr$i python3 main.py -j1 -u=$util -g1 -r10 -n="run$i"
+	   screen -dmS ascr$i python3.7 main.py -j1 -u=$util -g1 -r10 -n="run$i"
 	done
 
 	while screen -list | grep -q ascr.*
@@ -95,11 +97,11 @@ date
 
 for i in {50..90..10}
 do
-  screen -dmS ascrg0util_$i python3 main.py -j2 -u=$i -g0
+  screen -dmS ascrg0util_$i python3.7 main.py -j2 -u=$i -g0
 done
 for i in {50..90..10}
 do
-  screen -dmS ascrg1util_$i python3 main.py -j2 -u=$i -g1
+  screen -dmS ascrg1util_$i python3.7 main.py -j2 -u=$i -g1
 done
 while screen -list | grep -q ascr.*
 do
@@ -117,8 +119,8 @@ done
 echo "===Draw plots."
 date
 
-screen -dmS ascrj3g0 python3 main.py -j3 -g0
-screen -dmS ascrj3g1 python3 main.py -j3 -g1
+screen -dmS ascrj3g0 python3.7 main.py -j3 -g0
+screen -dmS ascrj3g1 python3.7 main.py -j3 -g1
 while screen -list | grep -q ascr.*
 do
   sleep 1
