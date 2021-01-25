@@ -349,37 +349,32 @@ def gen_tasksets(
 # Cause-effect chain generation.
 ###
 
-def gen_ce_chains(transformed_task_sets, sort):  # WATERS
+def gen_ce_chains(transfprmed_task_set):
     distribution_involved_activation_patterns = stats.rv_discrete(values=([1, 2, 3], [0.7, 0.2, 0.1]))
     distribution_number_of_tasks = stats.rv_discrete(values=([2, 3, 4, 5], [0.3, 0.4, 0.2, 0.1]))
     ce_chains = []
 
     for task_set in transformed_task_sets:
-        cause_effect_chain_set = []
-        for number_of_cause_effect_chains in range(int(np.random.randint(30, 60))): # 30 to 60 cause-effect chains
-            chain = []
+        ce_chains_from_task_set = list()
+        # generate 30 to 60 cause-effect chains for each input task set
+        for id_of_generated_ce_chain in range(int(np.random.randint(30, 60))):
+            tasks_in_chain = []
             involved_activation_patterns = list(np.random.choice(list(set(map(lambda task: task.period, task_set))),
                                                                  size=int(
                                                                      distribution_involved_activation_patterns.rvs()),
                                                                  replace=False))
-            if sort:
-                involved_activation_patterns.sort()
-            else:
-                np.random.shuffle(involved_activation_patterns)
 
-            for period in involved_activation_patterns:
-                tasks_with_period = [task for task in task_set if task.period == period]
-                try:
-                    chain.append(
-                        np.random.choice(tasks_with_period, size=distribution_number_of_tasks.rvs(), replace=False))
-                except ValueError:
-                    chain = []
-                    break
-            cec_chain = []
-            for chain_part in chain:
-                for task in chain_part:
-                    cec_chain.append(task)
-            if chain:
-                cause_effect_chain_set.append(c.CauseEffectChain(number_of_cause_effect_chains, cec_chain))
-        ce_chains.append(cause_effect_chain_set)
+            period_filtered_task_set = [[task for task in task_set if task.period == period] for period in involved_activation_patterns]
+            try:
+                # try to add 2-5 tasks for each selected activation pattern into the chain
+                tasks_in_chain.extend(list(np.random.choice(period_filtered_task_set, size=distribution_number_of_tasks.rvs(), replace=False)))
+            except ValueError:
+                # if we draw :distribution_number_of_tasks such that 
+                # it is larger than the number of tasks with filtered period then this task_set is skipped
+                tasks_in_chain = list()
+                break
+            # do not append the skipped task sets
+            if tasks_in_chain:
+                ce_chains_from_task_set.append(c.CauseEffectChain(id_of_generated_ce_chain, np.random.shuffle(tasks_in_chain)))
+        ce_chains.append(ce_chains_from_task_set)
     return ce_chains
