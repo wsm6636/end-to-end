@@ -3,23 +3,17 @@
 # Automatic Evaluation for the paper 'Timing Analysis of Asynchronized Distributed Cause-Effect Chains' (2021).
 
 ########################################
-# At first, start this shell script (for single ECU analysis) with
+# Start this shell script with
 # 	screen -dmS auto ./auto.sh
 # We use the screen command to parallelize the execution.
 ########################################
 
-########################################
-# Afterwards, start interconnected ECU analysis with:
-# 	for i in {50..90..10}; do  screen -dmS g0util_$i python3 main.py -j2 -u=$i -g0; done
-# 	for i in {50..90..10}; do  screen -dmS g1util_$i python3 main.py -j2 -u=$i -g1; done
-########################################
+###
+# Single ECU analysis
+###
 
-########################################
-# In the end, draw the pots with:
-# 	screen -dmS j3g0 python3 main.py -j3 -g0
-# 	screen -dmS j3g1 python3 main.py -j3 -g1
-########################################
-
+echo "===Start single ECU analysis"
+date
 # g=0 r=10 with different utilization
 for util in {50..90..10}
 do
@@ -87,3 +81,48 @@ do
 	echo "done 51 - 100"
 	date
 done
+
+###
+# Interconnected ECU analysis.
+###
+# Or manually with:
+# 	for i in {50..90..10}; do  screen -dmS g0util_$i python3 main.py -j2 -u=$i -g0; done
+# 	for i in {50..90..10}; do  screen -dmS g1util_$i python3 main.py -j2 -u=$i -g1; done
+###
+
+echo "===Start interconnected ECU analysis"
+date
+
+for i in {50..90..10}
+do
+  screen -dmS ascrg0util_$i python3 main.py -j2 -u=$i -g0
+done
+for i in {50..90..10}
+do
+  screen -dmS ascrg1util_$i python3 main.py -j2 -u=$i -g1
+done
+while screen -list | grep -q ascr.*
+do
+  sleep 1
+done
+
+###
+# Draw plots.
+###
+# Or manually with:
+# 	screen -dmS j3g0 python3 main.py -j3 -g0
+# 	screen -dmS j3g1 python3 main.py -j3 -g1
+###
+
+echo "===Draw plots."
+date
+
+screen -dmS ascrj3g0 python3 main.py -j3 -g0
+screen -dmS ascrj3g1 python3 main.py -j3 -g1
+while screen -list | grep -q ascr.*
+do
+  sleep 1
+done
+
+echo "DONE"
+date

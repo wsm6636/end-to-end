@@ -17,7 +17,13 @@ class eventSimulator:
         We assume that the tasks are sorted by their priority (highest priority
         first).
         """
-        self.statusTable = [[float(0.0) for x in range(5)] for y in range(n)]
+        self.tasks = tasks  # list of tasks
+        self.h = -1  # index of the active task with the highest workload
+        self.n = len(tasks)  # number of tasks
+        self.systemTick = float(0)  # current time
+
+        self.statusTable = [[float(0.0) for x in range(5)]
+                            for y in range(self.n)]
         # The status table for the simulator has 5 columns per row:
         # 0. remaining workload of task
         # 1. number of release
@@ -29,11 +35,6 @@ class eventSimulator:
 
         # # Sorting:
         # tasks = sorted(tasks, key=operator.attrgetter('priority'))
-
-        self.tasks = tasks  # list of tasks
-        self.h = -1  # index of the active task with the highest workload
-        self.n = len(tasks)  # number of tasks
-        self.systemTick = float(0)  # current time
 
         # Analysis result.
         self.raw_result = dict()
