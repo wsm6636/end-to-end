@@ -349,7 +349,7 @@ def gen_tasksets(
 # Cause-effect chain generation.
 ###
 
-def gen_ce_chains(transfprmed_task_set):
+def gen_ce_chains(transformed_task_set):
     distribution_involved_activation_patterns = stats.rv_discrete(values=([1, 2, 3], [0.7, 0.2, 0.1]))
     distribution_number_of_tasks = stats.rv_discrete(values=([2, 3, 4, 5], [0.3, 0.4, 0.2, 0.1]))
     ce_chains = []
@@ -369,7 +369,7 @@ def gen_ce_chains(transfprmed_task_set):
                 # try to add 2-5 tasks for each selected activation pattern into the chain
                 tasks_in_chain.extend(list(np.random.choice(period_filtered_task_set, size=distribution_number_of_tasks.rvs(), replace=False)))
             except ValueError:
-                # if we draw :distribution_number_of_tasks such that 
+                # if we draw :distribution_number_of_tasks such that
                 # it is larger than the number of tasks with filtered period then this task_set is skipped
                 tasks_in_chain = list()
                 break
