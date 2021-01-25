@@ -3,18 +3,12 @@
 
 class AugJobChain:
     """Augmented job chain."""
-    job_chain = []  # list of jobs
-    ext_activity = 0.0  # external activity
-    actuation = 0.0  # actuation
 
-    def __init__(self, job_chain=None, ext_activity=None, actuation=None):
+    def __init__(self, job_chain=[], ext_activity=None, actuation=None):
         """Create an augmented job chain."""
-        if job_chain is not None:
-            self.job_chain = job_chain
-        if ext_activity is not None:
-            self.ext_activity = ext_activity
-        if actuation is not None:
-            self.actuation = actuation
+        self.job_chain = job_chain  # list of jobs
+        self.ext_activity = ext_activity  # external activity
+        self.actuation = actuation  # actuation
 
     def add_job(self, job):
         """Add a job to the job chain."""
