@@ -115,7 +115,7 @@ for util in [50, 60, 70, 80, 90]:
         # Determination of the variables used to compute the stop condition
         # of the simulation
         max_e2e_latency = max(ce_chains[i], key=lambda chain:
-                              chain.e2e_latency).e2e_latency
+                              chain.davare).davare
         max_phase = max(task_set, key=lambda task: task.phase).phase
         max_period = max(task_set, key=lambda task: task.period).period
         hyper_period = analyzer.determine_hyper_period(task_set)
@@ -158,7 +158,7 @@ for util in [50, 60, 70, 80, 90]:
             # analyzer.kloda(chain, hyper_period)
             #
             # # Test.
-            # if chain.kloda < chain.sim_react:
+            # if chain.kloda < chain.our_react:
             #     breakpoint()
         i += 1
 

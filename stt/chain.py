@@ -12,12 +12,12 @@ class CauseEffectChain:
     interconnected = []
 
     # Analysis results: (Are added during the analysis.)
-    e2e_latency = 0  # Davare
-    jj_age = 0  # Duerr max data age
-    jj_react = 0  # Duerr max reaction time
-    sim_age = 0  # Our max data age
-    sim_react = 0  # Our max reaction time
-    sim_sh_age = 0  # Our reduced max data age
+    davare = 0  # Davare
+    duerr_age = 0  # Duerr max data age
+    duerr_react = 0  # Duerr max reaction time
+    our_age = 0  # Our max data age
+    our_react = 0  # Our max reaction time
+    our_red_age = 0  # Our reduced max data age
     interconnected_age = 0  # Our max data age for interconnected
     interconnected_react = 0  # Our max reaction time for interconnected
     kloda = 0  # Kloda

@@ -22,7 +22,6 @@ class task (dict):
         dict.__setitem__(self, "execution", float(execution))
         dict.__setitem__(self, "period", float(period))
         dict.__setitem__(self, "deadline", float(deadline))
-        dict.__setitem__(self, "id", 0)  # task id  # TODO: remove ?
 
 
 def sample_runnable_acet(period, amount=1, scalingFlag=False):

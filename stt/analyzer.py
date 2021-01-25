@@ -140,9 +140,9 @@ class Analyzer:
 
         # Results.
         if shortened:
-            chain.sim_sh_age = max_length
+            chain.our_red_age = max_length
         else:
-            chain.sim_age = max_length
+            chain.our_age = max_length
         return max_length
 
     def imm_bw_jc(self, current_job, c_len, schedule, chain, key=0):
@@ -246,7 +246,7 @@ class Analyzer:
         max_length = max_cand.length()
 
         # Results.
-        chain.sim_react = max_length
+        chain.our_react = max_length
         return max_length
 
     def imm_fw_jc(self, current_job, c_len, schedule, chain, key=0):
@@ -296,7 +296,7 @@ class Analyzer:
                                              + chain.interconnected[i].rt)
                 # Case: i is a cause-effect chain.
                 else:
-                    interconnected_react += chain.interconnected[i].sim_react
+                    interconnected_react += chain.interconnected[i].our_react
             # Store result.
             chain.interconnected_react = interconnected_react
 
@@ -317,8 +317,8 @@ class Analyzer:
                                            + chain.interconnected[i].rt)
                 # Case: i is a cause-effect chain.
                 else:
-                    interconnected_age += chain.interconnected[i].sim_age
-            interconnected_age += chain.interconnected[m-1].sim_sh_age
+                    interconnected_age += chain.interconnected[i].our_age
+            interconnected_age += chain.interconnected[m-1].our_red_age
             # Store result.
             chain.interconnected_age = interconnected_age
 
@@ -339,13 +339,13 @@ class Analyzer:
                 for task in chain.chain:
                     latency += task.period + task.rt
                 # Store result.
-                chain.e2e_latency = latency
+                chain.davare = latency
 
     ###
     # Duerr analysis from 'End-to-End Timing Analysis of Sporadic Cause-Effect
     # Chains in Distributed Systems' (2019).
     ###
-    # TODO: change name of jj_react, jj_age, and the functions
+    # TODO: change name of duerr_react, duerr_age, and the functions
     def reaction_sporadic(self, chain_sets):
         """Maximum reaction time analysis from Duerr.
 
@@ -363,7 +363,7 @@ class Analyzer:
                         part2 = 0
                     latency += max(task.rt, next_task.period + part2)
                 # Store result.
-                chain.jj_react = latency
+                chain.duerr_react = latency
 
     def age_sporadic(self, chain_sets):
         """Maximum data age analysis from Duerr.
@@ -382,7 +382,7 @@ class Analyzer:
                         part2 = 0
                     latency += task.period + part2
                 # Store result.
-                chain.jj_age = latency
+                chain.duerr_age = latency
 
     ###
     # Kloda analysis from 'Latency analysis for data chains of real-time

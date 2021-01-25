@@ -73,8 +73,8 @@ def main():
             # Required utilization:
             req_uti = args.u/100.0
             # Maximal difference between required utilization and actual
-            # utilization is set to 0.1 percent:
-            threshold = 0.1  # TODO is this 0.1 percent or 10 percent ? (change here to fit the paper=1 percent)
+            # utilization is set to 1 percent:
+            threshold = 1.0
 
             # Create task sets from the generator.
             # Each task is a dictionary.
@@ -82,7 +82,7 @@ def main():
             task_sets_waters = []
             while len(task_sets_waters) < args.r:
                 task_sets_gen = waters.gen_tasksets(
-                        1, req_uti, profile, True, threshold / 100.0, 4)
+                        1, req_uti, profile, True, threshold/100.0, 4)
                 task_sets_waters.append(task_sets_gen[0])
 
             # Transform tasks to fit framework structure.
@@ -180,7 +180,7 @@ def main():
             # Determination of the variables used to compute the stop condition
             # of the simulation
             max_e2e_latency = max(ce_chains[i], key=lambda chain:
-                                  chain.e2e_latency).e2e_latency
+                                  chain.davare).davare
             max_phase = max(task_set, key=lambda task: task.phase).phase
             max_period = max(task_set, key=lambda task: task.period).period
             hyper_period = analyzer.determine_hyper_period(task_set)
@@ -223,7 +223,7 @@ def main():
                 analyzer.kloda(chain, hyper_period)
 
                 # Test.
-                if chain.kloda < chain.sim_react:
+                if chain.kloda < chain.our_react:
                     breakpoint()
             i += 1
 
@@ -402,12 +402,12 @@ def main():
         # # Heatmap.
         # myeva.heatmap_improvement_disorder_age(
         #         chains_single_ECU,
-        #         "output/3plots/heatmap" + "_sim_age"
+        #         "output/3plots/heatmap" + "_our_age"
         #         + "_g=" + str(args.g) + ".pdf",
         #         yaxis_label="")
         # myeva.heatmap_improvement_disorder_react(
         #         chains_single_ECU,
-        #         "output/3plots/heatmap" + "_sim_react"
+        #         "output/3plots/heatmap" + "_our_react"
         #         + "_g=" + str(args.g) + ".pdf",
         #         yaxis_label="")
 

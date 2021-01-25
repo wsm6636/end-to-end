@@ -26,9 +26,9 @@ class Evaluation:
         our = []  # reduced data age (for comparison)
 
         for chain in chains:
-            duerr.append((1 - (chain.jj_age / chain.e2e_latency)) * 100)
-            kloda.append((1 - (chain.kloda / chain.e2e_latency)) * 100)
-            our.append((1 - (chain.sim_sh_age / chain.e2e_latency)) * 100)
+            duerr.append((1 - (chain.duerr_age / chain.davare)) * 100)
+            kloda.append((1 - (chain.kloda / chain.davare)) * 100)
+            our.append((1 - (chain.our_red_age / chain.davare)) * 100)
 
         # Plotting.
         # Blue box configuration:
@@ -84,9 +84,9 @@ class Evaluation:
         our = []
 
         for chain in chains:
-            duerr.append((1 - (chain.jj_react / chain.e2e_latency)) * 100)
-            kloda.append((1 - (chain.kloda / chain.e2e_latency)) * 100)
-            our.append((1 - (chain.sim_react / chain.e2e_latency)) * 100)
+            duerr.append((1 - (chain.duerr_react / chain.davare)) * 100)
+            kloda.append((1 - (chain.kloda / chain.davare)) * 100)
+            our.append((1 - (chain.our_react / chain.davare)) * 100)
 
         # Plotting.
         # Blue box configuration:
@@ -141,8 +141,8 @@ class Evaluation:
         our = []  # reduced interconnected data age (for comparison)
 
         for chain in chains:
-            duerr.append((1-(chain.jj_age/chain.e2e_latency))*100)
-            our.append((1-(chain.interconnected_age/chain.e2e_latency))*100)
+            duerr.append((1-(chain.duerr_age/chain.davare))*100)
+            our.append((1-(chain.interconnected_age/chain.davare))*100)
 
         # Plotting.
         # Blue box configuration:
@@ -197,8 +197,8 @@ class Evaluation:
         our = []
 
         for chain in chains:
-            duerr.append((1-(chain.jj_react/chain.e2e_latency))*100)
-            our.append((1-(chain.interconnected_react/chain.e2e_latency))*100)
+            duerr.append((1-(chain.duerr_react/chain.davare))*100)
+            our.append((1-(chain.interconnected_react/chain.davare))*100)
 
         # Plotting.
         # Blue box configuration:
@@ -252,7 +252,7 @@ class Evaluation:
         disorder_ratio = []
         improvement = []
         for chain in chains:
-            improvement.append((1-(chain.sim_age/chain.e2e_latency))*100)
+            improvement.append((1-(chain.our_age/chain.davare))*100)
             if len(chain.chain) == 1:
                 disorder_ratio.append(0)
             else:
@@ -309,7 +309,7 @@ class Evaluation:
         disorder_ratio = []
         improvement = []
         for chain in chains:
-            improvement.append((1-(chain.sim_react/chain.e2e_latency))*100)
+            improvement.append((1-(chain.our_react/chain.davare))*100)
             if len(chain.chain) == 1:
                 disorder_ratio.append(0)
             else:
