@@ -20,6 +20,12 @@ matplotlib.pyplot
 operator
 ```
 
+Furthermore, we utilize *screen* to parallelize the computations on several cores.
+
+For the experiments we use a machine running Debian 4.19.98-1 (2020-01-26) x86_64 GNU/Linux, with 2 x AMD EPYC 7742 64-Core Processor (64 Cores, 128 Threads), i.e., in total 256 Threads mit 2,25GHz and 256GB RAM.
+Running auto.sh to provide the plots from the paper takes about X AMOUNT OF TIME.
+
+
 ## File Structure
 
     .
@@ -43,86 +49,45 @@ operator
     ├── timing.py                    # Measure timing behavior
     └── README.md
 
-## Getting Started
+The experiments in the main function are splitted into 3 parts:
+1. Single-ECU analysis
+2. Interconnected ECU analysis
+3. Plotting the results
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+In each step, the machines loads the results from the previous step, randomly creates necessary resources like task sets and cause-effect chains, and saves the results in the corresponsing folder in output.  
 
-### Prerequisites
+## Running the Experiments
 
-What things you need to install the software and how to install them
-
-```
-Give examples
-```
-
-### Installing
-
-A step by step series of examples that tell you how to get a development env running
-
-Say what the step will be
-
-```
-Give the example
-```
-
-And repeat
-
-```
-until finished
-```
-
-End with an example of getting some data out of the system or using it for a little demo
-
-## Running the tests
-
-Explain how to run the automated tests for this system
-
-### Break down into end to end tests
-
-Explain what these tests test and why
-
-```
-Give an example
-```
-
-### And coding style tests
-
-Explain what these tests test and why
-
-```
-Give an example
-```
-
-## Deployment
-
-Add additional notes about how to deploy this on a live system
-
-## Built With
-
-* [Dropwizard](http://www.dropwizard.io/1.0.2/docs/) - The web framework used
-* [Maven](https://maven.apache.org/) - Dependency Management
-* [ROME](https://rometools.github.io/rome/) - Used to generate RSS Feeds
-
-## Contributing
-
-Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
-
-## Versioning
-
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags). 
+To run the experiments, the file auto.sh has to be started. 
+It indicates the progress of the experiments by a displaying short descriptions and timestamps.
+If the experiments have to be aborted at some time (e.g., because a certain package is missing), then the instructions inside the auto.sh file can be used to start step 2 and 3 of the evaluation manually.
+In the end the plots from Figure 6 and 7 of the paper can be foung in the folder output/3plots.
 
 ## Authors
 
-* **Billie Thompson** - *Initial work* - [PurpleBooth](https://github.com/PurpleBooth)
-
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
+* Mario Günzel
+* Marco ?
+* Niklas Ueter
+* Kuan-Hsun Chen
 
 ## License
+
+NO IDEA?
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
 
 ## Acknowledgments
 
+NO IDEA?
+
 * Hat tip to anyone whose code was used
 * Inspiration
 * etc
+
+
+
+
+# RTAS requirements for AE
+    1. the system requirements
+    2. how to use the packaged artifact (please reference specific figures and tables in the paper that will be reproduced), and
+    3. how to setup the artifact on a machine different from the provided packaged artifact (e.g., specific versions of software to install on a clean machine);
