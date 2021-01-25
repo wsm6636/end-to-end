@@ -293,7 +293,7 @@ class Analyzer:
                 # Case: i is a communication task.
                 if isinstance(chain.interconnected[i], stt.task.Task):
                     inter_our_react += (chain.interconnected[i].period
-                                             + chain.interconnected[i].rt)
+                                        + chain.interconnected[i].rt)
                 # Case: i is a cause-effect chain.
                 else:
                     inter_our_react += chain.interconnected[i].our_react
