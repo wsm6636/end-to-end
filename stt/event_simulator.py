@@ -3,7 +3,7 @@
 Source: https://github.com/tu-dortmund-ls12-rt/MissRateSimulator/blob/master/
 simulator.py
 """
-from __future__ import division  # TODO remove?
+from __future__ import division
 import operator
 
 
@@ -283,9 +283,7 @@ class eventSimulator:
         for task in self.tasks:
             self.raw_result[task] = []
 
-        tmp = range(len(self.tasks))
-        tmp = tmp[::-1]  # TODO why do we change the direction here?
-        for idx in tmp:
+        for idx in range(len(self.tasks)):
             # Fill the status Table.
             self.statusTable[idx][0] = 0
             self.statusTable[idx][3] = self.statusTable[idx][1]
