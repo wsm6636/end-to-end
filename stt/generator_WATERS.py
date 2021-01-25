@@ -199,18 +199,19 @@ def gen_tasksets(
     scalingFlag: make WCET out of ACET with scaling
     threshold: accuracy of the required utilization
     cylinder: specific value for WATERS
-
     """
 
     while True:
         taskset = []
-        dist = stats.rv_discrete(name='periods', values = ([1,2,5,10,20,50,100,200,1000], period_pdf))
-        runnables = (30000*number_of_sets)
-
-
+        # Create runnable periods.
+        dist = stats.rv_discrete(name='periods',
+                                 values=([1, 2, 5, 10, 20, 50, 100, 200, 1000],
+                                         period_pdf))
+        runnables = (30000*number_of_sets)  # number of runnables
 
         sys_runnable_periods = dist.rvs(size=runnables)
 
+        # Count runnables.
         sys_runnables_period_0001_amount = 0
         sys_runnables_period_0002_amount = 0
         sys_runnables_period_0005_amount = 0
@@ -243,62 +244,69 @@ def gen_tasksets(
             else:
                 print("ERROR")
 
-            # build tasks from runnables (PERIOD = 1)
-        wcets = sample_runnable_acet(1, sys_runnables_period_0001_amount, scalingFlag)
+        # Build tasks from runnables.
+
+        # (PERIOD = 1)
+        # Random WCETs.
+        wcets = sample_runnable_acet(1, sys_runnables_period_0001_amount,
+                                     scalingFlag)
+        # Use WCETs to create tasks.
         for i in range(sys_runnables_period_0001_amount):
-            # C_i = sum of acet(runnable), runnable assigned to task i
             taskset.append(task(wcets[i], 1, 1))
 
-            # build tasks from runnables (PERIOD = 2)
-        wcets = sample_runnable_acet(2, sys_runnables_period_0002_amount, scalingFlag)
+        # (PERIOD = 2)
+        wcets = sample_runnable_acet(2, sys_runnables_period_0002_amount,
+                                     scalingFlag)
         for i in range(sys_runnables_period_0002_amount):
-                # C_i = sum of acet(runnable), runnable assigned to task i
             taskset.append(task(wcets[i], 2, 2))
 
-            # build tasks from runnables (PERIOD = 5)
-        wcets = sample_runnable_acet(5, sys_runnables_period_0005_amount, scalingFlag)
+        # (PERIOD = 5)
+        wcets = sample_runnable_acet(5, sys_runnables_period_0005_amount,
+                                     scalingFlag)
         for i in range(sys_runnables_period_0005_amount):
-                # C_i = sum of acet(runnable), runnable assigned to task i
-            taskset.append(task(wcets[i], 5, 5))#
+            taskset.append(task(wcets[i], 5, 5))
 
-            # build tasks from runnables (PERIOD = 10)
-        wcets = sample_runnable_acet(10, sys_runnables_period_0010_amount, scalingFlag)
+        # (PERIOD = 10)
+        wcets = sample_runnable_acet(10, sys_runnables_period_0010_amount,
+                                     scalingFlag)
         for i in range(sys_runnables_period_0010_amount):
-                # C_i = sum of acet(runnable), runnable assigned to task i
             taskset.append(task(wcets[i], 10, 10))
 
-            # build tasks from runnables (PERIOD = 20)
-        wcets = sample_runnable_acet(20, sys_runnables_period_0020_amount, scalingFlag)
+        # (PERIOD = 20)
+        wcets = sample_runnable_acet(20, sys_runnables_period_0020_amount,
+                                     scalingFlag)
         for i in range(sys_runnables_period_0020_amount):
-                # C_i = sum of acet(runnable), runnable assigned to task i
             taskset.append(task(wcets[i], 20, 20))
 
-            # build tasks from runnables (PERIOD = 50)
-        wcets = sample_runnable_acet(50, sys_runnables_period_0050_amount, scalingFlag)
+        # (PERIOD = 50)
+        wcets = sample_runnable_acet(50, sys_runnables_period_0050_amount,
+                                     scalingFlag)
         for i in range(sys_runnables_period_0050_amount):
-                # C_i = sum of acet(runnable), runnable assigned to task i
             taskset.append(task(wcets[i], 50, 50))
 
-            # build tasks from runnables (PERIOD = 100)
-        wcets = sample_runnable_acet(100, sys_runnables_period_0100_amount, scalingFlag)
+        # (PERIOD = 100)
+        wcets = sample_runnable_acet(100, sys_runnables_period_0100_amount,
+                                     scalingFlag)
         for i in range(sys_runnables_period_0100_amount):
-                # C_i = sum of acet(runnable), runnable assigned to task i
             taskset.append(task(wcets[i], 100, 100))
 
-            # build tasks from runnables (PERIOD = 200)
-        wcets = sample_runnable_acet(200, sys_runnables_period_0200_amount, scalingFlag)
+        # (PERIOD = 200)
+        wcets = sample_runnable_acet(200, sys_runnables_period_0200_amount,
+                                     scalingFlag)
         for i in range(sys_runnables_period_0200_amount):
-                # C_i = sum of acet(runnable), runnable assigned to task i
             taskset.append(task(wcets[i], 200, 200))
 
-            # build tasks from runnables (PERIOD = 1000)
-        wcets = sample_runnable_acet(1000, sys_runnables_period_1000_amount, scalingFlag)
+        # (PERIOD = 1000)
+        wcets = sample_runnable_acet(1000, sys_runnables_period_1000_amount,
+                                     scalingFlag)
         for i in range(sys_runnables_period_1000_amount):
-                # C_i = sum of acet(runnable), runnable assigned to task i
             taskset.append(task(wcets[i], 1000, 1000))
 
+        # Shuffke the task set.
         random.shuffle(taskset)
         sets = []
+
+        # Select subset of tasks using the subset-sum approximation algorithm.
 
         for j in range(number_of_sets):
             thisset = taskset[:3000]
@@ -328,13 +336,15 @@ def gen_tasksets(
                 while (util < util_req):
                     tasks = remainingTasks[0]
                     if (tasks['period'] == 0.5):
-                        if (util + tasks['execution']/tasks['deadline'] <= util_req + threshold):
+                        if (util + tasks['execution']/tasks['deadline']
+                                <= util_req + threshold):
                             util += tasks['execution']/tasks['deadline']
                             initialSet.append(tasks)
                         remainingTasks = remainingTasks[1:]
 
                     else:
-                        if (util + tasks['execution']/tasks['period'] <= util_req + threshold):
+                        if (util + tasks['execution']/tasks['period']
+                                <= util_req + threshold):
                             util += tasks['execution']/tasks['period']
                             initialSet.append(tasks)
                         remainingTasks = remainingTasks[1:]
@@ -347,9 +357,9 @@ def gen_tasksets(
                 sets.remove(task_set)
         return sets
 
-""" cause effect chains
-"""
-
+###
+# Cause-effect chain generation.
+###
 
 def gen_ce_chains(transformed_task_sets, sort): # WATERS
     distribution_involved_activation_patterns = stats.rv_discrete(values=([1, 2, 3], [0.7, 0.2, 0.1]))

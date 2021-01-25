@@ -74,7 +74,7 @@ def main():
             req_uti = args.u/100.0
             # Maximal difference between required utilization and actual
             # utilization is set to 0.1 percent:
-            threshold = 0.1
+            threshold = 0.1  # TODO is this 0.1 percent or 10 percent ? (change here to fit the paper=1 percent)
 
             # Create task sets from the generator.
             # Each task is a dictionary.
