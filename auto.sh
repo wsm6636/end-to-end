@@ -7,7 +7,7 @@
 # 	screen -dmS auto ./auto.sh
 # We use the screen command to parallelize the execution.
 # 'screen -ls' shows all current screens
-# 'killall screen' aborts all current screens. 
+# 'killall screen' aborts all current screens.
 ########################################
 
 ###
@@ -48,6 +48,7 @@ do
 	done
 	echo "done 51 - 100"
 	date
+  echo " "
 done
 
 # g=1 r=10 with different utilization
@@ -82,6 +83,7 @@ do
 	done
 	echo "done 51 - 100"
 	date
+  echo " "
 done
 
 ###
@@ -107,6 +109,8 @@ while screen -list | grep -q ascr.*
 do
   sleep 1
 done
+
+echo " "
 
 ###
 # Draw plots.
