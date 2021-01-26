@@ -34,7 +34,7 @@ def main():
     # task generation (0: WATERS Benchmark, 1: UUnifast):
     parser.add_argument("-g", type=int, default=0)
 
-    # only for l==1:
+    # only for args.j==1:
     # name of the run:
     parser.add_argument("-n", type=str, default="run0")
     # number of task sets to generate:
@@ -92,11 +92,14 @@ def main():
                 task_sets = trans1.transform_tasks(False)
 
             elif args.g == 1:
-                # UUnifast benchmark.
-                print("UUnifast benchmark.")
+                # UUniFast benchmark.
+                print("UUniFast benchmark.")
 
                 # Create task sets from the generator.
                 print("\tCreate task sets.")
+
+                # The following can be used for task generation with the
+                # UUniFast benchmark without predefined periods.
 
                 # # Generate log-uniformly distributed task sets:
                 # task_sets_generator = uunifast.gen_tasksets(
@@ -252,9 +255,7 @@ def main():
             print(e)
             print("ERROR: save")
             breakpoint()
-    ###
-    # l=="2": Interconnected analysis; args: -l2 -u_ -g_
-    # Load data
+
     elif args.j == 2:
         """Interconnected ECU analysis.
 
@@ -338,6 +339,8 @@ def main():
         analyzer.age_duerr([chains_inter])
 
         print("Test: Our.")
+        # Our test can only be used when the single processor tests are already
+        # done.
         analyzer.max_age_inter_our(chains_inter, reduced=True)
         analyzer.reaction_inter_our(chains_inter)
 

@@ -1,3 +1,4 @@
+"""Representation of Tasks."""
 
 
 class Task:

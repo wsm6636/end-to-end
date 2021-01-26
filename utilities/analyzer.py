@@ -63,6 +63,7 @@ class Analyzer:
 
         We construct all immediate backward augmented job chains and then
         choose the maximal length of them.
+        Note: The schedule has to be build beforehand with the event scheduler.
         """
         # Compute maximal first read.
         first_jobs = []
@@ -188,6 +189,7 @@ class Analyzer:
 
         We construct all immediate forward augmented job chains and then
         choose the maximal length of them.
+        Note: The schedule has to be build beforehand with the event scheduler.
         """
         # Compute maximal first read.
         first_jobs = []
@@ -285,6 +287,8 @@ class Analyzer:
 
         Input: chain_set is a list of cause-effect chains with entry at
         interconnected.
+        Note: The chains have to be analyzed by our single ECU maximum reaction
+        time analysis beforehand. ( reaction_our() )
         """
         for chain in chain_set:
             inter_our_react = 0  # total reaction time
@@ -305,6 +309,8 @@ class Analyzer:
 
         Input: chain_set is a list of cause-effect chains with entry at
         interconnected.
+        Note: The chains have to be analyzed by our single ECU maximum data age
+        analysis beforehand. ( max_age_our() and max_age_our(reduced=True) )
         """
         for chain in chain_set:
             m = len(chain.interconnected)  # chain length
