@@ -22,8 +22,8 @@ operator
 
 Furthermore, we utilize *screen* to parallelize the computations on several cores.
 
-For the experiments we use a machine running Debian 4.19.98-1 (2020-01-26) x86_64 GNU/Linux, with 2 x AMD EPYC 7742 64-Core Processor (64 Cores, 128 Threads), i.e., in total 256 Threads mit 2,25GHz and 256GB RAM.
-Running auto.sh to provide the plots from the paper takes about X AMOUNT OF TIME.
+For the experiments we use a machine running Debian 4.19.98-1 (2020-01-26) x86_64 GNU/Linux, with 2 x AMD EPYC 7742 64-Core Processor (64 Cores, 128 Threads), i.e., in total 256 Threads with 2,25GHz and 256GB RAM.
+Running auto.sh to provide the plots from the paper takes about X AMOUNT OF TIME with this machine.
 
 
 ## File Structure
@@ -35,16 +35,16 @@ Running auto.sh to provide the plots from the paper takes about X AMOUNT OF TIME
     │   └── 3plots                   # Plots as in the paper
     ├── utilities                    # Placeholder for additional files
     │   ├── analyzer.py              # Methods to analyze end-to-end timing behavior
-    │   ├── augmented_job_chain.py   # Augmented job chains as in the paper.
+    │   ├── augmented_job_chain.py   # Augmented job chains as in the paper
     │   ├── chain.py                 # Cause-effect chains
     │   ├── communication.py         # Communication tasks
     │   ├── evaluation.py            # Methods to draw plots
     │   ├── event_simulator.py       # Scheduler with fixed execution time
     │   ├── generator_UUNIFAST       # Task set generator for uunifast benchmark
-    │   ├── generator_WATERS         # Task set generator for waters benchmark
+    │   ├── generator_WATERS         # Task set and cause-effect chain generator for waters benchmark
     │   ├── task.py                  # Tasks
     │   └── transformer.py           # Connect task creating with the scheduler
-    ├── auto.sh                      # Running all Experiments automatically
+    ├── auto.sh                      # Running all experiments automatically
     ├── main.py                      # Main function
     ├── timing.py                    # Measure timing behavior
     └── README.md
@@ -66,21 +66,19 @@ In the end the plots from Figure 6 and 7 of the paper can be foung in the folder
 ## Authors
 
 * Mario Günzel
-* Marco ?
+* Marco Dürr
 * Niklas Ueter
 * Kuan-Hsun Chen
-* Georg
-* JJ
+* Georg von der Brüggen
+* Jian-Jia Chen
 
 ## License
-
-NO IDEA?
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
 
 ## Acknowledgments
 
-NO IDEA?
+???
 
 * Hat tip to anyone whose code was used
 * Inspiration
