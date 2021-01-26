@@ -273,26 +273,31 @@ def main():
         gen_setting = args.g
         number_interconn_ce_chains = 10000
 
-        ###
-        # Load data.
-        ###
-        print("=Load data.=")
-        chains_single_ECU = []
-        for i in range(1, 101):
-            name_of_the_run = "run" + str(i)
-            data = np.load(
-                    "output/1single/task_set_u=" + str(utilization)
-                    + "_n=" + name_of_the_run
-                    + "_g=" + str(gen_setting)
-                    + ".npz", allow_pickle=True)
-            for chain_set in data.f.chains:
-                for chain in chain_set:
-                    chains_single_ECU.append(chain)
+        try:
+            ###
+            # Load data.
+            ###
+            print("=Load data.=")
+            chains_single_ECU = []
+            for i in range(1, 101):
+                name_of_the_run = "run" + str(i)
+                data = np.load(
+                        "output/1single/task_set_u=" + str(utilization)
+                        + "_n=" + name_of_the_run
+                        + "_g=" + str(gen_setting)
+                        + ".npz", allow_pickle=True)
+                for chain_set in data.f.chains:
+                    for chain in chain_set:
+                        chains_single_ECU.append(chain)
 
-            # Close data file and run the garbage collector.
-            data.close()
-            del data
-            gc.collect()
+                # Close data file and run the garbage collector.
+                data.close()
+                del data
+                gc.collect()
+        except Exception as e:
+            print(e)
+            print("ERROR: inputs from single are missing")
+            breakpoint()
 
         ###
         # Interconnected cause-effect chain generation.
@@ -364,29 +369,34 @@ def main():
         gen_setting = args.g
         utilizations = [50.0, 60.0, 70.0, 80.0, 90.0]
 
-        ###
-        # Load data.
-        ###
-        print("=Load data.=")
-        chains_single_ECU = []
-        chains_inter = []
-        for ut in utilizations:
-            data = np.load(
-                    "output/2interconn/chains_" + "u=" + str(ut)
-                    + "_g=" + str(args.g) + ".npz", allow_pickle=True)
+        try:
+            ###
+            # Load data.
+            ###
+            print("=Load data.=")
+            chains_single_ECU = []
+            chains_inter = []
+            for ut in utilizations:
+                data = np.load(
+                        "output/2interconn/chains_" + "u=" + str(ut)
+                        + "_g=" + str(args.g) + ".npz", allow_pickle=True)
 
-            # Single ECU.
-            for chain in data.f.chains_single_ECU:
-                chains_single_ECU.append(chain)
+                # Single ECU.
+                for chain in data.f.chains_single_ECU:
+                    chains_single_ECU.append(chain)
 
-            # Interconnected.
-            for chain in data.f.chains_inter:
-                chains_inter.append(chain)
+                # Interconnected.
+                for chain in data.f.chains_inter:
+                    chains_inter.append(chain)
 
-            # Close data file and run the garbage collector.
-            data.close()
-            del data
-            gc.collect()
+                # Close data file and run the garbage collector.
+                data.close()
+                del data
+                gc.collect()
+        except Exception as e:
+            print(e)
+            print("ERROR: inputs for plotter are missing")
+            breakpoint()
 
         ###
         # Draw plots.
