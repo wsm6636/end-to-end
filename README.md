@@ -96,7 +96,7 @@ Please note that the parallization will intensively use the computational resour
 - To ease the experiment deployment and parallelize the simulation on our server, we decide to use ```screen``` to manage persistent terminal sessions.
 - The script ```auto.sh``` is prepared for running all the experiments. It indicates the progress of the experiments by a displaying short descriptions and timestamps.
 - If the experiments have to be aborted at some time (e.g., because a certain package is missing), then the instructions inside the auto.sh file can be used to start step 2 and 3 of the evaluation manually.
-- Eventually the plots from Figure 6 and 7 of the paper can be foung in the folder output/3plots:
+- Eventually the plots from Figure 6 and 7 of the paper can be found in the folder output/3plots:
 
 (Need a table here to show the mapping of file and figure)
 
