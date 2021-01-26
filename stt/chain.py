@@ -3,31 +3,26 @@
 
 class CauseEffectChain:
     """Cause-effect chain."""
-    id = ""  # unique identifier
-
-    # List of all tasks in the chain
-    chain = []
-    # List of local cause-effect chains and communication tasks. (Only in the
-    # interconnected case.)
-    interconnected = []
-
-    # Analysis results: (Are added during the analysis.)
-    davare = 0  # Davare
-    duerr_age = 0  # Duerr max data age
-    duerr_react = 0  # Duerr max reaction time
-    our_age = 0  # Our max data age
-    our_react = 0  # Our max reaction time
-    our_red_age = 0  # Our reduced max data age
-    inter_our_age = 0  # Our max data age for interconnected
-    inter_our_red_age = 0  # Our reduced max data age for interconnected
-    inter_our_react = 0  # Our max reaction time for interconnected
-    kloda = 0  # Kloda
 
     def __init__(self, id, chain, interconnected=[]):
         """Initialize a cause-effect chain."""
-        self.id = id
-        self.chain = chain
+        self.id = id  # unique identifier
+        self.chain = chain  # list of all tasks in the chain
+        # List of local cause-effect chains and communication tasks. (Only in
+        # the interconnected case.)
         self.interconnected = interconnected
+
+        # Analysis results: (Are added during the analysis.)
+        davare = 0  # Davare
+        duerr_age = 0  # Duerr max data age
+        duerr_react = 0  # Duerr max reaction time
+        our_age = 0  # Our max data age
+        our_react = 0  # Our max reaction time
+        our_red_age = 0  # Our reduced max data age
+        inter_our_age = 0  # Our max data age for interconnected
+        inter_our_red_age = 0  # Our reduced max data age for interconnected
+        inter_our_react = 0  # Our max reaction time for interconnected
+        kloda = 0  # Kloda
 
     def length(self):
         """Compute the length of a cause-effect chain."""

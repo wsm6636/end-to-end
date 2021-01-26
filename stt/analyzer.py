@@ -6,12 +6,11 @@ import stt.augmented_job_chain as aug
 
 
 class Analyzer:
-
-    id = None  # unique identifier
+    """Analyzer to do the analysis."""
 
     def __init__(self, e_id):
         """Creates an analyzer represented by ID."""
-        self.id = e_id
+        self.id = e_id  # unique identifier
 
     @staticmethod
     def determine_hyper_period(task_set):

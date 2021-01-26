@@ -2,8 +2,6 @@
 
 class Task:
     """A task."""
-    # execution = 0
-    # jobs = []
 
     def __init__(self, task_id, task_phase, task_bcet, task_wcet, task_period,
                  task_deadline, priority=0, message=False):
