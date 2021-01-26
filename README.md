@@ -17,14 +17,10 @@ This document is organized as follows:
 
 To run the experiments Python 3.7 is required. Moreover, the following packages are required:
 ```
-gc
 argparse
-math
 numpy
 scipy
-random
-matplotlib.pyplot
-operator
+matplotlib
 ```
 ### File Structure
 
@@ -58,7 +54,12 @@ In each step, the machines loads the results from the previous step, randomly cr
 
 ### Deployment
 
-Assuming that the aforementioned packages and Python 3.7 are installed in the targeted machine. The following steps explain how to deploy this framework on the machine:
+Assuming that Python 3.7 is installed in the targeted machine, to install the required packages:
+```
+pip3 install scipy numpy matplotlib argparse
+```
+
+The following steps explain how to deploy this framework on the machine:
 
 First, clone the git repository or download the [zip file](https://github.com/tu-dortmund-ls12-rt/end-to-end/archive/master.zip)):
 ```
