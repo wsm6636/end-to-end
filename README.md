@@ -85,6 +85,11 @@ or execute it with ```screen```
 ```
 screen -dmS auto ./auto.sh
 ```
+Please note that the parallization will intensively use the computational resource. 
+```
+'screen -ls' #shows all current screens
+'killall screen' #aborts all current screens.
+```
 
 ## How to run the experiments
 
