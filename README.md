@@ -39,6 +39,8 @@ In case there is any dependent package missing, please install them accordingly.
 
 ### File Structure
 
+TODO: Check the file structure at the end!
+
     .
     ├── output                       # Placeholder for outputs
     │   ├── 1single                  # Single ECU chains + results
@@ -91,6 +93,8 @@ Please note that the parallization will intensively use the computational resour
 'killall screen' #aborts all current screens.
 ```
 
+TODO make a switch in the script to adjust the number of recurrent jobs
+
 ## How to run the experiments
 
 - To ease the experiment deployment and parallelize the simulation on our server, we decide to use ```screen``` to manage persistent terminal sessions.
@@ -98,13 +102,17 @@ Please note that the parallization will intensively use the computational resour
 - If the experiments have to be aborted at some time (e.g., because a certain package is missing), then the instructions inside the auto.sh file can be used to start step 2 and 3 of the evaluation manually.
 - Eventually the plots from Figure 6 and 7 of the paper can be found in the folder output/3plots:
 
-(Need a table here to show the mapping of file and figure)
+TODO: (Need a table here to show the mapping of file and figure)
 
 As a reference, we utilize a machine running Debian 4.19.98-1 (2020-01-26) x86_64 GNU/Linux, with 2 x AMD EPYC 7742 64-Core Processor (64 Cores, 128 Threads), i.e., in total 256 Threads with 2,25GHz and 256GB RAM. Running auto.sh to obtain the same plots from the paper takes about X AMOUNT OF TIME with this machine.
+
+TODO: add time
 
 ## Overview of the corresponding functions
 
 (Need a table here to show the mapping of function and equation?)
+
+TODO: mapping of function and equation
 
 ## Miscellaneous
 
@@ -119,7 +127,7 @@ As a reference, we utilize a machine running Debian 4.19.98-1 (2020-01-26) x86_6
 
 ### Acknowledgments
 
-???
+TODO: add acknowledgements
 
 ### License
 
