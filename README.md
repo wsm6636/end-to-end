@@ -41,7 +41,7 @@ Running auto.sh to provide the plots from the paper takes about X AMOUNT OF TIME
     │   ├── evaluation.py            # Methods to draw plots
     │   ├── event_simulator.py       # Scheduler with fixed execution time
     │   ├── generator_UUNIFAST       # Task set generator for uunifast benchmark
-    │   ├── generator_WATERS         # Task set generator for waters benchmark
+    │   ├── generator_WATERS         # Task set and cause-effect chain generator for waters benchmark
     │   ├── task.py                  # Tasks
     │   └── transformer.py           # Connect task creating with the scheduler
     ├── auto.sh                      # Running all Experiments automatically
@@ -66,21 +66,19 @@ In the end the plots from Figure 6 and 7 of the paper can be foung in the folder
 ## Authors
 
 * Mario Günzel
-* Marco ?
+* Marco Dürr
 * Niklas Ueter
 * Kuan-Hsun Chen
-* Georg
-* JJ
+* Georg von der Brüggen
+* Jian-Jia Chen
 
 ## License
-
-NO IDEA?
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
 
 ## Acknowledgments
 
-NO IDEA?
+???
 
 * Hat tip to anyone whose code was used
 * Inspiration
