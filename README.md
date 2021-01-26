@@ -35,7 +35,7 @@ Running auto.sh to provide the plots from the paper takes about X AMOUNT OF TIME
     │   └── 3plots                   # Plots as in the paper
     ├── utilities                    # Placeholder for additional files
     │   ├── analyzer.py              # Methods to analyze end-to-end timing behavior
-    │   ├── augmented_job_chain.py   # Augmented job chains as in the paper.
+    │   ├── augmented_job_chain.py   # Augmented job chains as in the paper
     │   ├── chain.py                 # Cause-effect chains
     │   ├── communication.py         # Communication tasks
     │   ├── evaluation.py            # Methods to draw plots
@@ -44,7 +44,7 @@ Running auto.sh to provide the plots from the paper takes about X AMOUNT OF TIME
     │   ├── generator_WATERS         # Task set and cause-effect chain generator for waters benchmark
     │   ├── task.py                  # Tasks
     │   └── transformer.py           # Connect task creating with the scheduler
-    ├── auto.sh                      # Running all Experiments automatically
+    ├── auto.sh                      # Running all experiments automatically
     ├── main.py                      # Main function
     ├── timing.py                    # Measure timing behavior
     └── README.md
