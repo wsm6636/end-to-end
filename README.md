@@ -161,7 +161,7 @@ Other analysis | Source code
 
 ### Acknowledgments
 
-TODO: add acknowledgements
+This work has been supported by European Research Council (ERC) Consolidator Award 2019, as part of PropRT (Number 865170), and by Deutsche Forschungsgemeinschaft (DFG), as part of Sus-Aware (Project no. 398602212)
 
 ### License
 
