@@ -4,7 +4,7 @@
 
 ########################################
 # Start this shell script with
-# 	screen -dmS auto ./auto.sh
+# 	./auto.sh
 # We use the screen command to parallelize the execution.
 # 'screen -ls' shows all current screens
 # 'killall screen' aborts all current screens.
