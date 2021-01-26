@@ -110,9 +110,39 @@ TODO: add time
 
 ## Overview of the corresponding functions
 
-(Need a table here to show the mapping of function and equation?)
+The following tables describe the mapping between content of our paper and the source code in this repository.
 
-TODO: mapping of function and equation
+**Section 5.B** (Local analysis):
+Paper equation | Source code
+--- | ---  
+(12) Reaction time | utilities.analyzer.reaction_our()
+(13) Data age | utilities.analyzer.max_age_our()
+
+**Section 5.C** (Interconnected analysis):
+Paper equation | Source code
+--- | ---  
+(17) Reaction time | utilities.analyzer.reaction_inter_our()
+(18) Data age | utilities.analyzer.max_age_inter_our()
+
+**Section 6** (Reduced data age):
+Paper equation | Source code
+--- | ---  
+(23) Local | utilities.analyzer.max_age_our() with `reduced=True` Flag
+(24) Interconnected | utilities.analyzer.max_age_inter_our() with `reduced=True` Flag
+
+**Section 7** (Evaluation):
+Benchmark | Source code
+--- | ---  
+\[18\] Automotive benchmark for task sets | utilities.generator_WATERS.gen_tasksets()
+\[18\] Automotive benchmark for cause-effect chains | utilities.generator_WATERS.gen_ce_chains()
+\[6\] UUnifast benchmark for task sets | utilities.generator_UUNIFAST.gen_tasksets()
+
+Other analysis | Source code
+--- | ---  
+\[10\] Dürr: Data age | utilities.analyzer.age_duerr()
+\[10\] Dürr: Reaction time | utilities.analyzer.reaction_duerr()
+\[17\] Kloda | utilities.analyzer.kloda()
+\[9\] Davare | utilities.analyzer.davare()
 
 ## Miscellaneous
 
