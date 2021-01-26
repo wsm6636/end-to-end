@@ -81,19 +81,14 @@ Move into the end-to-end folder, change the permissions of the script to be exec
 ```
 cd end-to-end
 chmod 777 auto.sh
-./auto.sh
+./auto.sh 10
 ```
-or execute it with ```screen``` 
-```
-screen -dmS auto ./auto.sh
-```
-Please note that the parallization will intensively use the computational resource. 
+where 10 is maximal number of concurrent jobs ob the machine, it can be set to a higher or lower number depending on the number of available cores.
+Please note that the parallization will intensively use the computational resource.
 ```
 'screen -ls' #shows all current screens
 'killall screen' #aborts all current screens.
 ```
-
-TODO make a switch in the script to adjust the number of recurrent jobs
 
 ## How to run the experiments
 
