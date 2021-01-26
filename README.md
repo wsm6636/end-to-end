@@ -22,8 +22,8 @@ operator
 
 Furthermore, we utilize *screen* to parallelize the computations on several cores.
 
-For the experiments we use a machine running Debian 4.19.98-1 (2020-01-26) x86_64 GNU/Linux, with 2 x AMD EPYC 7742 64-Core Processor (64 Cores, 128 Threads), i.e., in total 256 Threads mit 2,25GHz and 256GB RAM.
-Running auto.sh to provide the plots from the paper takes about X AMOUNT OF TIME.
+For the experiments we use a machine running Debian 4.19.98-1 (2020-01-26) x86_64 GNU/Linux, with 2 x AMD EPYC 7742 64-Core Processor (64 Cores, 128 Threads), i.e., in total 256 Threads with 2,25GHz and 256GB RAM.
+Running auto.sh to provide the plots from the paper takes about X AMOUNT OF TIME with this machine.
 
 
 ## File Structure
