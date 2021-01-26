@@ -58,7 +58,7 @@ class Analyzer:
     ###
 
     def max_age_our(self, schedule, task_set, chain, max_phase, hyper_period,
-                    shortened=False):
+                    reduced=False):
         """Our maximum data age time analysis.
 
         We construct all immediate backward augmented job chains and then
@@ -87,7 +87,7 @@ class Analyzer:
             next_job = schedule.get(chain.chain[-1])[position]
 
             # Find actuation.
-            if shortened:
+            if reduced:
                 actuation = schedule.get(chain.chain[-1])[position][1]
             else:
                 actuation = schedule.get(chain.chain[-1])[position+1][1]
@@ -138,7 +138,7 @@ class Analyzer:
         max_length = max_cand.length()
 
         # Results.
-        if shortened:
+        if reduced:
             chain.our_red_age = max_length
         else:
             chain.our_age = max_length

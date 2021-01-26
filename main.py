@@ -218,9 +218,9 @@ def main():
                 for chain in ce_chains[i]:
                     print("Test: Our Data Age.")
                     analyzer.max_age_our(schedule, task_set, chain, max_phase,
-                                         hyper_period, shortened=False)
+                                         hyper_period, reduced=False)
                     analyzer.max_age_our(schedule, task_set, chain, max_phase,
-                                         hyper_period, shortened=True)
+                                         hyper_period, reduced=True)
 
                     print("Test: Our Reaction Time.")
                     analyzer.reaction_our(schedule, task_set, chain, max_phase,
