@@ -19,9 +19,9 @@ class CauseEffectChain:
         self.our_age = 0  # Our max data age
         self.our_react = 0  # Our max reaction time
         self.our_red_age = 0  # Our reduced max data age
-        self.inter_our_age = 0  # Our max data age for interconnected
-        self.inter_our_red_age = 0  # Our reduced max data age for interconnected
-        self.inter_our_react = 0  # Our max reaction time for interconnected
+        self.inter_our_age = 0  # Our max data age for interconn
+        self.inter_our_red_age = 0  # Our reduced max data age for interconn
+        self.inter_our_react = 0  # Our max reaction time for interconn
         self.kloda = 0  # Kloda
 
     def length(self):
