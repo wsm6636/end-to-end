@@ -15,13 +15,28 @@ This document is organized as follows:
 ## Environment Setup
 ### Requirements
 
-To run the experiments Python 3.7 is required. Moreover, the following packages are required:
+To run the experiments Python 3.7 is required (Python 3.9 might also work). Moreover, the following packages are required:
 ```
+gc
 argparse
+math
 numpy
 scipy
-matplotlib
+random
+matplotlib.pyplot
+operator
 ```
+
+Assuming that Python 3.7 is installed in the targeted machine, to install the required packages:
+```
+pip3 install scipy numpy matplotlib argparse
+```
+or
+```
+python3.7 -m pip install scipy numpy matplotlib argparse
+```
+In case there is any dependent package missing, please install them accordingly.
+
 ### File Structure
 
     .
@@ -53,11 +68,6 @@ The experiments in the main function are splitted into 3 parts:
 In each step, the machines loads the results from the previous step, randomly creates necessary resources like task sets and cause-effect chains, and saves the results in the corresponsing folder in output.  
 
 ### Deployment
-
-Assuming that Python 3.7 is installed in the targeted machine, to install the required packages:
-```
-pip3 install scipy numpy matplotlib argparse
-```
 
 The following steps explain how to deploy this framework on the machine:
 
