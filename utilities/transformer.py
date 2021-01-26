@@ -1,5 +1,5 @@
 """Transform task from dictionaries to task objects for the event simulator."""
-import stt.task as t
+import utilities.task as t
 from scipy import stats
 
 

@@ -3,7 +3,7 @@
 import numpy as np
 import random
 import math
-import stt.task as task
+import utilities.task as task
 
 # CAN-bus description.
 CAN_BUS = {

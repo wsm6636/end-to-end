@@ -4,7 +4,7 @@ From the paper: 'Measuring the performance of schedulability tests.' (2005).
 """
 import numpy as np
 from scipy import stats
-import stt.chain as c
+import utilities.chain as c
 import random
 
 

@@ -6,7 +6,7 @@ from scipy import stats
 import numpy as np
 import random
 from scipy.stats import exponweib
-import stt.chain as c
+import utilities.chain as c
 
 
 ###

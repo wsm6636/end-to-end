@@ -5,14 +5,14 @@ import gc  # garbage collector
 import argparse
 import math
 import numpy as np
-import stt.chain as c
-import stt.communication as comm
-import stt.generator_WATERS as waters
-import stt.generator_UUNIFAST as uunifast
-import stt.transformer as trans
-import stt.event_simulator as es
-import stt.analyzer as a
-import stt.evaluation as eva
+import utilities.chain as c
+import utilities.communication as comm
+import utilities.generator_WATERS as waters
+import utilities.generator_UUNIFAST as uunifast
+import utilities.transformer as trans
+import utilities.event_simulator as es
+import utilities.analyzer as a
+import utilities.evaluation as eva
 import random
 import time
 

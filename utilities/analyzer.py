@@ -1,8 +1,8 @@
 """End-to-End (e2e) Analysis."""
 
 import math
-import stt.task
-import stt.augmented_job_chain as aug
+import utilities.task
+import utilities.augmented_job_chain as aug
 
 
 class Analyzer:
@@ -290,7 +290,7 @@ class Analyzer:
             inter_our_react = 0  # total reaction time
             for i in range(0, len(chain.interconnected)):
                 # Case: i is a communication task.
-                if isinstance(chain.interconnected[i], stt.task.Task):
+                if isinstance(chain.interconnected[i], utilities.task.Task):
                     inter_our_react += (chain.interconnected[i].period
                                         + chain.interconnected[i].rt)
                 # Case: i is a cause-effect chain.
@@ -311,7 +311,7 @@ class Analyzer:
             inter_our_red_age = 0  # total data age
             for i in range(0, m-1):
                 # Case: i is a communication task.
-                if isinstance(chain.interconnected[i], stt.task.Task):
+                if isinstance(chain.interconnected[i], utilities.task.Task):
                     inter_our_red_age += (chain.interconnected[i].period
                                           + chain.interconnected[i].rt)
                 # Case: i is a cause-effect chain.
