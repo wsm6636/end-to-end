@@ -9,7 +9,7 @@ from RTAS 2021.
 This document is organized as follows:
 1. [Environment Setup](#environment-setup)
 2. [How to run the experiments](#how-to-run-the-experiments)
-3. [Overview of the corresponding functions](#overview-of-the-corresponding -functions)
+3. [Overview of the corresponding functions](#overview-of-the-corresponding-functions)
 4. [Miscellaneous](#miscellaneous)
 
 # Environment Setup
