@@ -6,7 +6,7 @@ from scipy import stats
 class Transformer:
     """Transformer class."""
 
-    def __init__(self, t_id, t_task_sets, time_scale):
+    def __init__(self, t_id, t_task_sets, time_scale=10000000):
         """Creates a transformer object."""
         self.id = str(t_id)  # unique identifier
         self.task_sets = t_task_sets  # task set as dictionary
