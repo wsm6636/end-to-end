@@ -1,144 +1,175 @@
-import gc
-import stt.task as t
-import stt.scheduler as s
-import stt.analyser as a
-import stt.generator as g
-import stt.chain as c
-import stt.transformer as trans
-from stt.niklas import generate_cause_effect_chains_waters15
-from stt.niklas import generate_distributed_chain
-from stt.niklas import generate_cause_effect_chains_from_transformed_task_sets
-import stt.communication as communication
-import csv
+#!/usr/bin/env python3
+"""Measure timing behavior for the single ECU case."""
+# TODO: this still has to be done!
+
+import gc  # garbage collector
 import argparse
-import stt.evaluation as eva
-import stt.generator_marco as gm
-import stt.eventSimulator as es
 import math
 import numpy as np
-
+import utilities.chain as c
+import utilities.communication as comm
+import utilities.generator_WATERS as waters
+import utilities.generator_UUNIFAST as uunifast
+import utilities.transformer as trans
+import utilities.event_simulator as es
+import utilities.analyzer as a
+import utilities.evaluation as eva
 import random
 import time
 
-# Global Variables
-task_sets = []
-task_sets_communication = []
-schedules = []
-cause_effect_chain_sets = {"all": [], "ordered": [], "unordered": []}
-cause_effect_chains_interconnected = {"all": [], "ordered": [], "unordered": []}
+# Variables:
+number_task_sets = 10
+number_tasks = 50
 
-no_task_sets = 10
-no_tasks = 50
 total_time = 0.0
 
-for util in [50,60,70,80,90]:
+
+for util in [50, 60, 70, 80, 90]:
     print("Util:", util)
 
     ###
-    # UUnifast by KHCHEN
+    # Task set and cause-effect chain generation.
     ###
-    # task_sets_generator = gm.generate_tasksets(5, args.r, 1, 100, args.u, rounded=True)
-    task_sets_generator = gm.generate_tasksets_predefined(no_tasks, no_task_sets, 1, 2000, float(util)/100.0, [1,2,5,10,20,50,100,200,500,1000])
-    # Transform tasks and cause-effect chains into framework structure
-    trans2 = trans.Transformer("transformer2", task_sets_generator, 10000000)
-    # Transform tasks into framework model
-    task_sets = trans2.transform_tasks(False) # we created all tasks to have bcet=0, we do not use this value in any analysis
-    # Create cause-effect chains w.r.t the task sets
-    # breakpoint()
-    print("create cause-effect chains")
-    cause_effect_chain_sets = generate_cause_effect_chains_from_transformed_task_sets(task_sets)
+    print("=Task set and cause-effect chain generation.=")
 
+    # UUnifast benchmark.
+    print("UUnifast benchmark.")
 
-    # Create an analyzer to determine response times with TDA
-    analyzer = a.Analyser("0")
-    # TDA for each task set
+    # Create task sets from the generator.
+    print("\tCreate task sets.")
+
+    # # Generate log-uniformly distributed task sets:
+    # task_sets_generator = uunifast.gen_tasksets(
+    #         5, args.r, 1, 100, args.u, rounded=True)
+
+    # Generate log-uniformly distributed task sets with predefined
+    # periods:
+    periods = [1, 2, 5, 10, 20, 50, 100, 200, 500, 1000]
+    # Interval from where the generator pulls log-uniformly.
+    min_pull = 1
+    max_pull = 2000
+
+    task_sets_uunifast = uunifast.gen_tasksets_pred(
+            50, args.r, min_pull, max_pull, args.u/100.0, periods)
+
+    # Transform tasks to fit framework structure.
+    trans2 = trans.Transformer("2", task_sets_uunifast, 10000000)
+    task_sets = trans2.transform_tasks(False)
+
+    # Create cause-effect chains.
+    print("\tCreate cause-effect chains")
+    ce_chains = uunifast.gen_ce_chains(task_sets)
+    # ce_chains contains one set of cause effect chains for each task
+    # set in task_sets.
+
+    ###
+    # First analyses (TDA, Davare, Duerr).
+    ###
+    print("=First analyses (TDA, Davare, Duerr).=")
+    analyzer = a.Analyzer("0")
+
+    # TDA for each task set.
+    print("TDA.")
     for idxx in range(len(task_sets)):
-        # If TDA fails, remove task and chain set and continue
         try:
-            # TDA
+            # TDA.
             i = 1
             for task in task_sets[idxx]:
-                # Compute the worse case response time of the current task by TDA
                 task.rt = analyzer.tda(task, task_sets[idxx][:(i - 1)])
-                if task.rt > task.deadline or task.rt == 0:
-                    # breakpoint()
-                    raise ValueError("TDA Result: WCRT bigger than deadline or 0!")
+                if task.rt > task.deadline:
+                    raise ValueError(
+                            "TDA Result: WCRT bigger than deadline!")
                 i += 1
-        except ValueError: # if WCRT is bigger than deadline, then this task is removed from task set and cause effect chains
+        except ValueError:
+            # If TDA fails, remove task and chain set and continue.
             task_sets.remove(task_sets[idxx])
-            cause_effect_chain_sets.remove(cause_effect_chain_sets[idxx])
-            # breakpoint()
+            ce_chains.remove(ce_chains[idxx])
             continue
-    # Sporadic End-to-End Analyses
-    print("test: davare")
-    analyzer.davare(cause_effect_chain_sets) # e2e_latency
-    print("test: reaction CASES19")
-    analyzer.reaction_sporadic(cause_effect_chain_sets) #jj_react
-    print("test: age CASES19")
-    analyzer.age_sporadic(cause_effect_chain_sets) #jj_age
 
+    # End-to-End Analyses.
+    print("Test: Davare.")
+    analyzer.davare(ce_chains)
+
+    print("Test: Duerr Reaction Time.")
+    analyzer.reaction_duerr(ce_chains)
+
+    print("Test: Duerr Data Age.")
+    analyzer.age_duerr(ce_chains)
+
+    # Start timer.
     tick = time.time()
 
-    """
-    Second Analyses (Simulation, Job Chains)
-    """
-    print("SIM TESTS")
-    i = 0
+    ###
+    # Second analyses (Simulation, Our, Kloda).
+    ###
+    print("=Second analyses (Simulation, Our, Kloda).=")
+    i = 0  # task set counter
+    schedules = []
     for task_set in task_sets:
-        print("\ttask set ", i+1)
-        print("\tsimulate")
-        # Event-based simulator
-        simulator = es.eventSimulator(len(task_set), task_set)
-        # Determination of the variables used to compute the stop condition of the simulation
-        max_e2e_latency = max(cause_effect_chain_sets[i], key=lambda chain: chain.e2e_latency).e2e_latency
+        print("=Task set ", i+1)
+
+        # Event-based simulation.
+        print("Simulation.")
+
+        simulator = es.eventSimulator(task_set)
+
+        # Determination of the variables used to compute the stop condition
+        # of the simulation
+        max_e2e_latency = max(ce_chains[i], key=lambda chain:
+                              chain.davare).davare
         max_phase = max(task_set, key=lambda task: task.phase).phase
         max_period = max(task_set, key=lambda task: task.period).period
         hyper_period = analyzer.determine_hyper_period(task_set)
-        period_lowest_priority_task = task_set[-1].period
-        print("\t\tno of tasks: ", len(task_set))
-        print("\t\thyperperiod: ", hyper_period)
-        no_of_jobs = 0
+
+        sched_interval = (
+                2 * hyper_period + max_phase  # interval from paper
+                + max_e2e_latency  # upper bound job chain length
+                + max_period)  # for convenience
+
+        # Information for end user.
+        print("\tNumber of tasks: ", len(task_set))
+        print("\tHyperperiod: ", hyper_period)
+        number_of_jobs = 0
         for task in task_set:
-            no_of_jobs += (((2 * hyper_period + max_phase + max_period) / task.period) + max_e2e_latency / task.period)
-        print("\t\tno of jobs to schedule:", no_of_jobs)
-        # Stop condition is the max number of jobs from the lowest priority task; Note: this is just an estimation of the right end of both testing intervals plus job chain length; Since the schedule repeats, we can make this estimation
-        simulator.dispatcher(int(math.ceil((2 * hyper_period + max_phase # interval to be scheduled
-                                            + max_period + max_e2e_latency) # for convinience # TODO maybe one additional max_period ?
-                                            / period_lowest_priority_task )))
-        # Simulate
-        schedule = simulator.e2e_result() # Note: the schedule is created without early completion
-        #breakpoint()
+            number_of_jobs += sched_interval/task.period
+        print("\tNumber of jobs to schedule: ", number_of_jobs)
+
+        # Stop condition: Number of jobs of lowest priority task.
+        simulator.dispatcher(
+                int(math.ceil(sched_interval/task_set[-1].period)))
+
+        # Simulation without early completion.
+        schedule = simulator.e2e_result()
         schedules.append(schedule)
-        # for task in task_set:
-        #    task.jobs = schedule[task]
-        # Analyze the cause-effect chains
-        chain = random.choice(cause_effect_chain_sets[i])
-        # OUR RESULTS
-        # print("\t\tCASES20: max age")
-        # res0 = analyzer.max_age_CASES(schedule, chain, max_phase, hyper_period, args.s, extended=True) # CASES20 - our analysis
-        # res0b = analyzer.max_age_CASES(schedule, chain, max_phase, hyper_period, args.s, extended=False) # CASES20 - our analysis
-        print("\t\tOUR: max age")
-        analyzer.max_age_OUR(schedule, task_set, chain, max_phase, hyper_period, shortened=False)
-        # analyzer.max_age_OUR(schedule, task_set, chain, max_phase, hyper_period, shortened=True)
-        print("\t\tOUR: reaction")
-        analyzer.reaction_OUR(schedule, task_set, chain, max_phase, hyper_period)
 
-        # # Kloda analysis, assuming synchronous releases
-        # print("\t\tKloda for synchr")
-        # for release_time_first_task_in_chain in range(0, max(1, hyper_period), chain.chain[0].period):
-        #     kloda = analyzer.kloda(chain.chain, release_time_first_task_in_chain, beginning=True)
-        #     if chain.kloda < kloda:
-        #         chain.kloda = kloda # Kloda
-        # # Note: additional period of the first task is already in the computation of kloda
-        #
-        # ###
-        # if chain.kloda < chain.sim_react:
-        #     breakpoint()
+        # Analyses.
+        for chain in ce_chains[i]:
+            print("Test: Our Data Age.")
+            analyzer.max_age_our(schedule, task_set, chain, max_phase,
+                                 hyper_period, reduced=False)
+            # analyzer.max_age_our(schedule, task_set, chain, max_phase,
+            #                      hyper_period, reduced=True)
+
+            print("Test: Our Reaction Time.")
+            analyzer.reaction_our(schedule, task_set, chain, max_phase,
+                                  hyper_period)
+
+            # # Kloda analysis, assuming synchronous releases.
+            # print("Test: Kloda.")
+            # analyzer.kloda(chain, hyper_period)
+            #
+            # # Test.
+            # if chain.kloda < chain.our_react:
+            #     breakpoint()
         i += 1
-    tock=time.time()
 
+    # Stop timer.
+    tock = time.time()
+
+    # Compute total time.
     total_time += (tock-tick)
 
+# Timing results.
 print(total_time)
-print(total_time/(no_task_sets*5))
+print(total_time/(number_task_sets*5))
 breakpoint()
