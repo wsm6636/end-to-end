@@ -17,6 +17,11 @@ class Transformer:
 
         The flag phase specifies if phases should be introduced to the task
         set.
+        - bring task so object definition
+        - sort tasks for RM and set priorities
+        - time_scale is the exactness of the values (task values are integers
+                only afterwards.)
+        - set phase
         """
         # Distribution of task phases
         distribution_phase = stats.uniform()
@@ -31,11 +36,13 @@ class Transformer:
             i = 0
             # Transform each task individually.
             for task in sorted_task_set:
+                # Set phase.
                 if phase:
                     phase = int(float(format(distribution_phase.rvs() * 1000,
                                              ".7f")) * self.time_scale)
                 else:
                     phase = 0
+                # Scale values and make a task object.
                 transformed_task_set.append(
                     t.Task(i, phase, 0,
                            int(float(format(task['execution'], ".7f"))
