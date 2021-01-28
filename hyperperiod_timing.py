@@ -459,7 +459,7 @@ def plot_results_numbertasks(
 def draw_boxplots(
         results,
         filename,
-        xlabels=["", "", ""],
+        xlabels,
         xaxis_label="",
         yaxis_label="",
         ylimits=None  # [ylim_min, ylim_max]
