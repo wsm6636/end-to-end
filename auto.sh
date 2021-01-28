@@ -75,6 +75,12 @@ do
 done
 echo " "
 
+# wait until all are closed
+while screen -list | grep -q ascr.*
+do
+  sleep 1
+done
+
 ###
 # Interconnected ECU analysis.
 ###
@@ -110,6 +116,7 @@ do
   done
 done
 
+# wait until all are closed
 while screen -list | grep -q ascr.*
 do
   sleep 1
