@@ -1,13 +1,32 @@
 #!/usr/bin/env python3
 """Measure timing behavior for the single ECU case depending on hyperperiod."""
 
+import argparse
 import random
 import math
+import time
 import utilities.generator_UUNIFAST as uunifast
 import utilities.transformer as trans
 import utilities.chain as ch
 import utilities.analyzer as ana
 import utilities.event_simulator as es
+
+###
+# Argument Parser
+###
+parser = argparse.ArgumentParser()
+
+# name of the run:
+parser.add_argument("-n", type=str, default="run0")
+# number of tasks:
+parser.add_argument("-t", type=int, default=10)
+# compute hyperperiod:
+parser.add_argument("-c", type=int, default=0)
+# hyperperiod switch:
+parser.add_argument("-s", type=int, default=0)
+
+args = parser.parse_args()
+del parser
 
 
 ###
@@ -18,14 +37,17 @@ def main():
     """Main Function."""
     # User specific variables.
     # Hyperperiod as prime factorization:
-    prime = [2, 2, 5, 5]  # 2*2*5*5 = 100
+    if args.c == 0:
+        hyperperiods = [
+            [2, 2, 5, 5]  # s=0  # 2*2*5*5 = 100
+        ]
+        prime = hyperperiods[args.s]
+    else:
+        prime = prime_factorization(args.c)
     # Number of tasks per task set:
     num_tasks = 10
 
     utilization = 50.0  # in percent
-
-    # Other variables:
-    total_time = 0.0  # count total time
 
     ###
     # Task set generation.
@@ -101,6 +123,9 @@ def main():
     # Time measurements.
     ###
 
+    # Start timer.
+    tick = time.time()
+
     # Preperation.
     analyzer = ana.Analyzer("0")
     for idx in range(len(task_set)):
@@ -147,7 +172,13 @@ def main():
     analyzer.reaction_our(schedule, task_set, ce_chain, max_phase,
                           hyperperiod)
 
-    breakpoint()
+    # Stop timer.
+    tock = time.time()
+
+    # Time difference.
+    timing = tock-tick
+    print(timing, 'seconds')
+    return
 
 
 ###
@@ -176,6 +207,20 @@ def evaluate_filter(prime, filter):
         if filter[idx] == 1:
             period = period * prime[idx]
     return period
+
+
+def prime_factorization(number):
+    if number < 1 or number % 1 != 0:
+        print("ERROR: No prime factorization possible")
+        return []
+    prime_list = []
+    idx = 2
+    while number > 1:
+        while number % idx == 0:
+            prime_list.append(idx)
+            number = number / idx
+        idx += 1
+    return prime_list
 
 
 if __name__ == '__main__':
