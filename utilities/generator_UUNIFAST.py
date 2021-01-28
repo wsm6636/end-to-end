@@ -141,7 +141,7 @@ def generate_utilizations_uniform(num_tasks, num_tasksets, utilization):
     Variables:
     num_tasks: number of tasks per set
     num_tasksets: number of sets
-    utilization: desired utilization
+    utilization: desired utilization in (0,1]
     """
     def uunifast(num_tasks, utilization):
         """UUNIFAST utilization pulling."""
