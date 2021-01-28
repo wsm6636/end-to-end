@@ -2,9 +2,12 @@
 """Measure timing behavior for the single ECU case depending on hyperperiod."""
 
 import random
+import math
 import utilities.generator_UUNIFAST as uunifast
 import utilities.transformer as trans
 import utilities.chain as ch
+import utilities.analyzer as ana
+import utilities.event_simulator as es
 
 
 ###
@@ -69,7 +72,7 @@ def main():
 
     # Task transformation.
     # - task dictionary -> task object
-    # - order by period
+    # - order by period = ordered by priority
     # - set precision (by multiplication + rounding to integers)
 
     trans1 = trans.Transformer("1", [task_set_dic], 10000000)
@@ -98,14 +101,53 @@ def main():
     # Time measurements.
     ###
 
+    # Preperation.
+    analyzer = ana.Analyzer("0")
+    for idx in range(len(task_set)):
+        task_set[idx].rt = analyzer.tda(task_set[idx], task_set[:idx])
+        if task_set[idx].rt > task_set[idx].deadline:
+            print("ERROR: Task set not schedulable.")
+            return None  # TODO: what to return? or Cotinue/break? see main.py
 
+    analyzer.davare([[ce_chain]])
 
+    # Event-based simulation.
+    print("Simulation.")
 
+    simulator = es.eventSimulator(task_set)
+
+    # Determination of the variables used to compute the stop
+    # condition of the simulation
+    max_e2e_latency = ce_chain.davare
+    max_phase = 0
+    hyperperiod = analyzer.determine_hyper_period(task_set)
+    max_period = hyperperiod  # by definition of the first task in task_set_dic
+
+    sched_interval = (
+            2 * hyperperiod + max_phase  # interval from paper
+            + max_e2e_latency  # upper bound job chain length
+            + max_period)  # for convenience
+
+    # Information for end user.
+    print("\tNumber of tasks: ", len(task_set))
+    print("\tHyperperiod: ", hyperperiod)
+    number_of_jobs = 0
+    for task in task_set:
+        number_of_jobs += sched_interval/task.period
+    print("\tNumber of jobs to schedule: ",
+          "%.2f" % number_of_jobs)
+
+    # Stop condition: Number of jobs of lowest priority task.
+    simulator.dispatcher(
+            int(math.ceil(sched_interval/task_set[-1].period)))
+
+    # Simulation without early completion.
+    schedule = simulator.e2e_result()
+
+    analyzer.reaction_our(schedule, task_set, ce_chain, max_phase,
+                          hyperperiod)
 
     breakpoint()
-
-    # Transform tasks
-
 
 
 ###
