@@ -18,19 +18,28 @@ import utilities.event_simulator as es
 ###
 parser = argparse.ArgumentParser()
 
-# name of the run:
-parser.add_argument("-n", type=str, default="run0")
+# number of the run:
+parser.add_argument("-n", type=int, default=-1)
+
 # number of tasks:
-parser.add_argument("-t", type=int, default=10)
-# compute hyperperiod:
-parser.add_argument("-c", type=int, default=0)
-# hyperperiod switch:
-parser.add_argument("-s", type=int, default=0)
+parser.add_argument("-t", type=int, default=50)
+
+# number of tasks from list:
+parser.add_argument("-tindex", type=int, default=-1)
+
+# hyperperiod:
+parser.add_argument("-p", type=int, default=2000)
+
+# hyperperiod from list:
+parser.add_argument("-pindex", type=int, default=-1)
 
 # number of runs:
 parser.add_argument("-r", type=int, default=1)
 
-# flag to plot results:
+# flag to plot results in list:
+# - j=1 hyperperiod on xaxis
+# - j=2 number of tasks on xaxis
+# --> for plotting, the max number of runs has to be specified by args.n
 parser.add_argument("-j", type=int, default=0)
 
 args = parser.parse_args()
@@ -44,33 +53,114 @@ del parser
 def main():
     """Main Function."""
 
+    # hyperperiod_factorizations = [
+    #     [2, 2, 2, 2, 5, 5, 5, 5],  # 10000
+    #     [2, 2, 2, 2, 2, 5, 5, 5, 5],  # 20000
+    #     [2, 2, 2, 2, 3, 5, 5, 5, 5],  # 30000
+    #     [2, 2, 2, 2, 2, 2, 5, 5, 5, 5],  # 40000
+    #     [2, 2, 2, 2, 5, 5, 5, 5, 5],  # 50000
+    #     [2, 2, 2, 2, 2, 3, 5, 5, 5, 5],  # 60000
+    #     [2, 2, 2, 2, 5, 5, 5, 5, 7],  # 70000
+    #     [2, 2, 2, 2, 2, 2, 2, 5, 5, 5, 5],  # 80000
+    #     [2, 2, 2, 2, 3, 3, 5, 5, 5, 5],  # 90000
+    #     [2, 2, 2, 2, 2, 5, 5, 5, 5, 5]  # 100000
+    #     ]
+
+    # hyperperiod_factorizations = [
+    #     [2, 5],  # 10
+    #     [2, 2, 5, 5],  # 10^2
+    #     [2, 2, 2, 5, 5, 5],  # 10^3
+    #     [2, 2, 2, 2, 5, 5, 5, 5],  # 10^4
+    #     ]
+
     hyperperiod_factorizations = [
-        [2, 2, 2, 5, 5, 5],  # 1000
         [2, 2, 2, 2, 5, 5, 5],  # 2000
-        [2, 2, 2, 3, 5, 5, 5],  # 3000
         [2, 2, 2, 2, 2, 5, 5, 5],  # 4000
-        [2, 2, 2, 5, 5, 5, 5]  # 5000
+        [2, 2, 2, 2, 3, 5, 5, 5],  # 6000
+        [2, 2, 2, 2, 2, 2, 5, 5, 5],  # 8000
+        [2, 2, 2, 2, 5, 5, 5, 5]  # 10000
         ]
 
-    if args.j == 1:
-        pred_hyperperiods = []
-        for fac in hyperperiod_factorizations:
-            hyp = 1
-            for val in fac:
-                hyp *= val
-            pred_hyperperiods.append(hyp)
-        plot_results(pred_hyperperiods=pred_hyperperiods)
+    hyperperiod_factorizations = []
+
+    task_numbers = [
+        20,
+        40,
+        60,
+        80,
+        100
+    ]
+
+    ###
+    # Plotting. (j != 0)
+    ###
+
+    if args.j != 0:
+        if args.n == -1:
+            print("ERROR: The number of runs is not specified.")
+            return
+
+        # Plot with hyperperiods on xaxis.
+        if args.j == 1:
+            # Compute predefined hyperperiods.
+            pred_hyperperiods = []
+            for fac in hyperperiod_factorizations:
+                hyp = 1
+                for val in fac:
+                    hyp *= val
+                pred_hyperperiods.append(hyp)
+            # plot
+            plot_results_hyperperiod(
+                    pred_hyperperiods,
+                    args.t,
+                    args.n)
+            return
+
+        # Plot with number of tasks on xaxis.
+        if args.j == 2:
+            # compute predefined hyperperiods
+            pred_hyperperiods = []
+            for fac in hyperperiod_factorizations:
+                hyp = 1
+                for val in fac:
+                    hyp *= val
+                pred_hyperperiods.append(hyp)
+            # plot
+            plot_results_numbertasks(
+                    args.p,
+                    task_numbers,
+                    args.n)
+            return
+
         return
 
-    # User specific variables.
-    # Hyperperiod as prime factorization:
-    if args.c == 0:
-        prime = hyperperiod_factorizations[args.s]
-    else:
-        prime = prime_factorization(args.c)
-    # Number of tasks per task set:
-    num_tasks = args.t
+    ###
+    # Experiment. (j == 0)
+    ###
 
+    # Choose hyperperiod:
+    try:
+        if args.pindex == -1:
+            prime = prime_factorization(args.p)
+        else:
+            prime = hyperperiod_factorizations[args.pindex]
+    except Exception as e:
+        print(e)
+        print("ERROR: Hyperperiod could not be chosen.")
+        return
+
+    # Choose number of tasks:
+    try:
+        if args.tindex == -1:
+            num_tasks = args.t
+        else:
+            num_tasks = task_numbers[args.tindex]
+    except Exception as e:
+        print(e)
+        print("ERROR: Number of tasks could not be chosen.")
+        return
+
+    # Other variables:
     utilization = 50.0  # in percent
 
     ###
@@ -230,7 +320,7 @@ def main():
             hyperperiod *= p
         np.savez("output/timing/"
                  + "hyper_" + str(hyperperiod)
-                 + "_#tasks_" + str(args.t)
+                 + "_#tasks_" + str(num_tasks)
                  + "_run_" + str(args.n)
                  + ".npz",
                  timings=timings)
@@ -284,23 +374,15 @@ def prime_factorization(number):
     return prime_list
 
 
-def plot_results(pred_number=None, pred_hyperperiods=None, pred_number_tasks=None):
-    hyperperiods = [100, 200, 400, 800]
-    number_tasks = 10
-    number = 2  # number of runs to collect data from
-
-    if pred_hyperperiods is not None:
-        hyperperiods = pred_hyperperiods
-    if pred_number_tasks is not None:
-        number_tasks = pred_number_tasks
-    if pred_number is not None:
-        number = pred_number
+def plot_results_hyperperiod(
+        hyperperiods,
+        number_tasks,
+        number):  # number of runs to collect data from
 
     try:
         ###
         # Load data.
         ###
-        print("=Load data.=")
         results = []  # lists of timing results (one list for each hyperperiod)
         for hyperperiod in hyperperiods:
             hyper_results = []  # results for one specific hyperperiod
@@ -323,8 +405,55 @@ def plot_results(pred_number=None, pred_hyperperiods=None, pred_number_tasks=Non
         print("ERROR: inputs for plotter are missing")
         breakpoint()
 
-    draw_boxplots(results, "output/timing/results.pdf", xlabels=hyperperiods,
-            xaxis_label="hyperperiod", yaxis_label="time for execution [s]")
+    ###
+    # Plot result.
+    ###
+    draw_boxplots(
+            results, "output/timing/results_hyper.pdf",
+            xlabels=hyperperiods,
+            xaxis_label="hyperperiod",
+            yaxis_label="time for execution [s]")
+
+
+def plot_results_numbertasks(
+        hyperperiod,
+        numbers_tasks,
+        number):  # number of runs to collect data from
+
+    try:
+        ###
+        # Load data.
+        ###
+        results = []  # lists of timing results (one list for each hyperperiod)
+        for number_tasks in numbers_tasks:
+            number_results = []  # results for one specific task number
+            for idx in range(number):
+                data = np.load("output/timing/"
+                               + "hyper_" + str(hyperperiod)
+                               + "_#tasks_" + str(number_tasks)
+                               + "_run_" + str(idx)
+                               + ".npz",
+                               allow_pickle=True)
+
+                # Interconnected.
+                number_results += list(data.f.timings)
+
+                # Close data file and run the garbage collector.
+                data.close()
+            results.append(number_results)
+    except Exception as e:
+        print(e)
+        print("ERROR: inputs for plotter are missing")
+        breakpoint()
+
+    ###
+    # Plot result.
+    ###
+    draw_boxplots(
+            results, "output/timing/results_number.pdf",
+            xlabels=numbers_tasks,
+            xaxis_label="number of tasks",
+            yaxis_label="time for execution [s]")
 
 
 def draw_boxplots(

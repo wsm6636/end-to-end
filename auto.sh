@@ -5,7 +5,7 @@
 ########################################
 # Start this shell script with
 # 	./auto.sh x
-# where x should be replace by the number of maximal recurrent jobs (typically not more than free processor of the machine that is used)
+# where x should be replace by the number of maximal concurrent jobs (typically not more than free processor of the machine that is used)
 ###
 # We use the screen command to parallelize the execution.
 # 'screen -ls' shows all current screens
@@ -13,15 +13,15 @@
 ########################################
 
 ###
-# Specify number of recurrent jobs
+# Specify number of concurrent jobs
 ###
 if [ $# -eq 0 ]
 then
-  echo "Specify maximal number of recurrent jobs for the experiment (e.g. './auto.sh 5' )."
+  echo "Specify maximal number of concurrent jobs for the experiment (e.g. './auto.sh 5' )."
   exit 1
 else
   var=$1
-  echo "with $var recurrent jobs"
+  echo "with $var concurrent jobs"
 fi
 
 ###
