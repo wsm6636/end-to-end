@@ -72,17 +72,24 @@ def main():
         return
 
     # Other variables:
-    utilization = 50.0  # in percent
-    num_tasks = 10
+    # utilization = 50.0  # in percent
+    # num_tasks = 10  # number of tasks
     periods_interval = [1, 10]
     num_runs = args.r
     jobmin = args.jobmin
     jobmax = args.jobmax
 
+    if jobmax < jobmin:
+        print("ERROR: jobmax has to be higher than jobmin.")
+        return
+
     results = []
 
     total_runs = 0
     while total_runs < num_runs:
+        # random values
+        utilization = random.randint(50, 90)  # random utilization in percent
+        num_tasks = random.randint(5, 30)  # random number of tasks
 
         ###
         # Task set generation.
@@ -97,7 +104,8 @@ def main():
                 rounded=True)
 
         # Transform tasks to fit framework structure.
-        trans2 = trans.Transformer("0", task_sets_dic, 10000000)
+        accuracy = 10000000
+        trans2 = trans.Transformer("0", task_sets_dic, accuracy)
         task_sets = trans2.transform_tasks(False)
 
         ###
@@ -130,7 +138,8 @@ def main():
         # Start timer.
         tick = time.time()
 
-        # Preperation.
+        # Task and CE-chain Preperation.
+
         analyzer = ana.Analyzer("0")
         for idx in range(len(task_set)):
             task_set[idx].rt = analyzer.tda(task_set[idx], task_set[:idx])
@@ -140,10 +149,7 @@ def main():
 
         analyzer.davare([[ce_chain]])
 
-        # Event-based simulation.
-        print("Simulation.")
-
-        simulator = es.eventSimulator(task_set)
+        # Simulation preperation
 
         # Determination of the variables used to compute the stop
         # condition of the simulation
@@ -157,20 +163,28 @@ def main():
                 + max_e2e_latency  # upper bound job chain length
                 + max_period)  # for convenience
 
-        # Information for end user.
-        print("\tNumber of tasks: ", len(task_set))
-        print("\tHyperperiod: ", hyperperiod)
+        # Compute number of jobs.
         number_of_jobs = 0
         for task in task_set:
             number_of_jobs += sched_interval/task.period
-        print("\tNumber of jobs to schedule: ",
-              "%.2f" % number_of_jobs)
 
         # Check if number of jobs is in the given range.
         if jobmin != -1 and number_of_jobs < jobmin:
             continue
         if jobmax != -1 and number_of_jobs > jobmax:
             continue
+
+        # Information for end user.
+        print("\tNumber of tasks: ", len(task_set))
+        print("\tHyperperiod: ", hyperperiod/accuracy)
+
+        print("\tNumber of jobs to schedule: ",
+              "%.2f" % number_of_jobs)
+
+        # Event-based simulation.
+        print("Simulation.")
+
+        simulator = es.eventSimulator(task_set)
 
         # Stop condition: Number of jobs of lowest priority task.
         simulator.dispatcher(
@@ -189,7 +203,7 @@ def main():
         timing = tock-tick
         print(timing, 'seconds')
 
-        results.append([timing, number_of_jobs])
+        results.append([number_of_jobs, timing])
 
         total_runs += 1
 
@@ -224,7 +238,7 @@ def plot_results(number):  # number of runs to collect data from
         results = []  # lists of timing results (one list for each hyperperiod)
         for idx in range(number):
             data = np.load("output/timing/result"
-                           + "_run_" + str(number)
+                           + "_run_" + str(idx)
                            + ".npz",
                            allow_pickle=True)
 
@@ -243,7 +257,7 @@ def plot_results(number):  # number of runs to collect data from
     ###
     draw_points(
             results,
-            "output/timing/results_hyper.pdf",
+            "output/timing/results.pdf",
             xaxis_label="#Jobs",
             yaxis_label="Runtime [s]",
             convert=True)
