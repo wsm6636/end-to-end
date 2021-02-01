@@ -101,7 +101,7 @@ def main():
 
     total_succ_runs = 0
     total_tries = 0
-    max_total_tries = 100
+    max_total_tries = 10000
     while total_succ_runs < num_runs:
 
         # When max_total_tries are done, increase succesful tries by 1
@@ -290,7 +290,7 @@ def plot_results(
         number,  # number of runs to collect data from
         task_numbers):  # list of task numbers
 
-    hyperperiods = [1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000]
+    hyperperiods = [1000, 2000, 3000, 4000]
 
     result_values = []
     for _ in hyperperiods:
@@ -311,7 +311,7 @@ def plot_results(
                 if data.f is not None:
                     results += list(data.f.results)
 
-                # Close data file and run the garbage collector.
+                # Close data file.
                 data.close()
 
         except Exception as e:

@@ -20,12 +20,12 @@ fi
 echo "===Run Experiment"
 date
 
-num_tries=5  # number of runs
-runs_per_screen=5  # number of runs per screen
+num_tries=100  # number of runs
+runs_per_screen=10  # number of runs per screen
 
-num_task_ind=1  # amount of different task numbers
+num_task_ind=19  # amount of different task numbers
 
-hypers=(0 1000 2000 3000 4000 5000 6000 7000 8000 9000 10000)  # hyperperiods to be checked
+hypers=(0 1000 2000 3000 4000 )  # hyperperiods to be checked
 len_hypers=${#hypers[@]}  # number of elements in hypers
 
 timeout_par=10
@@ -33,12 +33,12 @@ timeout_par=10
 for ((j=0;j<num_task_ind;j++))
 do
   echo "task index $j"
-  for ((i=0;i<num_tries
+  for ((i=0;i<num_tries;i++))
   do
     for ((k=1;k<len_hypers;k++))
     do
-      echo "start instance $((i+k))"
-      screen -dmS ascr$i python3.7 runtime_tasks.py -n$i -timeout=$timeout_par -tindex=$j -r$runs_per_screen -hypermin=$((${array[$((k-1))]})) -hypermax=$((${array[$k]}))
+      echo "start instance $(( (i)*(len_hypers-1)+k ))"
+      screen -dmS ascr$j$i$k python3.7 runtime_tasks.py -n$(( (i)*(len_hypers-1)+k-1 )) -timeout=$timeout_par -tindex=$j -r$runs_per_screen -hypermin=$((${hypers[$((k-1))]})) -hypermax=$((${hypers[$k]}))
 
       # wait until variable is reached
       numberrec=$(screen -list | grep -c ascr.*)
@@ -106,7 +106,7 @@ done
 # Plotting.
 ###
 echo "===Plot data"
-python3.7 runtime_tasks.py -j1 -n=$((4*num_tries))
+python3.7 runtime_tasks.py -j1 -n=$(( num_tries*(len_hypers-1) ))
 
 
 echo "DONE"
