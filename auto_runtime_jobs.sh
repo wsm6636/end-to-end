@@ -20,7 +20,7 @@ fi
 echo "===Run Experiment"
 date
 
-num_tries=10
+num_tries=100
 runs_per_screen=10
 
 for ((i=0;i<num_tries;i++))
