@@ -61,7 +61,10 @@ TODO: Check the file structure at the end!
     │   └── transformer.py           # Connect task creating with the scheduler
     ├── auto.sh                      # Running all experiments automatically
     ├── main.py                      # Main function
-    ├── timing.py                    # Measure timing behavior
+    ├── auto_runtime_jobs.sh         # Running first runtime evaluation automatically
+    ├── runtime_jobs.py              # First runtime evaluation
+    ├── auto_runtime_tasks.sh        # Running second runtime evaluation automatically
+    ├── runtime_tasks.py             # Second runtime evaluation
     └── README.md
 
 The experiments in the main function are splitted into 3 parts:
