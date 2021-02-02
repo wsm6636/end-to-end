@@ -238,7 +238,7 @@ def main():
                 print(e)
                 breakpoint()
 
-        if timing > event_sim_timeout:
+        if event_sim_timeout > 0 and timing > event_sim_timeout:
             timing = event_sim_timeout
 
         # Compute hyperperiod (may not have been done before due to timeout)
