@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Measure timing behavior for the single ECU case depending on hyperperiod."""
+"""Measure timing behavior for the single ECU case depending on number of jobs.
+"""
 
 import argparse
 import random
@@ -57,14 +58,12 @@ del parser
 ###
 
 def main():
+    """Main Function."""
+
     try:
-        """Main Function."""
-
         ###
-        # Plotting. (j != 0)
+        # Plotting. (j == 1)
         ###
-
-        # Plot with hyperperiods on xaxis.
         if args.j == 1:
             if args.n == -1:
                 print("ERROR: The number of runs is not specified.")
@@ -72,9 +71,11 @@ def main():
             plot_results(args.n)
             return
 
-        # Other variables:
-        # utilization = 50.0  # in percent
-        # num_tasks = 10  # number of tasks
+        ###
+        # Measurements. (j != 1)
+        ###
+
+        # Variables:
         periods_interval = [1, 20]
         num_runs = args.r
         jobmin = args.jobmin
@@ -86,10 +87,13 @@ def main():
 
         results = []
 
+        # Variable to observe the number of tries.
         total_runs = 0
+
         while total_runs < num_runs:
-            # random values
-            utilization = random.randint(50, 90)  # random utilization in percent
+
+            # Random values.
+            utilization = random.randint(50, 90)  # random utilization in %
             num_tasks = random.randint(5, 20)  # random number of tasks
 
             ###
@@ -114,10 +118,7 @@ def main():
             ###
 
             chain_len = 5  # number of tasks per chain
-
-            ce_chains = []
-
-            task_set = task_sets[0]
+            task_set = task_sets[0]  # the task set under analysis
 
             if chain_len > len(task_set):
                 print("ERROR: Not enough tasks for required chain length.")
@@ -136,17 +137,13 @@ def main():
             # Time measurements.
             ###
 
-            # Start timer.
-            tick = time.time()
-
             # Task and CE-chain Preperation.
 
             analyzer = ana.Analyzer("0")
-            if TDA_check(task_set, analyzer) is False:
+            if TDA_check(task_set, analyzer) is False:  # check schedulability
                 print("Task set not schedulable.")
                 continue
-
-            analyzer.davare([[ce_chain]])
+            analyzer.davare([[ce_chain]])  # davare analysis for interval def
 
             # Simulation preperation
 
@@ -176,13 +173,14 @@ def main():
             # Information for end user.
             print("\tNumber of tasks: ", len(task_set))
             print("\tHyperperiod: ", hyperperiod/accuracy)
-
             print("\tNumber of jobs to schedule: ",
                   "%.2f" % number_of_jobs)
 
+            # Start timer.
+            tick = time.time()
+
             # Event-based simulation.
             print("Simulation.")
-
             simulator = es.eventSimulator(task_set)
 
             # Stop condition: Number of jobs of lowest priority task.
@@ -214,7 +212,7 @@ def main():
     ###
 
     try:
-        np.savez("output/timing/result"
+        np.savez("output/runtime/result"
                  + "_run_" + str(args.n)
                  + ".npz",
                  results=results)
@@ -232,6 +230,7 @@ def main():
 
 
 def TDA_check(task_set, analyzer):
+    """Check if all tasks meet their deadline."""
     for idx in range(len(task_set)):
         task_set[idx].rt = analyzer.tda(task_set[idx], task_set[:idx])
         if task_set[idx].rt > task_set[idx].deadline:
@@ -239,22 +238,23 @@ def TDA_check(task_set, analyzer):
     return True
 
 
-def plot_results(number):  # number of runs to collect data from
-
+def plot_results(
+        number):  # number of runs to collect data from
+    """Plot the results."""
     try:
         ###
         # Load data.
         ###
-        results = []  # lists of timing results (one list for each hyperperiod)
+        results = []
         for idx in range(number):
-            data = np.load("output/timing/result"
+            data = np.load("output/runtime/result"
                            + "_run_" + str(idx)
                            + ".npz",
                            allow_pickle=True)
 
             results += list(data.f.results)
 
-            # Close data file and run the garbage collector.
+            # Close data file.
             data.close()
 
     except Exception as e:
@@ -267,7 +267,7 @@ def plot_results(number):  # number of runs to collect data from
     ###
     draw_points(
             results,
-            "output/timing/results.pdf",
+            "output/runtime/runtime_jobs.pdf",
             xaxis_label="#Jobs",
             yaxis_label="Runtime [s]",
             convert=True)
@@ -280,14 +280,11 @@ def draw_points(
         yaxis_label="",
         ylimits=None,  # [ylim_min, ylim_max]
         convert=False):
-    """Boxplot: Draw given results.
-    """
+    """Draw given results as points."""
 
     # Convert list of results.
     if convert:
         results = list(zip(*results))
-
-    # Plotting.
 
     # Size parameters:
     plt.rcParams.update({'font.size': 18})

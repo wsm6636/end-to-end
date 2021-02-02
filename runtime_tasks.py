@@ -12,7 +12,6 @@ import utilities.transformer as trans
 import utilities.chain as ch
 import utilities.analyzer as ana
 import utilities.event_simulator as es
-
 import signal
 
 ###
@@ -55,13 +54,12 @@ del parser
 def main():
     """Main Function."""
 
-    task_numbers = [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 30, 40, 50]
+    task_numbers = [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+                    30, 40, 50]
 
     ###
     # Plotting. (j == 1)
     ###
-
-    # Plot with hyperperiods on xaxis.
     if args.j == 1:
         if args.n == -1:
             print("ERROR: The number of runs is not specified.")
@@ -70,15 +68,15 @@ def main():
         return
 
     ###
-    # Measurements. (j == 1)
+    # Measurements. (j != 1)
     ###
 
-    # Other variables:
-    # utilization = 50.0  # in percent
+    # Variables:
     periods_interval = [1, 20]
     num_runs = args.r
     hypermin = args.hypermin
     hypermax = args.hypermax
+    event_sim_timeout = args.timeout
 
     # Choose number of tasks:
     try:
@@ -91,17 +89,17 @@ def main():
         print("ERROR: Number of tasks could not be chosen.")
         return
 
-    event_sim_timeout = args.timeout
-
     if hypermax != -1 and hypermax < hypermin:
         print("ERROR: hypermax has to be higher than hypermin.")
         return
 
     results = []
 
+    # Variables to observe the number of tries.
     total_succ_runs = 0
     total_tries = 0
     max_total_tries = 10000
+
     while total_succ_runs < num_runs:
 
         # When max_total_tries are done, increase succesful tries by 1
@@ -112,8 +110,8 @@ def main():
 
         total_tries += 1
 
-        # random values
-        utilization = random.randint(50, 90)  # random utilization in percent
+        # Random values.
+        utilization = random.randint(50, 90)  # random utilization in %
 
         ###
         # Task set generation.
@@ -137,10 +135,7 @@ def main():
         ###
 
         chain_len = 5  # number of tasks per chain
-
-        ce_chains = []
-
-        task_set = task_sets[0]
+        task_set = task_sets[0]  # the task set under analysis
 
         if chain_len > len(task_set):
             print("ERROR: Not enough tasks for required chain length.")
@@ -160,28 +155,20 @@ def main():
         ###
 
         try:
-            # Start timer.
-            tick = time.time()
-
-            # Set timeout.
-            signal.signal(signal.SIGALRM, handler)
-            signal.alarm(event_sim_timeout)
 
             # Task and CE-chain Preperation.
 
             analyzer = ana.Analyzer("0")
-
-            if TDA_check(task_set, analyzer) is False:
+            if TDA_check(task_set, analyzer) is False:  # check schedulability
                 print("Task set not schedulable.")
                 signal.alarm(0)
                 continue
-
-            analyzer.davare([[ce_chain]])
+            analyzer.davare([[ce_chain]])  # davare analysis for interval def
 
             # Simulation preperation
 
             # Determination of the variables used to compute the stop
-            # condition of the simulation
+            # condition of the simulation.
             max_e2e_latency = ce_chain.davare
             max_phase = 0  # by definition
             hyperperiod = analyzer.determine_hyper_period(task_set)
@@ -208,9 +195,15 @@ def main():
             # Information for end user.
             print("\tNumber of tasks: ", len(task_set))
             print("\tHyperperiod: ", hyperperiod/accuracy)
-
             print("\tNumber of jobs to schedule: ",
                   "%.2f" % number_of_jobs)
+
+            # Start timer.
+            tick = time.time()
+
+            # Set timeout.
+            signal.signal(signal.SIGALRM, handler)
+            signal.alarm(event_sim_timeout)
 
             # Event-based simulation.
             print("Simulation.")
@@ -261,7 +254,7 @@ def main():
     ###
 
     try:
-        np.savez("output/timing/result"
+        np.savez("output/runtime/result"
                  + "_#tasks_" + str(num_tasks)
                  + "_run_" + str(args.n)
                  + ".npz",
@@ -279,6 +272,7 @@ def main():
 ###
 
 def TDA_check(task_set, analyzer):
+    """Check if all tasks meet their deadline."""
     for idx in range(len(task_set)):
         task_set[idx].rt = analyzer.tda(task_set[idx], task_set[:idx])
         if task_set[idx].rt > task_set[idx].deadline:
@@ -289,10 +283,13 @@ def TDA_check(task_set, analyzer):
 def plot_results(
         number,  # number of runs to collect data from
         task_numbers):  # list of task numbers
+    """Plot the results."""
 
+    # Hyperperiods to draw.
     hyperperiods = [1000, 2000, 3000, 4000]
 
-    result_values = []
+    # Prepare result_values.
+    result_values = []  # list of lists of results
     for _ in hyperperiods:
         result_values.append([])
 
@@ -301,9 +298,9 @@ def plot_results(
             ###
             # Load data.
             ###
-            results = []  # lists of timing results
+            results = []  # lists of runtime results
             for idx in range(number):
-                data = np.load("output/timing/result"
+                data = np.load("output/runtime/result"
                                + "_#tasks_" + str(num_tasks)
                                + "_run_" + str(idx)
                                + ".npz",
@@ -337,7 +334,7 @@ def plot_results(
                 if hyperperiods[idx] == -1 or res[1] <= hyperperiods[idx]:
                     filtered_results[idx].append(res[0])
 
-        # Choose maximal value among them
+        # Choose maximal value among them.
         for idx in range(len(filtered_results)):
             result_values[idx].append(max(filtered_results[idx]))
 
@@ -348,7 +345,7 @@ def plot_results(
             task_numbers,
             result_values,
             hyperperiods,
-            "output/timing/results_tasks.pdf",
+            "output/runtime/runtime_tasks.pdf",
             xaxis_label="#Tasks per set",
             yaxis_label="Runtime [s]",
             convert=True)
@@ -363,12 +360,10 @@ def draw_points(
         yaxis_label="",
         ylimits=None,  # [ylim_min, ylim_max]
         convert=False):
-    """Boxplot: Draw given results.
-    """
+    """Draw given results as functions."""
+
     markers = ["+", "x", "v", "^", "<", ">", "o", "+", "x", "v", "^", "<", ">",
                "o"]
-
-    # Plotting.
 
     # Size parameters:
     plt.rcParams.update({'font.size': 18})
@@ -392,7 +387,8 @@ def draw_points(
                 label=str(names[idx]))
 
     # Show a legend.
-    plt.legend()
+    plt.legend(title="Max. hyperperiod:", loc=2, fontsize='x-small',
+               title_fontsize='x-small')
 
     ax1.set_xlabel(xaxis_label, fontsize=25)
     plt.tight_layout()

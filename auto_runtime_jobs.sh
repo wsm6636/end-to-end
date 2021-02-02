@@ -1,5 +1,4 @@
 #!/bin/bash
-#
 
 ###
 # Specify number of concurrent instances.
@@ -20,8 +19,8 @@ fi
 echo "===Run Experiment"
 date
 
-num_tries=100
-runs_per_screen=10
+num_tries=100  # number of runs
+runs_per_screen=10  # number of runs per screen
 
 for ((i=0;i<num_tries;i++))
 do
@@ -47,6 +46,7 @@ done
 # Plotting.
 ###
 echo "===Plot data"
+date
 python3.7 runtime_jobs.py -j1 -n$num_tries
 
 

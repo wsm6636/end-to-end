@@ -1,5 +1,4 @@
 #!/bin/bash
-#
 
 ###
 # Specify number of concurrent instances.
@@ -25,14 +24,15 @@ runs_per_screen=10  # number of runs per screen
 
 num_task_ind=19  # amount of different task numbers
 
-hypers=(0 1000 2000 3000 4000 )  # hyperperiods to be checked
+hypers=( 0 1000 2000 3000 4000 )  # hyperperiods to be checked
 len_hypers=${#hypers[@]}  # number of elements in hypers
 
-timeout_par=10
+timeout_par=0  # abort runtime measurement after ... seconds (0 = abort never)
 
 for ((j=0;j<num_task_ind;j++))
 do
   echo "task index $j"
+  date
   for ((i=0;i<num_tries;i++))
   do
     for ((k=1;k<len_hypers;k++))
@@ -48,53 +48,8 @@ do
         numberrec=$(screen -list | grep -c ascr.*)
       done
     done
-    #
-    # echo "start instance $i"
-    # screen -dmS ascr$i python3.7 runtime_tasks.py -n$i -timeout=10 -tindex=$j -r$runs_per_screen -hypermin=0 -hypermax=1000
-    #
-    # # wait until variable is reached
-    # numberrec=$(screen -list | grep -c ascr.*)
-    # while (($numberrec >= $var))
-    # do
-    #   sleep 1
-    #   numberrec=$(screen -list | grep -c ascr.*)
-    # done
-    #
-    # echo "start instance $((i+1))"
-    # screen -dmS ascr$i python3.7 runtime_tasks.py -n$((i+1)) -timeout=10 -tindex=$j -r$runs_per_screen -hypermin=1000 -hypermax=2000
-    #
-    # # wait until variable is reached
-    # numberrec=$(screen -list | grep -c ascr.*)
-    # while (($numberrec >= $var))
-    # do
-    #   sleep 1
-    #   numberrec=$(screen -list | grep -c ascr.*)
-    # done
-    #
-    # echo "start instance $((i+2))"
-    # screen -dmS ascr$i python3.7 runtime_tasks.py -n$((i+2)) -timeout=10 -tindex=$j -r$runs_per_screen -hypermin=2000 -hypermax=3000
-    #
-    # # wait until variable is reached
-    # numberrec=$(screen -list | grep -c ascr.*)
-    # while (($numberrec >= $var))
-    # do
-    #   sleep 1
-    #   numberrec=$(screen -list | grep -c ascr.*)
-    # done
-    #
-    # echo "start instance $((i+3))"
-    # screen -dmS ascr$i python3.7 runtime_tasks.py -n$((i+3)) -timeout=10 -tindex=$j -r$runs_per_screen -hypermin=3000 -hypermax=4000
-    #
-    # # wait until variable is reached
-    # numberrec=$(screen -list | grep -c ascr.*)
-    # while (($numberrec >= $var))
-    # do
-    #   sleep 1
-    #   numberrec=$(screen -list | grep -c ascr.*)
-    # done
   done
 done
-
 
 # wait until all are closed
 while screen -list | grep -q ascr.*
@@ -106,6 +61,7 @@ done
 # Plotting.
 ###
 echo "===Plot data"
+date
 python3.7 runtime_tasks.py -j1 -n=$(( num_tries*(len_hypers-1) ))
 
 
