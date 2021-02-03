@@ -196,8 +196,3 @@ This work has been supported by European Research Council (ERC) Consolidator Awa
 ### License
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
-
-# RTAS requirements for AE
-1. the system requirements (See [Environment Setup](#environment-setup))
-2. how to use the packaged artifact (please reference specific figures and tables in the paper that will be reproduced) (See [How to run the experiments](#how-to-run-the-experiments) and the provided table)
-3. how to setup the artifact on a machine different from the provided packaged artifact (e.g., specific versions of software to install on a clean machine) (See [Deployment](#deployment))
