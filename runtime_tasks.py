@@ -377,7 +377,7 @@ def draw_points(
     fig1, ax1 = plt.subplots()
     if ylimits is not None:
         ax1.set_ylim(ylimits)
-    ax1.set_ylabel(yaxis_label, fontsize=25)
+    ax1.set_ylabel(yaxis_label, fontsize=20)
 
     for idx in range(len(results_ys)):
         plt.plot(
@@ -390,7 +390,7 @@ def draw_points(
     plt.legend(title="Max. hyperperiod:", loc=2, fontsize='x-small',
                title_fontsize='x-small')
 
-    ax1.set_xlabel(xaxis_label, fontsize=25)
+    ax1.set_xlabel(xaxis_label, fontsize=20)
     plt.tight_layout()
 
     # Save.

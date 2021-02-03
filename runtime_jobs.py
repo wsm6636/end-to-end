@@ -298,11 +298,11 @@ def draw_points(
     fig1, ax1 = plt.subplots()
     if ylimits is not None:
         ax1.set_ylim(ylimits)
-    ax1.set_ylabel(yaxis_label, fontsize=25)
+    ax1.set_ylabel(yaxis_label, fontsize=20)
 
     plt.plot(results[0], results[1], 'o')
 
-    ax1.set_xlabel(xaxis_label, fontsize=25)
+    ax1.set_xlabel(xaxis_label, fontsize=20)
     plt.tight_layout()
 
     # Save.
