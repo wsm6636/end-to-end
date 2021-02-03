@@ -40,8 +40,6 @@ In case there is any dependent package missing, please install them accordingly.
 
 ### File Structure
 
-TODO: Check the file structure at the end!
-
     .
     ├── output                       # Placeholder for outputs
     │   ├── 1single                  # Single ECU chains + results
