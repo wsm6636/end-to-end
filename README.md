@@ -165,16 +165,16 @@ Paper equation | Source code
 **Section 7** (Evaluation):
 Benchmark | Source code
 --- | ---  
+\[6\] UUnifast benchmark for task sets | utilities.generator_UUNIFAST.gen_tasksets()
 \[18\] Automotive benchmark for task sets | utilities.generator_WATERS.gen_tasksets()
 \[18\] Automotive benchmark for cause-effect chains | utilities.generator_WATERS.gen_ce_chains()
-\[6\] UUnifast benchmark for task sets | utilities.generator_UUNIFAST.gen_tasksets()
 
 Other analysis | Source code
 --- | ---  
+\[9\] Davare | utilities.analyzer.davare()
 \[10\] Dürr: Data age | utilities.analyzer.age_duerr()
 \[10\] Dürr: Reaction time | utilities.analyzer.reaction_duerr()
 \[17\] Kloda | utilities.analyzer.kloda()
-\[9\] Davare | utilities.analyzer.davare()
 
 ## Miscellaneous
 
