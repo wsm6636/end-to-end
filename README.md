@@ -129,9 +129,7 @@ Fig. 7 (b) | davare_interconnected_reaction_g=1.pdf
 Fig. 7 (c) | davare_single_ecu_age_g=1.pdf
 Fig. 7 (d) | davare_interconnected_age_g=1.pdf
 
-As a reference, we utilize a machine running Debian 4.19.98-1 (2020-01-26) x86_64 GNU/Linux, with 2 x AMD EPYC 7742 64-Core Processor (64 Cores, 128 Threads), i.e., in total 256 Threads with 2,25GHz and 256GB RAM. Running ```auto.sh 100``` to obtain the same plots from the paper takes about X AMOUNT OF TIME with this machine.
-
-TODO: add time
+As a reference, we utilize a machine running Debian 4.19.98-1 (2020-01-26) x86_64 GNU/Linux, with 2 x AMD EPYC 7742 64-Core Processor (64 Cores, 128 Threads), i.e., in total 256 Threads with 2,25GHz and 256GB RAM. Running ```auto.sh 100``` to obtain the same plots from the paper takes about 1 hour with this machine.
 
 - After finish of ```auto_runtime_jobs.sh``` and ```auto_runtime_tasks.sh```, the plots from Figure 8 and 9 of the paper can be found in the folder output/runtime:
 
