@@ -93,7 +93,7 @@ The results of both experiments are stored in the folder output/runtime.
 
 The following steps explain how to deploy this framework on the machine:
 
-First, clone the git repository or download the [zip file](https://github.com/tu-dortmund-ls12-rt/end-to-end/archive/master.zip)):
+First, clone the git repository or download the [zip file](https://github.com/tu-dortmund-ls12-rt/end-to-end/archive/master.zip):
 ```
 git clone https://github.com/tu-dortmund-ls12-rt/end-to-end.git
 ```
@@ -153,11 +153,11 @@ With the same machine as above, ```auto_runtime_jobs.sh 100``` is finished in le
 
 ## How to use VM
 
-Please download the zip file which contains the virtual disk and the machine description.
-
-The source code is deployed on the desktop already. Some common software are installed accoridngly, e.g., vim, vscode, git.
-
-Please follow the above description to test out the provided analyses.
+- Please download the [zip file]() which contains the virtual disk and the machine description. The credential is: end2end/rtas21
+- The source code is deployed on the desktop already. Some common software are installed accoridngly, e.g., vim, vscode, git, evince.
+- Please follow the above description to test out the provided analyses. 
+- Please note that the original scripts are for reproducing the results on the paper (so time consuming). 
+- The num_tries and runs_per_screen variables in can be reduced to obtain the results faster.
 
 ## Overview of the corresponding functions
 
