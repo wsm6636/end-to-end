@@ -9,11 +9,22 @@ from RTAS 2021.
 This document is organized as follows:
 1. [Environment Setup](#environment-setup)
 2. [How to run the experiments](#how-to-run-the-experiments)
-3. [Overview of the corresponding functions](#overview-of-the-corresponding-functions)
-4. [Miscellaneous](#miscellaneous)
+3. [Usage of Virtual Machine](#how-to-use-vm)
+4. [Overview of the corresponding functions](#overview-of-the-corresponding-functions)
+5. [Miscellaneous](#miscellaneous)
 
 ## Environment Setup
 ### Requirements
+
+Some common software should be installed:
+```
+sudo apt-get install software-properties-common git screen python3.7
+```
+If the installation of Python3.7 doesn't work, likely you need to add deadsnakes PPA beforehand as it is not available on universe repo:
+```
+sudo add-apt-repository ppa:deadsnakes/ppa
+sudo apt-get update
+```
 
 To run the experiments Python 3.7 is required (Python 3.9 might also work). Moreover, the following packages are required:
 ```
@@ -139,6 +150,14 @@ Fig. 8 | runtime_jobs.pdf
 Fig. 9 | runtime_tasks.pdf
 
 With the same machine as above, ```auto_runtime_jobs.sh 100``` is finished in less than one minute and ```auto_runtime_tasks.sh 100``` is finished after about 30 minutes.
+
+## How to use VM
+
+Please download the zip file which contains the virtual disk and the machine description.
+
+The source code is deployed on the desktop already. Some common software are installed accoridngly, e.g., vim, vscode, git.
+
+Please follow the above description to test out the provided analyses.
 
 ## Overview of the corresponding functions
 
