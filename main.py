@@ -248,7 +248,8 @@ def main():
         print("=Save data.=")
 
         try:
-            np.savez("output/1single/task_set_u="+str(args.u) + "_n=" + args.n
+            np.savez("output/1single/task_set_u="+str(args.u)
+                     + "_n=" + str(args.n)
                      + "_g=" + str(args.g) + ".npz", task_sets=task_sets,
                      chains=ce_chains)
         except Exception as e:
