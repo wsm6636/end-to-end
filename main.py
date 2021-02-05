@@ -20,6 +20,9 @@ import utilities.analyzer as a
 import utilities.evaluation as eva
 
 
+debug_flag = False  # flag to have breakpoint() when errors occur
+
+
 def main():
     """Main Function."""
     ###
@@ -132,7 +135,10 @@ def main():
         except Exception as e:
             print(e)
             print("ERROR: task + ce creation")
-            breakpoint()
+            if debug_flag:
+                breakpoint()
+            else:
+                return
 
         ###
         # First analyses (TDA, Davare, Duerr).
@@ -239,12 +245,18 @@ def main():
 
                     # Test.
                     if chain.kloda < chain.our_react:
-                        breakpoint()
+                        if debug_flag:
+                            breakpoint()
+                        else:
+                            return
                 i += 1
         except Exception as e:
             print(e)
             print("ERROR: analysis")
-            breakpoint()
+            if debug_flag:
+                breakpoint()
+            else:
+                return
 
         ###
         # Save data.
@@ -259,7 +271,10 @@ def main():
         except Exception as e:
             print(e)
             print("ERROR: save")
-            breakpoint()
+            if debug_flag:
+                breakpoint()
+            else:
+                return
 
     elif args.j == 2:
         """Interconnected ECU analysis.
@@ -307,7 +322,10 @@ def main():
         except Exception as e:
             print(e)
             print("ERROR: inputs from single are missing")
-            breakpoint()
+            if debug_flag:
+                breakpoint()
+            else:
+                return
 
         ###
         # Interconnected cause-effect chain generation.
@@ -406,7 +424,10 @@ def main():
         except Exception as e:
             print(e)
             print("ERROR: inputs for plotter are missing")
-            breakpoint()
+            if debug_flag:
+                breakpoint()
+            else:
+                return
 
         ###
         # Draw plots.

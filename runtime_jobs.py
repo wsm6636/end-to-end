@@ -14,6 +14,10 @@ import utilities.chain as ch
 import utilities.analyzer as ana
 import utilities.event_simulator as es
 
+
+debug_flag = False  # flag to have breakpoint() when errors occur
+
+
 ###
 # Argument Parser
 ###
@@ -122,7 +126,10 @@ def main():
 
             if chain_len > len(task_set):
                 print("ERROR: Not enough tasks for required chain length.")
-                breakpoint()
+                if debug_flag:
+                    breakpoint()
+                else:
+                    return
 
             # Choose chain_len different tasks randomly and shuffled.
             ce_chain_as_list = random.sample(task_set, chain_len)
@@ -205,7 +212,10 @@ def main():
             total_runs += 1
     except Exception as e:
         print(e)
-        breakpoint()
+        if debug_flag:
+            breakpoint()
+        else:
+            return
 
     ###
     # Save data.
@@ -219,7 +229,10 @@ def main():
     except Exception as e:
         print(e)
         print("ERROR: save")
-        breakpoint()
+        if debug_flag:
+            breakpoint()
+        else:
+            return
 
     return
 
@@ -260,7 +273,10 @@ def plot_results(
     except Exception as e:
         print(e)
         print("ERROR: inputs for plotter are missing")
-        breakpoint()
+        if debug_flag:
+            breakpoint()
+        else:
+            return
 
     ###
     # Plot result.

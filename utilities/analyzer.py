@@ -5,6 +5,9 @@ import utilities.task
 import utilities.augmented_job_chain as aug
 
 
+debug_flag = False  # flag to have breakpoint() when errors occur
+
+
 class Analyzer:
     """Analyzer to do the analysis."""
 
@@ -82,7 +85,10 @@ class Analyzer:
 
             # Checking for mistakes.
             if len(schedule.get(chain.chain[-1])) < position:
-                breakpoint()
+                if debug_flag:
+                    breakpoint()
+                else:
+                    return
 
             # Last job in the job chain:
             next_job = schedule.get(chain.chain[-1])[position]
@@ -112,7 +118,10 @@ class Analyzer:
                     flag = True
                     break
             if flag is False:  # no event after ext_activity could be found
-                breakpoint()
+                if debug_flag:
+                    breakpoint()
+                else:
+                    return
             else:
                 job_after_ext_activity = job
 
@@ -209,7 +218,10 @@ class Analyzer:
 
             # Checking for mistakes.
             if len(schedule.get(chain.chain[0])) < position:
-                breakpoint()
+                if debug_flag:
+                    breakpoint()
+                else:
+                    return
 
             # First job in the job chain.
             next_job = schedule.get(chain.chain[0])[position]

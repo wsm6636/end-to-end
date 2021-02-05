@@ -383,7 +383,6 @@ def gen_ce_chains(transformed_task_sets):
                 period_filtered_task_set.append(
                         [task for task in task_set if task.period == period])
             try:
-                # breakpoint()
                 for filt_task_set in period_filtered_task_set:
                     # Try to add 2-5 tasks for each selected activation pattern
                     # into the chain.

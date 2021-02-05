@@ -14,6 +14,10 @@ import utilities.analyzer as ana
 import utilities.event_simulator as es
 import signal
 
+
+debug_flag = False  # flag to have breakpoint() when errors occur
+
+
 ###
 # Argument Parser
 ###
@@ -139,7 +143,10 @@ def main():
 
         if chain_len > len(task_set):
             print("ERROR: Not enough tasks for required chain length.")
-            breakpoint()
+            if debug_flag:
+                breakpoint()
+            else:
+                return
 
         # Choose chain_len different tasks randomly and shuffled.
         ce_chain_as_list = random.sample(task_set, chain_len)
@@ -236,7 +243,10 @@ def main():
             else:
                 signal.alarm(0)
                 print(e)
-                breakpoint()
+                if debug_flag:
+                    breakpoint()
+                else:
+                    return
 
         if event_sim_timeout > 0 and timing > event_sim_timeout:
             timing = event_sim_timeout
@@ -262,7 +272,10 @@ def main():
     except Exception as e:
         print(e)
         print("ERROR: save")
-        breakpoint()
+        if debug_flag:
+            breakpoint()
+        else:
+            return
 
     return
 
@@ -314,7 +327,10 @@ def plot_results(
         except Exception as e:
             print(e)
             print("ERROR: inputs for plotter are missing")
-            breakpoint()
+            if debug_flag:
+                breakpoint()
+            else:
+                return
 
         ###
         # Sort by hyperperiod and choose worst case.
