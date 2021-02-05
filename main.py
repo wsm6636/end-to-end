@@ -138,7 +138,8 @@ def main():
             if debug_flag:
                 breakpoint()
             else:
-                return
+                task_sets = []
+                ce_chains = []
 
         ###
         # First analyses (TDA, Davare, Duerr).
@@ -155,7 +156,8 @@ def main():
                     i = 1
                     for task in task_sets[idxx]:
                         # Prevent WCET = 0 since the scheduler can
-                        # not handle this yet.
+                        # not handle this yet. This case can occur due to
+                        # rounding with the transformer.
                         if task.wcet == 0:
                             raise ValueError("WCET == 0")
                         task.rt = analyzer.tda(task, task_sets[idxx][:(i - 1)])
@@ -248,7 +250,8 @@ def main():
                         if debug_flag:
                             breakpoint()
                         else:
-                            return
+                            raise ValueError(
+                                    ".kloda is shorter than .our_react")
                 i += 1
         except Exception as e:
             print(e)
@@ -256,7 +259,8 @@ def main():
             if debug_flag:
                 breakpoint()
             else:
-                return
+                task_sets = []
+                ce_chains = []
 
         ###
         # Save data.
