@@ -24,6 +24,9 @@ else
   echo "with $var concurrent jobs"
 fi
 
+num_tries=100  # number of runs
+runs_per_screen=10  # number of runs per screen
+
 ###
 # Single ECU analysis
 ###
@@ -36,10 +39,10 @@ for util in {50..90..10}
 do
 	echo "utilization: $util"
 	date
-  for i in {1..100}
+  for ((i=0;i<num_tries;i++))
 	do
     # start a new screen
-    screen -dmS ascr$i python3.7 main.py -j1 -u=$util -g0 -r10 -n="run$i"
+    screen -dmS ascr$i python3.7 main.py -j1 -u=$util -g0 -r$runs_per_screen -n=$i
 
     numberrec=$(screen -list | grep -c ascr.*)
 
@@ -58,10 +61,10 @@ for util in {50..90..10}
 do
 	echo "utilization: $util"
 	date
-  for i in {1..100}
+  for ((i=0;i<num_tries;i++))
 	do
     # start a new screen
-    screen -dmS ascr$i python3.7 main.py -j1 -u=$util -g1 -r10 -n="run$i"
+    screen -dmS ascr$i python3.7 main.py -j1 -u=$util -g1 -r$runs_per_screen -n=$i
 
     numberrec=$(screen -list | grep -c ascr.*)
 
@@ -95,7 +98,7 @@ date
 echo "automotive benchmark"
 for i in {50..90..10}
 do
-  screen -dmS ascrg0util_$i python3.7 main.py -j2 -u=$i -g0
+  screen -dmS ascrg0util_$i python3.7 main.py -j2 -u=$i -g0 -n=$num_tries
   # wait until variable is reached
   while (($numberrec >= $var))
   do
@@ -107,7 +110,7 @@ done
 echo "uunifast benchmark"
 for i in {50..90..10}
 do
-  screen -dmS ascrg1util_$i python3.7 main.py -j2 -u=$i -g1
+  screen -dmS ascrg1util_$i python3.7 main.py -j2 -u=$i -g1 -n=$num_tries
   # wait until variable is reached
   while (($numberrec >= $var))
   do

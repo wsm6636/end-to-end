@@ -36,7 +36,7 @@ def main():
 
     # only for args.j==1:
     # name of the run:
-    parser.add_argument("-n", type=str, default="run0")
+    parser.add_argument("-n", type=int, default=-1)
     # number of task sets to generate:
     parser.add_argument("-r", type=int, default=1)
 
@@ -268,9 +268,14 @@ def main():
         Davare, Duerr and Our.
         """
 
+        if args.n == -1:
+            print("ERROR: The number of runs -n is not specified.")
+            return
+
         # Variables.
         utilization = args.u
         gen_setting = args.g
+        num_runs = args.n
         number_interconn_ce_chains = 10000
 
         try:
@@ -279,8 +284,8 @@ def main():
             ###
             print("=Load data.=")
             chains_single_ECU = []
-            for i in range(1, 101):
-                name_of_the_run = "run" + str(i)
+            for i in range(num_runs):
+                name_of_the_run = str(i)
                 data = np.load(
                         "output/1single/task_set_u=" + str(utilization)
                         + "_n=" + name_of_the_run

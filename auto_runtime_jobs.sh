@@ -25,7 +25,7 @@ runs_per_screen=10  # number of runs per screen
 for ((i=0;i<num_tries;i++))
 do
   echo "start instance $i"
-  screen -dmS ascr$i python3.7 runtime_jobs.py -r10 -n$i -jobmax=100000
+  screen -dmS ascr$i python3.7 runtime_jobs.py -r$runs_per_screen -n$i -jobmax=100000
 
   # wait until variable is reached
   numberrec=$(screen -list | grep -c ascr.*)
