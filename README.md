@@ -157,7 +157,7 @@ With the same machine as above, ```auto_runtime_jobs.sh 100``` is finished in le
 - The source code is deployed on the desktop already. Some common software are installed accordingly, e.g., vim, vscode, git, evince.
 - Please follow the above description to test out the provided analyses. 
 - Please note that the original scripts are for reproducing the results on the paper (so time consuming). 
-- The ```num_tries``` and ```runs_per_screen``` variables in ```auto_runtime_jobs.sh``` and ```auto_runtime_tasks.sh``` can be reduced to obtain the results faster.
+- The ```num_tries``` and ```runs_per_screen``` variables in ```auto.sh```, ```auto_runtime_jobs.sh``` and ```auto_runtime_tasks.sh``` can be reduced to obtain the results faster.
 
 ## Overview of the corresponding functions
 
