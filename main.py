@@ -148,6 +148,10 @@ def main():
                     # TDA.
                     i = 1
                     for task in task_sets[idxx]:
+                        # Prevent WCET = 0 since the scheduler can
+                        # not handle this yet.
+                        if task.wcet == 0:
+                            raise ValueError("WCET == 0")
                         task.rt = analyzer.tda(task, task_sets[idxx][:(i - 1)])
                         if task.rt > task.deadline:
                             raise ValueError(

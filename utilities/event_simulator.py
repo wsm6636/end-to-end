@@ -8,7 +8,7 @@ import operator
 
 
 class eventSimulator:
-    """The event simulator with periodic job behavior, fixed execution time,
+    """The event simulator with periodic job behavior, fixed execution time>0,
     constrained deadline and synchronous releases for the single ECU case.
     """
     def __init__(self, tasks):
@@ -225,6 +225,8 @@ class eventSimulator:
         The result of the scheduler is pre-handled to represent in [start, end]
         format (result[task] is a list of tuples describing the start and end
         of each job).
+        Note: The scheduler returns an empty list for a task if it has
+        execution time = 0.
         """
         # Initialize result dictionary.
         result = dict()
