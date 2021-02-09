@@ -4,7 +4,7 @@ The repository is used to reproduce the evaluation from
 
 *Timing Analysis of Asynchronized Distributed Cause-Effect Chains*
 
-from RTAS 2021.
+for RTAS 2021.
 
 This document is organized as follows:
 1. [Environment Setup](#environment-setup)
