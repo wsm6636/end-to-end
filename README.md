@@ -155,7 +155,7 @@ With the same machine as above, ```auto_runtime_jobs.sh 100``` is finished in le
 
 ## How to use VM
 
-- Please download the [zip file](https://tu-dortmund.sciebo.de/s/zCpLabfyKhPwxGO), which contains the virtual disk and the machine description. The credential is: end2end/rtas21
+- Please download the [zip file](https://tu-dortmund.sciebo.de/s/GcftlevzCwg7Zaz), which contains the virtual disk and the machine description. The credential is: end2end/rtas21
 - The source code is deployed on the desktop already. Some common software are installed accordingly, e.g., vim, vscode, git, evince.
 - Please follow the above description to test out the provided analyses.
 - Please note that the original scripts are for reproducing the results on the paper (so time consuming).
