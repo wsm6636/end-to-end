@@ -1,6 +1,6 @@
 # End-To-End Timing Analysis
 
-The repository is used to reproduce the evaluation from 
+The repository is used to reproduce the evaluation from
 
 *Timing Analysis of Asynchronized Distributed Cause-Effect Chains*
 
@@ -104,8 +104,10 @@ chmod 777 auto.sh
 ./auto.sh 10
 ```
 where 10 is maximal number of concurrent jobs on the machine, it can be set to a higher or lower number depending on the number of available cores.
+Please note that the experiment may be very time consuming if used out of the box as explained in the section "How to run the experiments".
+We encourage to use a machine with several cores or adjust the variables according to the section "How to use VM" to reduce the computation effort.
 
-The runtime evaluation can be started inpendently from the same folder:
+The runtime evaluation can be started independently from the same folder:
 ```
 chmod 777 auto_runtime_jobs.sh
 ./auto_runtime_jobs.sh 10
@@ -113,9 +115,9 @@ chmod 777 auto_runtime_jobs.sh
 chmod 777 auto_runtime_tasks.sh
 ./auto_runtime_tasks.sh 10
 ```
-where again 10 is maximal number of concurrent jobs on the machine
+where again 10 is maximal number of concurrent jobs on the machine.
 
-Please note that the parallization will intensively use the computational resource.
+Please note that the parallelization will intensively use the computational resource and has to be adjusted for the number of cores of the machine.
 ```
 'screen -ls' #shows all current screens
 'killall screen' #aborts all current screens.
@@ -127,27 +129,27 @@ Please note that the parallization will intensively use the computational resour
 - The scripts ```auto.sh```, ```auto_runtime_jobs.sh``` and ```auto_runtime_tasks.sh``` are prepared for running all the experiments. They indicate the progress of the experiments by displaying short descriptions and timestamps.
 - If the experiments have to be aborted at some time (e.g., because a certain package is missing), then the instructions inside the auto.sh file can be used to start step 2 and 3 of the evaluation manually.
 
-- After finish of ```auto.sh```, the plots from Figure 6 and 7 of the paper can be found in the folder output/3plots:
+- After finish of ```auto.sh```, the plots from Figure 7 and 8 of the paper can be found in the folder output/3plots:
 
 Paper figure | Plot in output/3plots
 --- | ---  
-Fig. 6 (a) | davare_single_ecu_reaction_g=0.pdf
-Fig. 6 (b) | davare_interconnected_reaction_g=0.pdf
-Fig. 6 (c) | davare_single_ecu_age_g=0.pdf
-Fig. 6 (d) | davare_interconnected_age_g=0.pdf
-Fig. 7 (a) | davare_single_ecu_reaction_g=1.pdf
-Fig. 7 (b) | davare_interconnected_reaction_g=1.pdf
-Fig. 7 (c) | davare_single_ecu_age_g=1.pdf
-Fig. 7 (d) | davare_interconnected_age_g=1.pdf
+Fig. 7 (a) | davare_single_ecu_reaction_g=0.pdf
+Fig. 7 (b) | davare_interconnected_reaction_g=0.pdf
+Fig. 7 (c) | davare_single_ecu_age_g=0.pdf
+Fig. 7 (d) | davare_interconnected_age_g=0.pdf
+Fig. 8 (a) | davare_single_ecu_reaction_g=1.pdf
+Fig. 8 (b) | davare_interconnected_reaction_g=1.pdf
+Fig. 8 (c) | davare_single_ecu_age_g=1.pdf
+Fig. 8 (d) | davare_interconnected_age_g=1.pdf
 
 As a reference, we utilize a machine running Debian 4.19.98-1 (2020-01-26) x86_64 GNU/Linux, with 2 x AMD EPYC 7742 64-Core Processor (64 Cores, 128 Threads), i.e., in total 256 Threads with 2,25GHz and 256GB RAM. Running ```auto.sh 100``` to obtain the same plots from the paper takes about 1 hour with this machine.
 
-- After finish of ```auto_runtime_jobs.sh``` and ```auto_runtime_tasks.sh```, the plots from Figure 8 and 9 of the paper can be found in the folder output/runtime:
+- After finish of ```auto_runtime_jobs.sh``` and ```auto_runtime_tasks.sh```, the plots from Figure 9 and 10 of the paper can be found in the folder output/runtime:
 
 Paper figure | Plot in output/runtime
 --- | ---  
-Fig. 8 | runtime_jobs.pdf
-Fig. 9 | runtime_tasks.pdf
+Fig. 9 | runtime_jobs.pdf
+Fig. 10 | runtime_tasks.pdf
 
 With the same machine as above, ```auto_runtime_jobs.sh 100``` is finished in less than one minute and ```auto_runtime_tasks.sh 100``` is finished after about 30 minutes.
 
@@ -155,8 +157,8 @@ With the same machine as above, ```auto_runtime_jobs.sh 100``` is finished in le
 
 - Please download the [zip file](https://tu-dortmund.sciebo.de/s/zCpLabfyKhPwxGO), which contains the virtual disk and the machine description. The credential is: end2end/rtas21
 - The source code is deployed on the desktop already. Some common software are installed accordingly, e.g., vim, vscode, git, evince.
-- Please follow the above description to test out the provided analyses. 
-- Please note that the original scripts are for reproducing the results on the paper (so time consuming). 
+- Please follow the above description to test out the provided analyses.
+- Please note that the original scripts are for reproducing the results on the paper (so time consuming).
 - The ```num_tries``` and ```runs_per_screen``` variables in ```auto.sh```, ```auto_runtime_jobs.sh``` and ```auto_runtime_tasks.sh``` can be reduced to obtain the results faster.
 
 ## Overview of the corresponding functions
