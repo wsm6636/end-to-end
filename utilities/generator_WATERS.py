@@ -352,6 +352,7 @@ def gen_tasksets(
 def gen_ce_chains(transformed_task_sets):
     distribution_involved_activation_patterns = stats.rv_discrete(
             values=([1, 2, 3], [0.7, 0.2, 0.1]))
+            
     distribution_number_of_tasks = stats.rv_discrete(
             values=([2, 3, 4, 5], [0.3, 0.4, 0.2, 0.1]))
     ce_chains = []

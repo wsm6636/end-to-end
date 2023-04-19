@@ -314,6 +314,7 @@ class Analyzer:
                     inter_Gunzel_react += chain.interconnected[i].Gunzel_react
             # Store result.
             chain.inter_Gunzel_react = inter_Gunzel_react
+            
 
     def max_age_inter_Gunzel(self, chain_set, reduced=False):
         """Gunzel reduced maximum data age analysis for interconnected
@@ -324,26 +325,6 @@ class Analyzer:
         Note: The chains have to be analyzed by Gunzel single ECU maximum data age
         analysis beforehand. ( max_age_Gunzel() and max_age_Gunzel(reduced=True) )
         """
-        # for chain in chain_set:
-        #     m = len(chain.interconnected)  # chain length
-        #     inter_Gunzel_red_age = 0  # total data age
-        #     for i in range(0, m-1):
-        #         # Case: i is a communication task.
-        #         if isinstance(chain.interconnected[i], utilities.task.Task):
-        #             inter_Gunzel_red_age += (chain.interconnected[i].period
-        #                                   + chain.interconnected[i].rt)
-        #         # Case: i is a cause-effect chain.
-        #         else:
-        #             inter_Gunzel_red_age += chain.interconnected[i].Gunzel_age
-
-        #     # Handle the last cause-effect chain in the list.
-        #     if reduced:
-        #         inter_Gunzel_red_age += chain.interconnected[m-1].Gunzel_red_age
-        #     else:
-        #         inter_Gunzel_red_age += chain.interconnected[m-1].Gunzel_age
-
-        #     # Store result.
-        #     chain.inter_Gunzel_red_age = inter_Gunzel_red_age
 
         for chain in chain_set:
             m = len(chain.interconnected)  # chain length
@@ -386,99 +367,3 @@ class Analyzer:
                 # Store result.
                 chain.davare = latency
 
-    ###
-    # Duerr analysis from 'End-to-End Timing Analysis of Sporadic Cause-Effect
-    # Chains in Distributed Systems' (2019).
-    ###
-    # def reaction_duerr(self, chain_sets):
-    #     """Maximum reaction time analysis from Duerr.
-
-    #     Input: chain_sets is a list of lists of chains.
-    #     """
-    #     for chain_set in chain_sets:
-    #         for chain in chain_set:
-    #             # Compute latency.
-    #             latency = chain.chain[-1].rt + chain.chain[0].period
-    #             for task, next_task in zip(chain.chain[:-1], chain.chain[1:]):
-    #                 if (task.priority > next_task.priority
-    #                         or next_task.message or task.message):
-    #                     part2 = task.rt
-    #                 else:
-    #                     part2 = 0
-    #                 latency += max(task.rt, next_task.period + part2)
-    #             # Store result.
-    #             chain.duerr_react = latency
-
-    # def age_duerr(self, chain_sets):
-    #     """Maximum data age analysis from Duerr.
-
-    #     Input: chain_sets is a list of lists of chains.
-    #     """
-    #     for chain_set in chain_sets:
-    #         for chain in chain_set:
-    #             # Compute latency.
-    #             latency = chain.chain[-1].rt
-    #             for task, next_task in zip(chain.chain[:-1], chain.chain[1:]):
-    #                 if (task.priority > next_task.priority
-    #                         or next_task.message or task.message):
-    #                     part2 = task.rt
-    #                 else:
-    #                     part2 = 0
-    #                 latency += task.period + part2
-    #             # Store result.
-    #             chain.duerr_age = latency
-
-    ###
-    # Kloda analysis from 'Latency analysis for data chains of real-time
-    # periodic tasks' (2018).
-    ###
-
-    # def kloda(self, chain, hyper_period):
-    #     """Kloda analysis for the single ECU case with synchronous releases.
-
-    #     Input: chain is one cause-effect chain. hyper_period is the hyperperiod
-    #     of the underlying task set.
-    #     """
-    #     for release_first_task_in_chain in range(0, max(1, hyper_period),
-    #                                              chain.chain[0].period):
-    #         # Compute latency for a given first job.
-    #         kloda = self.kloda_rec(chain.chain, release_first_task_in_chain,
-    #                                beginning=True)
-    #         # Compare and store the results.
-    #         if chain.kloda < kloda:
-    #             chain.kloda = kloda
-    #     return chain.kloda
-
-    # def kloda_rec(self, chain, rel_producer, beginning=True):
-    #     """Recursive function to compute the reaction time by klodas analysis.
-
-    #     Note: The additional period is already added with the beginning=True
-    #     option.
-    #     """
-    #     add = 0
-    #     # Additional period at the beginning. (This is only done for the
-    #     # initial case.)
-    #     if beginning:
-    #         add += chain[0].period
-
-    #     producer_task = chain[0]  # producer
-
-    #     # Final case
-    #     if len(chain) == 1:
-    #         return producer_task.rt + add
-
-    #     rem_chain = chain[1::]  # remaining chain
-    #     consumer_task = rem_chain[0]  # consumer
-
-    #     # Intermediate cases. Compute difference between producer and consumer.
-    #     q = 0
-    #     # Case: Producer has lower priority than consumer, i.e., the priority
-    #     # value is higher. Note: We do not implement a processor change since
-    #     # we consider only the single ECU case. (Kloda cannot be applied to
-    #     # asynchronized ECUs.)
-    #     if (producer_task.priority > consumer_task.priority):
-    #         q = producer_task.rt
-    #     rel_consumer = (math.ceil((rel_producer + q) / consumer_task.period)
-    #                     * consumer_task.period)
-    #     return (add + rel_consumer - rel_producer
-    #             + self.kloda_rec(rem_chain, rel_consumer, beginning=False))
