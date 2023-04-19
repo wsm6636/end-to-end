@@ -19,8 +19,11 @@ fi
 echo "===Run Experiment"
 date
 
-num_tries=100  # number of runs
-runs_per_screen=10  # number of runs per screen
+#num_tries=100  # number of runs，跑多少次
+#runs_per_screen=10  # number of runs per screen，一次跑几个screen
+
+num_tries=1  #test
+runs_per_screen=10
 
 for ((i=0;i<num_tries;i++))
 do
@@ -51,4 +54,8 @@ python3.7 runtime_jobs.py -j1 -n$num_tries
 
 
 echo "DONE"
+date
+
+echo "rm ./output/runtime/*.npz"
+rm ./output/runtime/*.npz
 date

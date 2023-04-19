@@ -5,7 +5,7 @@ simulator.py
 """
 from __future__ import division
 import operator
-
+# 带有周期性作业行为、固定执行时间>0、受限期限和单个ECU情况下同步发布的事件模拟器
 
 class eventSimulator:
     """The event simulator with periodic job behavior, fixed execution time>0,

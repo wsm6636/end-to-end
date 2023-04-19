@@ -1,7 +1,7 @@
 """Transform task from dictionaries to task objects for the event simulator."""
 import utilities.task as t
 from scipy import stats
-
+#将任务从字典转换为事件模拟器的任务对象。
 
 class Transformer:
     """Transformer class."""

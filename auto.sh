@@ -14,6 +14,7 @@
 
 ###
 # Specify number of concurrent jobs
+# 最大并发作业量
 ###
 if [ $# -eq 0 ]
 then
@@ -24,8 +25,11 @@ else
   echo "with $var concurrent jobs"
 fi
 
-num_tries=100  # number of runs
-runs_per_screen=10  # number of runs per screen
+#num_tries=100  # number of runs，跑多少次
+#runs_per_screen=10  # number of runs per screen，一次跑几个screen
+
+num_tries=1  #test
+runs_per_screen=10
 
 ###
 # Single ECU analysis
@@ -33,7 +37,7 @@ runs_per_screen=10  # number of runs per screen
 echo "===Start single ECU analysis"
 date
 
-# g=0 r=10 with different utilization
+# g=0 r=10 with different utilization，waters基准
 echo "automotive benchmark"
 for util in {50..90..10}
 do
@@ -41,12 +45,13 @@ do
 	date
   for ((i=0;i<num_tries;i++))
 	do
-    # start a new screen
+    # start a new screen，每次都会启动一个新的screen执行main
+    # 实际运行main.py 传入参数unil利用率，g执行哪个基准，n执行第几次，r几个screen
     screen -dmS ascr$i python3.7 main.py -j1 -u=$util -g0 -r$runs_per_screen -n=$i
-
+    
     numberrec=$(screen -list | grep -c ascr.*)
 
-    # wait until variable is reached
+    # wait until variable is reached，并行数量到达输入的值比如10，就会等待，知道screen数量减少到10以下
     while (($numberrec >= $var))
    	do
    		sleep 1
@@ -55,7 +60,7 @@ do
 	done
 done
 
-  # g=1 r=10 with different utilization
+  # g=1 r=10 with different utilization，UUnifast基准
 echo "uunifast benchmark"
 for util in {50..90..10}
 do
@@ -147,3 +152,11 @@ done
 
 echo "DONE"
 date
+
+# echo "rm ./output/1single/*.npz"
+# rm ./output/1single/*.npz
+# date
+
+# echo "rm ./output/2interconn/*.npz"
+# rm ./output/2interconn/*.npz
+# date

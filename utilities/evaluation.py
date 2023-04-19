@@ -20,14 +20,15 @@ class Evaluation:
             ylabel = self.ylabel
 
         # Analysis results.
-        kloda = []
-        duerr = []
+        # kloda = []
+        # duerr = []
         our = []  # reduced data age (for comparison)
 
         for chain in chains:
-            duerr.append((1 - (chain.duerr_age / chain.davare)) * 100)
-            kloda.append((1 - (chain.kloda / chain.davare)) * 100)
-            our.append((1 - (chain.our_red_age / chain.davare)) * 100)
+            # duerr.append((1 - (chain.duerr_age / chain.davare)) * 100)
+            # kloda.append((1 - (chain.kloda / chain.davare)) * 100)
+            # our.append((1 - (chain.our_red_age / chain.davare)) * 100)
+            our.append((1 - (chain.our_age / chain.davare)) * 100)
 
         # Plotting.
         # Blue box configuration:
@@ -50,8 +51,10 @@ class Evaluation:
         ax1.hlines(self.hlines, 0, 4, linestyles=(0, (5, 5)),
                    colors="lightgrey")
         my_plot = ax1.boxplot(
-                [duerr, kloda, our],
-                labels=["Dür", "Klo", "Our"],
+                # [duerr, kloda, our],
+                # labels=["Dür", "Klo", "Our"],
+                [our],
+                labels=["Our"],
                 showfliers=False,
                 boxprops=boxprops,
                 medianprops=medianprops,
@@ -78,13 +81,13 @@ class Evaluation:
             ylabel = self.ylabel
 
         # Analysis results.
-        kloda = []
-        duerr = []
+        # kloda = []
+        # duerr = []
         our = []
 
         for chain in chains:
-            duerr.append((1 - (chain.duerr_react / chain.davare)) * 100)
-            kloda.append((1 - (chain.kloda / chain.davare)) * 100)
+            # duerr.append((1 - (chain.duerr_react / chain.davare)) * 100)
+            # kloda.append((1 - (chain.kloda / chain.davare)) * 100)
             our.append((1 - (chain.our_react / chain.davare)) * 100)
 
         # Plotting.
@@ -108,8 +111,10 @@ class Evaluation:
         ax1.hlines(self.hlines, 0, 4, linestyles=(0, (5, 5)),
                    colors="lightgrey")
         my_plot = ax1.boxplot(
-                [duerr, kloda, our],
-                labels=["Dür", "Klo", "Our"],
+                # [duerr, kloda, our],
+                # labels=["Dür", "Klo", "Our"],
+                [our],
+                labels=["Our"],
                 showfliers=False,
                 boxprops=boxprops,
                 medianprops=medianprops,
@@ -136,12 +141,13 @@ class Evaluation:
             ylabel = self.ylabel
 
         # Analysis results.
-        duerr = []
+        # duerr = []
         our = []  # reduced interconnected data age (for comparison)
 
         for chain in chains:
-            duerr.append((1-(chain.duerr_age/chain.davare))*100)
-            our.append((1-(chain.inter_our_red_age/chain.davare))*100)
+            # duerr.append((1-(chain.duerr_age/chain.davare))*100)
+            # our.append((1-(chain.inter_our_red_age/chain.davare))*100)
+            our.append((1-(chain.inter_our_age/chain.davare))*100)
 
         # Plotting.
         # Blue box configuration:
@@ -164,8 +170,10 @@ class Evaluation:
         ax1.hlines(self.hlines, 0, 3, linestyles=(0, (5, 5)),
                    colors="lightgrey")
         my_plot = ax1.boxplot(
-                [duerr, our],
-                labels=["Dür", "Our"],
+                # [duerr, our],
+                # labels=["Dür", "Our"],
+                [ our],
+                labels=["Our"],
                 showfliers=False,
                 boxprops=boxprops,
                 medianprops=medianprops,
@@ -192,11 +200,11 @@ class Evaluation:
             ylabel = self.ylabel
 
         # Analysis results.
-        duerr = []
+        # duerr = []
         our = []
 
         for chain in chains:
-            duerr.append((1-(chain.duerr_react/chain.davare))*100)
+            # duerr.append((1-(chain.duerr_react/chain.davare))*100)
             our.append((1-(chain.inter_our_react/chain.davare))*100)
 
         # Plotting.
@@ -220,8 +228,10 @@ class Evaluation:
         ax1.hlines(self.hlines, 0, 3, linestyles=(0, (5, 5)),
                    colors="lightgrey")
         my_plot = ax1.boxplot(
-                [duerr, our],
-                labels=["Dür", "Our"],
+                # [duerr, our],
+                # labels=["Dür", "Our"],
+                [our],
+                labels=["Our"],
                 showfliers=False,
                 boxprops=boxprops,
                 medianprops=medianprops,

@@ -29,7 +29,7 @@ def main():
     # Argument Parser
     ###
     parser = argparse.ArgumentParser()
-
+    #一共三部分，第一部分单ECU，第二部分多ECU，第三部分画图
     # which part of code should be executed:
     parser.add_argument("-j", type=int, default=0)
     # utilization in 0 to 100 [percent]:
@@ -44,7 +44,7 @@ def main():
     parser.add_argument("-r", type=int, default=1)
 
     args = parser.parse_args()
-    del parser
+    del parser #释放内存
 
     if args.j == 1:
         """Single ECU analysis.
@@ -91,6 +91,7 @@ def main():
 
                 # Transform tasks to fit framework structure.
                 # Each task is an object of utilities.task.Task.
+                # 将任务转换为适合框架架构的形式。 每个任务都是 utilities.task.Task 对象。
                 trans1 = trans.Transformer("1", task_sets_waters, 10000000)
                 task_sets = trans1.transform_tasks(False)
 
@@ -143,48 +144,51 @@ def main():
 
         ###
         # First analyses (TDA, Davare, Duerr).
+        #TDA，第二个是R+T那个最悲观情况，第三个是偶发任务的论文
         ###
-        print("=First analyses (TDA, Davare, Duerr).=")
+        #print("=First analyses (TDA, Davare, Duerr).=")
+
         analyzer = a.Analyzer("0")
 
         try:
             # TDA for each task set.
-            print("TDA.")
-            for idxx in range(len(task_sets)):
-                try:
-                    # TDA.
-                    i = 1
-                    for task in task_sets[idxx]:
-                        # Prevent WCET = 0 since the scheduler can
-                        # not handle this yet. This case can occur due to
-                        # rounding with the transformer.
-                        if task.wcet == 0:
-                            raise ValueError("WCET == 0")
-                        task.rt = analyzer.tda(task, task_sets[idxx][:(i - 1)])
-                        if task.rt > task.deadline:
-                            raise ValueError(
-                                    "TDA Result: WCRT bigger than deadline!")
-                        i += 1
-                except ValueError:
-                    # If TDA fails, remove task and chain set and continue.
-                    task_sets.remove(task_sets[idxx])
-                    ce_chains.remove(ce_chains[idxx])
-                    continue
+            # print("TDA.")
+            # for idxx in range(len(task_sets)):
+            #     try:
+            #         # TDA.
+            #         i = 1
+            #         for task in task_sets[idxx]:
+            #             # Prevent WCET = 0 since the scheduler can
+            #             # not handle this yet. This case can occur due to
+            #             # rounding with the transformer.
+            #             if task.wcet == 0:
+            #                 raise ValueError("WCET == 0")
+            #             task.rt = analyzer.tda(task, task_sets[idxx][:(i - 1)])
+            #             if task.rt > task.deadline:
+            #                 raise ValueError(
+            #                         "TDA Result: WCRT bigger than deadline!")
+            #             i += 1
+            #     except ValueError:
+            #         # If TDA fails, remove task and chain set and continue.
+            #         task_sets.remove(task_sets[idxx])
+            #         ce_chains.remove(ce_chains[idxx])
+            #         continue
 
             # End-to-End Analyses.
             print("Test: Davare.")
             analyzer.davare(ce_chains)
 
-            print("Test: Duerr Reaction Time.")
-            analyzer.reaction_duerr(ce_chains)
+            # print("Test: Duerr Reaction Time.")
+            # analyzer.reaction_duerr(ce_chains)
 
-            print("Test: Duerr Data Age.")
-            analyzer.age_duerr(ce_chains)
+            # print("Test: Duerr Data Age.")
+            # analyzer.age_duerr(ce_chains)
 
             ###
             # Second analyses (Simulation, Our, Kloda).
             ###
-            print("=Second analyses (Simulation, Our, Kloda).=")
+            #print("=Second analyses (Simulation, Our, Kloda).=")
+            print("=test Second analyses (Simulation, Our).=")
             i = 0  # task set counter
             schedules = []
             for task_set in task_sets:
@@ -234,24 +238,24 @@ def main():
                     print("Test: Our Data Age.")
                     analyzer.max_age_our(schedule, task_set, chain, max_phase,
                                          hyper_period, reduced=False)
-                    analyzer.max_age_our(schedule, task_set, chain, max_phase,
-                                         hyper_period, reduced=True)
+                    # analyzer.max_age_our(schedule, task_set, chain, max_phase,
+                    #                      hyper_period, reduced=True)
 
                     print("Test: Our Reaction Time.")
                     analyzer.reaction_our(schedule, task_set, chain, max_phase,
                                           hyper_period)
 
                     # Kloda analysis, assuming synchronous releases.
-                    print("Test: Kloda.")
-                    analyzer.kloda(chain, hyper_period)
+                    # print("Test: Kloda.")
+                    # analyzer.kloda(chain, hyper_period)
 
                     # Test.
-                    if chain.kloda < chain.our_react:
-                        if debug_flag:
-                            breakpoint()
-                        else:
-                            raise ValueError(
-                                    ".kloda is shorter than .our_react")
+                    # if chain.kloda < chain.our_react:
+                    #     if debug_flag:
+                    #         breakpoint()
+                    #     else:
+                    #         raise ValueError(
+                    #                 ".kloda is shorter than .our_react")
                 i += 1
         except Exception as e:
             print(e)
@@ -305,6 +309,7 @@ def main():
         try:
             ###
             # Load data.
+            # 多个ECU互联需要前面单个ECU上的分析结果？
             ###
             print("=Load data.=")
             chains_single_ECU = []
@@ -365,20 +370,22 @@ def main():
         # Analyses (Davare, Duerr, Our).
         # Kloda is not included, since it is only for synchronized clocks.
         ###
-        print("=Analyses (Davare, Duerr, Our).=")
+        # print("=Analyses (Davare, Duerr, Our).=")
+        print("=test Analyses (Our).=")
         analyzer = a.Analyzer("0")
 
         print("Test: Davare.")
         analyzer.davare([chains_inter])
 
-        print("Test: Duerr.")
-        analyzer.reaction_duerr([chains_inter])
-        analyzer.age_duerr([chains_inter])
+        # print("Test: Duerr.")
+        # analyzer.reaction_duerr([chains_inter])
+        # analyzer.age_duerr([chains_inter])
 
         print("Test: Our.")
         # Our test can only be used when the single processor tests are already
         # done.
-        analyzer.max_age_inter_our(chains_inter, reduced=True)
+        # analyzer.max_age_inter_our(chains_inter, reduced=True)
+        analyzer.max_age_inter_our(chains_inter, reduced=False)
         analyzer.reaction_inter_our(chains_inter)
 
         ###
