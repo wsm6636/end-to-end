@@ -56,7 +56,7 @@ def main():
         -r : number of runs
         -n : name of the run
 
-        Create task sets and cause-effect chains, use TDA, Davare, Duerr, our
+        Create task sets and cause-effect chains, use TDA, Davare, Duerr, Gunzel
         analysis, Kloda, and save the Data
         """
         ###
@@ -151,44 +151,15 @@ def main():
         analyzer = a.Analyzer("0")
 
         try:
-            # TDA for each task set.
-            # print("TDA.")
-            # for idxx in range(len(task_sets)):
-            #     try:
-            #         # TDA.
-            #         i = 1
-            #         for task in task_sets[idxx]:
-            #             # Prevent WCET = 0 since the scheduler can
-            #             # not handle this yet. This case can occur due to
-            #             # rounding with the transformer.
-            #             if task.wcet == 0:
-            #                 raise ValueError("WCET == 0")
-            #             task.rt = analyzer.tda(task, task_sets[idxx][:(i - 1)])
-            #             if task.rt > task.deadline:
-            #                 raise ValueError(
-            #                         "TDA Result: WCRT bigger than deadline!")
-            #             i += 1
-            #     except ValueError:
-            #         # If TDA fails, remove task and chain set and continue.
-            #         task_sets.remove(task_sets[idxx])
-            #         ce_chains.remove(ce_chains[idxx])
-            #         continue
-
             # End-to-End Analyses.
             print("Test: Davare.")
             analyzer.davare(ce_chains)
 
-            # print("Test: Duerr Reaction Time.")
-            # analyzer.reaction_duerr(ce_chains)
-
-            # print("Test: Duerr Data Age.")
-            # analyzer.age_duerr(ce_chains)
-
             ###
-            # Second analyses (Simulation, Our, Kloda).
+            # Second analyses (Simulation, Gunzel, Kloda).
             ###
-            #print("=Second analyses (Simulation, Our, Kloda).=")
-            print("=test Second analyses (Simulation, Our).=")
+            #print("=Second analyses (Simulation, Gunzel, Kloda).=")
+            print("=test Second analyses (Simulation, Gunzel).=")
             i = 0  # task set counter
             schedules = []
             for task_set in task_sets:
@@ -235,27 +206,14 @@ def main():
 
                 # Analyses.
                 for chain in ce_chains[i]:
-                    print("Test: Our Data Age.")
-                    analyzer.max_age_our(schedule, task_set, chain, max_phase,
+                    print("Test: Gunzel Data Age.")
+                    analyzer.max_age_Gunzel(schedule, task_set, chain, max_phase,
                                          hyper_period, reduced=False)
-                    # analyzer.max_age_our(schedule, task_set, chain, max_phase,
-                    #                      hyper_period, reduced=True)
 
-                    print("Test: Our Reaction Time.")
-                    analyzer.reaction_our(schedule, task_set, chain, max_phase,
+                    print("Test: Gunzel Reaction Time.")
+                    analyzer.reaction_Gunzel(schedule, task_set, chain, max_phase,
                                           hyper_period)
-
-                    # Kloda analysis, assuming synchronous releases.
-                    # print("Test: Kloda.")
-                    # analyzer.kloda(chain, hyper_period)
-
-                    # Test.
-                    # if chain.kloda < chain.our_react:
-                    #     if debug_flag:
-                    #         breakpoint()
-                    #     else:
-                    #         raise ValueError(
-                    #                 ".kloda is shorter than .our_react")
+                    
                 i += 1
         except Exception as e:
             print(e)
@@ -293,7 +251,7 @@ def main():
         -g : task generation setting (for loading)
 
         Load data, create interconnected chains and then do the analysis by
-        Davare, Duerr and Our.
+        Davare, Duerr and Gunzel.
         """
 
         if args.n == -1:
@@ -367,26 +325,21 @@ def main():
                 print("\t", j)
 
         ###
-        # Analyses (Davare, Duerr, Our).
+        # Analyses (Davare, Duerr, Gunzel).
         # Kloda is not included, since it is only for synchronized clocks.
         ###
-        # print("=Analyses (Davare, Duerr, Our).=")
-        print("=test Analyses (Our).=")
+        # print("=Analyses (Davare, Duerr, Gunzel).=")
+        print("=test Analyses (Gunzel).=")
         analyzer = a.Analyzer("0")
 
         print("Test: Davare.")
         analyzer.davare([chains_inter])
 
-        # print("Test: Duerr.")
-        # analyzer.reaction_duerr([chains_inter])
-        # analyzer.age_duerr([chains_inter])
-
-        print("Test: Our.")
-        # Our test can only be used when the single processor tests are already
+        print("Test: Gunzel.")
+        # Gunzel test can only be used when the single processor tests are already
         # done.
-        # analyzer.max_age_inter_our(chains_inter, reduced=True)
-        analyzer.max_age_inter_our(chains_inter, reduced=False)
-        analyzer.reaction_inter_our(chains_inter)
+        analyzer.max_age_inter_Gunzel(chains_inter, reduced=False)
+        analyzer.reaction_inter_Gunzel(chains_inter)
 
         ###
         # Save data.
@@ -474,12 +427,12 @@ def main():
         # # Heatmap.
         # myeva.heatmap_improvement_disorder_age(
         #         chains_single_ECU,
-        #         "output/3plots/heatmap" + "_our_age"
+        #         "output/3plots/heatmap" + "_Gunzel_age"
         #         + "_g=" + str(args.g) + ".pdf",
         #         yaxis_label="")
         # myeva.heatmap_improvement_disorder_react(
         #         chains_single_ECU,
-        #         "output/3plots/heatmap" + "_our_react"
+        #         "output/3plots/heatmap" + "_Gunzel_react"
         #         + "_g=" + str(args.g) + ".pdf",
         #         yaxis_label="")
 

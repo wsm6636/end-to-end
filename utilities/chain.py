@@ -16,12 +16,12 @@ class CauseEffectChain:
         self.davare = 0  # Davare
         self.duerr_age = 0  # Duerr max data age
         self.duerr_react = 0  # Duerr max reaction time
-        self.our_age = 0  # Our max data age
-        self.our_react = 0  # Our max reaction time
-        self.our_red_age = 0  # Our reduced max data age
-        self.inter_our_age = 0  # Our max data age for interconn
-        self.inter_our_red_age = 0  # Our reduced max data age for interconn
-        self.inter_our_react = 0  # Our max reaction time for interconn
+        self.Gunzel_age = 0  # Gunzel max data age
+        self.Gunzel_react = 0  # Gunzel max reaction time
+        self.Gunzel_red_age = 0  # Gunzel reduced max data age
+        self.inter_Gunzel_age = 0  # Gunzel max data age for interconn
+        self.inter_Gunzel_red_age = 0  # Gunzel reduced max data age for interconn
+        self.inter_Gunzel_react = 0  # Gunzel max reaction time for interconn
         self.kloda = 0  # Kloda
 
     def length(self):
@@ -30,7 +30,7 @@ class CauseEffectChain:
 
     @property
     def chain_disorder(self):
-        """Compute the chain disorder. (Not explained in our paper.)
+        """Compute the chain disorder. (Not explained in Gunzel paper.)
 
         The disorder of a chain is the number of priority inversions along
         the data propagation path.

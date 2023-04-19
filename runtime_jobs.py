@@ -197,7 +197,7 @@ def main():
             # Simulation without early completion.
             schedule = simulator.e2e_result()
 
-            analyzer.reaction_our(schedule, task_set, ce_chain, max_phase,
+            analyzer.reaction_Gunzel(schedule, task_set, ce_chain, max_phase,
                                   hyperperiod)
 
             # Stop timer.

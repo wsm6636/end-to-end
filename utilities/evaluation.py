@@ -20,15 +20,10 @@ class Evaluation:
             ylabel = self.ylabel
 
         # Analysis results.
-        # kloda = []
-        # duerr = []
-        our = []  # reduced data age (for comparison)
+        Gunzel = []  # reduced data age (for comparison)
 
         for chain in chains:
-            # duerr.append((1 - (chain.duerr_age / chain.davare)) * 100)
-            # kloda.append((1 - (chain.kloda / chain.davare)) * 100)
-            # our.append((1 - (chain.our_red_age / chain.davare)) * 100)
-            our.append((1 - (chain.our_age / chain.davare)) * 100)
+            Gunzel.append((1 - (chain.Gunzel_age / chain.davare)) * 100)
 
         # Plotting.
         # Blue box configuration:
@@ -51,10 +46,8 @@ class Evaluation:
         ax1.hlines(self.hlines, 0, 4, linestyles=(0, (5, 5)),
                    colors="lightgrey")
         my_plot = ax1.boxplot(
-                # [duerr, kloda, our],
-                # labels=["Dür", "Klo", "Our"],
-                [our],
-                labels=["Our"],
+                [Gunzel],
+                labels=["Gunzel"],
                 showfliers=False,
                 boxprops=boxprops,
                 medianprops=medianprops,
@@ -81,14 +74,10 @@ class Evaluation:
             ylabel = self.ylabel
 
         # Analysis results.
-        # kloda = []
-        # duerr = []
-        our = []
+        Gunzel = []
 
         for chain in chains:
-            # duerr.append((1 - (chain.duerr_react / chain.davare)) * 100)
-            # kloda.append((1 - (chain.kloda / chain.davare)) * 100)
-            our.append((1 - (chain.our_react / chain.davare)) * 100)
+            Gunzel.append((1 - (chain.Gunzel_react / chain.davare)) * 100)
 
         # Plotting.
         # Blue box configuration:
@@ -111,10 +100,8 @@ class Evaluation:
         ax1.hlines(self.hlines, 0, 4, linestyles=(0, (5, 5)),
                    colors="lightgrey")
         my_plot = ax1.boxplot(
-                # [duerr, kloda, our],
-                # labels=["Dür", "Klo", "Our"],
-                [our],
-                labels=["Our"],
+                [Gunzel],
+                labels=["Gunzel"],
                 showfliers=False,
                 boxprops=boxprops,
                 medianprops=medianprops,
@@ -141,13 +128,10 @@ class Evaluation:
             ylabel = self.ylabel
 
         # Analysis results.
-        # duerr = []
-        our = []  # reduced interconnected data age (for comparison)
+        Gunzel = []  # reduced interconnected data age (for comparison)
 
         for chain in chains:
-            # duerr.append((1-(chain.duerr_age/chain.davare))*100)
-            # our.append((1-(chain.inter_our_red_age/chain.davare))*100)
-            our.append((1-(chain.inter_our_age/chain.davare))*100)
+            Gunzel.append((1-(chain.inter_Gunzel_age/chain.davare))*100)
 
         # Plotting.
         # Blue box configuration:
@@ -170,10 +154,8 @@ class Evaluation:
         ax1.hlines(self.hlines, 0, 3, linestyles=(0, (5, 5)),
                    colors="lightgrey")
         my_plot = ax1.boxplot(
-                # [duerr, our],
-                # labels=["Dür", "Our"],
-                [ our],
-                labels=["Our"],
+                [ Gunzel],
+                labels=["Gunzel"],
                 showfliers=False,
                 boxprops=boxprops,
                 medianprops=medianprops,
@@ -200,12 +182,10 @@ class Evaluation:
             ylabel = self.ylabel
 
         # Analysis results.
-        # duerr = []
-        our = []
+        Gunzel = []
 
         for chain in chains:
-            # duerr.append((1-(chain.duerr_react/chain.davare))*100)
-            our.append((1-(chain.inter_our_react/chain.davare))*100)
+            Gunzel.append((1-(chain.inter_Gunzel_react/chain.davare))*100)
 
         # Plotting.
         # Blue box configuration:
@@ -228,10 +208,8 @@ class Evaluation:
         ax1.hlines(self.hlines, 0, 3, linestyles=(0, (5, 5)),
                    colors="lightgrey")
         my_plot = ax1.boxplot(
-                # [duerr, our],
-                # labels=["Dür", "Our"],
-                [our],
-                labels=["Our"],
+                [Gunzel],
+                labels=["Gunzel"],
                 showfliers=False,
                 boxprops=boxprops,
                 medianprops=medianprops,
@@ -253,7 +231,7 @@ class Evaluation:
         """Heatmap: Reduction of maximum data age w.r.t. normalized chain
         disorder.
 
-        Shows the latency reduction [%] of our analyses compared to Davare.
+        Shows the latency reduction [%] of Gunzel analyses compared to Davare.
         """
         import seaborn as sns  # only necessary for heatmaps
 
@@ -261,7 +239,7 @@ class Evaluation:
         disorder_ratio = []
         improvement = []
         for chain in chains:
-            improvement.append((1-(chain.our_age/chain.davare))*100)
+            improvement.append((1-(chain.Gunzel_age/chain.davare))*100)
             if len(chain.chain) == 1:
                 disorder_ratio.append(0)
             else:
@@ -310,7 +288,7 @@ class Evaluation:
         """Heatmap: Reduction of maximum reaction time w.r.t. normalized chain
         disorder.
 
-        Shows the latency reduction [%] of our analyses compared to Davare.
+        Shows the latency reduction [%] of Gunzel analyses compared to Davare.
         """
         import seaborn as sns  # only necessary for heatmaps
 
@@ -318,7 +296,7 @@ class Evaluation:
         disorder_ratio = []
         improvement = []
         for chain in chains:
-            improvement.append((1-(chain.our_react/chain.davare))*100)
+            improvement.append((1-(chain.Gunzel_react/chain.davare))*100)
             if len(chain.chain) == 1:
                 disorder_ratio.append(0)
             else:

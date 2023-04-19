@@ -14,7 +14,7 @@ import utilities.chain as c
 ###
 
 class task (dict):
-    """A task according to our task model.
+    """A task according to Gunzel task model.
     Used only for the purpose of task creation.
     """
     def __init__(self, execution, period, deadline):

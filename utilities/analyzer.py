@@ -56,13 +56,13 @@ class Analyzer:
                 return r
 
     ###
-    # Our analyses from 'Timing Analysis of Asynchronized Distributed
+    # Gunzel analyses from 'Timing Analysis of Asynchronized Distributed
     # Cause-Effect Chains' (2021).
     ###
 
-    def max_age_our(self, schedule, task_set, chain, max_phase, hyper_period,
+    def max_age_Gunzel(self, schedule, task_set, chain, max_phase, hyper_period,
                     reduced=False):
-        """Our maximum data age time analysis.
+        """Gunzel maximum data age time analysis.
 
         We construct all immediate backward augmented job chains and then
         choose the maximal length of them.
@@ -149,15 +149,15 @@ class Analyzer:
 
         # Results.
         if reduced:
-            chain.our_red_age = max_length
+            chain.Gunzel_red_age = max_length
         else:
-            chain.our_age = max_length
+            chain.Gunzel_age = max_length
         return max_length
 
     def imm_bw_jc(self, current_job, c_len, schedule, chain, key=0):
         """Compute immediate forward job chain recursively.
 
-        Used as help function for max_age_our(). Returns None if the job chain
+        Used as help function for max_age_Gunzel(). Returns None if the job chain
         is incomplete.
         """
         # Initial case.
@@ -193,8 +193,8 @@ class Analyzer:
         else:
             return []
 
-    def reaction_our(self, schedule, task_set, chain, max_phase, hyper_period):
-        """Our maximum reaction time analysis.
+    def reaction_Gunzel(self, schedule, task_set, chain, max_phase, hyper_period):
+        """Gunzel maximum reaction time analysis.
 
         We construct all immediate forward augmented job chains and then
         choose the maximal length of them.
@@ -259,13 +259,13 @@ class Analyzer:
         max_length = max_cand.length()
 
         # Results.
-        chain.our_react = max_length
+        chain.Gunzel_react = max_length
         return max_length
 
     def imm_fw_jc(self, current_job, c_len, schedule, chain, key=0):
         """Compute immediate forward job chain recursively
 
-        Used as help function for reaction_our().
+        Used as help function for reaction_Gunzel().
         """
         # Initial case.
         if key == 0:
@@ -293,78 +293,78 @@ class Analyzer:
         else:
             return []
 
-    def reaction_inter_our(self, chain_set):
-        """Our maximum reaction time analysis for interconnected cause-effect
+    def reaction_inter_Gunzel(self, chain_set):
+        """Gunzel maximum reaction time analysis for interconnected cause-effect
         chains.
 
         Input: chain_set is a list of cause-effect chains with entry at
         interconnected.
-        Note: The chains have to be analyzed by our single ECU maximum reaction
-        time analysis beforehand. ( reaction_our() )
+        Note: The chains have to be analyzed by Gunzel single ECU maximum reaction
+        time analysis beforehand. ( reaction_Gunzel() )
         """
         for chain in chain_set:
-            inter_our_react = 0  # total reaction time
+            inter_Gunzel_react = 0  # total reaction time
             for i in range(0, len(chain.interconnected)):
                 # Case: i is a communication task.
                 if isinstance(chain.interconnected[i], utilities.task.Task):
-                    inter_our_react += (chain.interconnected[i].period
+                    inter_Gunzel_react += (chain.interconnected[i].period
                                         + chain.interconnected[i].rt)
                 # Case: i is a cause-effect chain.
                 else:
-                    inter_our_react += chain.interconnected[i].our_react
+                    inter_Gunzel_react += chain.interconnected[i].Gunzel_react
             # Store result.
-            chain.inter_our_react = inter_our_react
+            chain.inter_Gunzel_react = inter_Gunzel_react
 
-    def max_age_inter_our(self, chain_set, reduced=False):
-        """Our reduced maximum data age analysis for interconnected
+    def max_age_inter_Gunzel(self, chain_set, reduced=False):
+        """Gunzel reduced maximum data age analysis for interconnected
         cause-effect chains.
 
         Input: chain_set is a list of cause-effect chains with entry at
         interconnected.
-        Note: The chains have to be analyzed by our single ECU maximum data age
-        analysis beforehand. ( max_age_our() and max_age_our(reduced=True) )
+        Note: The chains have to be analyzed by Gunzel single ECU maximum data age
+        analysis beforehand. ( max_age_Gunzel() and max_age_Gunzel(reduced=True) )
         """
         # for chain in chain_set:
         #     m = len(chain.interconnected)  # chain length
-        #     inter_our_red_age = 0  # total data age
+        #     inter_Gunzel_red_age = 0  # total data age
         #     for i in range(0, m-1):
         #         # Case: i is a communication task.
         #         if isinstance(chain.interconnected[i], utilities.task.Task):
-        #             inter_our_red_age += (chain.interconnected[i].period
+        #             inter_Gunzel_red_age += (chain.interconnected[i].period
         #                                   + chain.interconnected[i].rt)
         #         # Case: i is a cause-effect chain.
         #         else:
-        #             inter_our_red_age += chain.interconnected[i].our_age
+        #             inter_Gunzel_red_age += chain.interconnected[i].Gunzel_age
 
         #     # Handle the last cause-effect chain in the list.
         #     if reduced:
-        #         inter_our_red_age += chain.interconnected[m-1].our_red_age
+        #         inter_Gunzel_red_age += chain.interconnected[m-1].Gunzel_red_age
         #     else:
-        #         inter_our_red_age += chain.interconnected[m-1].our_age
+        #         inter_Gunzel_red_age += chain.interconnected[m-1].Gunzel_age
 
         #     # Store result.
-        #     chain.inter_our_red_age = inter_our_red_age
+        #     chain.inter_Gunzel_red_age = inter_Gunzel_red_age
 
         for chain in chain_set:
             m = len(chain.interconnected)  # chain length
-            inter_our_age = 0  # total data age
+            inter_Gunzel_age = 0  # total data age
             for i in range(0, m-1):
                 # Case: i is a communication task.
                 if isinstance(chain.interconnected[i], utilities.task.Task):
-                    inter_our_age += (chain.interconnected[i].period
+                    inter_Gunzel_age += (chain.interconnected[i].period
                                           + chain.interconnected[i].rt)
                 # Case: i is a cause-effect chain.
                 else:
-                    inter_our_age += chain.interconnected[i].our_age
+                    inter_Gunzel_age += chain.interconnected[i].Gunzel_age
 
             # Handle the last cause-effect chain in the list.
             if reduced:
-                inter_our_age += chain.interconnected[m-1].our_red_age
+                inter_Gunzel_age += chain.interconnected[m-1].Gunzel_red_age
             else:
-                inter_our_age += chain.interconnected[m-1].our_age
+                inter_Gunzel_age += chain.interconnected[m-1].Gunzel_age
 
             # Store result.
-            chain.inter_our_age = inter_our_age
+            chain.inter_Gunzel_age = inter_Gunzel_age
 
 
     ###
