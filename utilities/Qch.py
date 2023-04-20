@@ -69,14 +69,14 @@ def generate_tsn_candidate_taskset(num_tasks, min_period, max_period,
 
 def qch_response_time(taskset):
     """Compute the worst-case response time of the tsn tasks."""  
-    def ddl(pivot):
+    def ddl_ck(pivot):
         time = (pivot.offset + pivot.hops) * pivot.slot
         if (pivot.deadline <= time):  # stop property
             return False
 
     for task in taskset:
         rt = task.offset + (task.hops + 1) * task.slot
-        ddl = ddl(task)
+        ddl = ddl_ck(task)
         if rt >= task.deadline:  # WCRT > deadline is not allowed
             return False
         elif ddl is False:
