@@ -3,7 +3,7 @@
 import math
 import utilities.task
 import utilities.augmented_job_chain as aug
-
+import utilities.TSNtask
 
 debug_flag = False  # flag to have breakpoint() when errors occur
 
@@ -334,6 +334,7 @@ class Analyzer:
                 if isinstance(chain.interconnected[i], utilities.task.Task):
                     inter_Gunzel_age += (chain.interconnected[i].period
                                           + chain.interconnected[i].rt)
+                    #这里改成TSN的rt，response time
                 # Case: i is a cause-effect chain.
                 else:
                     inter_Gunzel_age += chain.interconnected[i].Gunzel_age
@@ -346,8 +347,59 @@ class Analyzer:
 
             # Store result.
             chain.inter_Gunzel_age = inter_Gunzel_age
+    def reaction_inter_tsn(self, chain_set):
+        """tsn maximum reaction time analysis for interconnected cause-effect
+        chains.
 
+        Input: chain_set is a list of cause-effect chains with entry at
+        interconnected.
+        Note: The chains have to be analyzed by Gunzel single ECU maximum reaction
+        time analysis beforehand. ( reaction_Gunzel() )
+        """
+        for chain in chain_set:
+            inter_tsn_react = 0  # total reaction time
+            for i in range(0, len(chain.tsntask)):
+                # Case: i is a communication task.
+                if isinstance(chain.tsntask[i], utilities.TSNtask.TSNTask):
+                    inter_tsn_react += (chain.tsntask[i].period
+                                        + chain.tsntask[i].rt)
+                # Case: i is a cause-effect chain.
+                else:
+                    inter_tsn_react += chain.tsntask[i].Gunzel_react
+            # Store result.
+            chain.inter_tsn_react = inter_tsn_react
 
+    def max_age_inter_tsn(self, chain_set, reduced=False):
+        """Gunzel reduced maximum data age analysis for interconnected
+        cause-effect chains.
+
+        Input: chain_set is a list of cause-effect chains with entry at
+        interconnected.
+        Note: The chains have to be analyzed by Gunzel single ECU maximum data age
+        analysis beforehand. ( max_age_Gunzel() and max_age_Gunzel(reduced=True) )
+        """
+
+        for chain in chain_set:
+            m = len(chain.tsntask)  # chain length
+            inter_tsn_age = 0  # total data age
+            for i in range(0, m-1):
+                # Case: i is a communication task.
+                if isinstance(chain.tsntask[i], utilities.TSNtask.TSNTask):
+                    inter_tsn_age += (chain.tsntask[i].period
+                                            + chain.tsntask[i].rt)
+                    #这里改成TSN的rt，response time
+                # Case: i is a cause-effect chain.
+                else:
+                    inter_tsn_age += chain.tsntask[i].Gunzel_age
+
+            # Handle the last cause-effect chain in the list.
+            if reduced:
+                inter_tsn_age += chain.tsntask[m-1].Gunzel_red_age
+            else:
+                inter_tsn_age += chain.tsntask[m-1].Gunzel_age
+
+            # Store result.
+            chain.inter_tsn_age = inter_tsn_age
     ###
     # Davare analysis from 'Period Optimization for Hard Real-time Distributed
     # Automotive Systems' (2007).

@@ -12,6 +12,7 @@ import math
 import numpy as np
 import utilities.chain as c
 import utilities.communication as comm
+import utilities.Qch as qch
 import utilities.generator_WATERS as waters
 import utilities.generator_UUNIFAST as uunifast
 import utilities.transformer as trans
@@ -48,7 +49,7 @@ def main():
 
     if args.j == 1:
         """Single ECU analysis.
-
+            分析单个ECU 不用管
         Required arguments:
         -j1
         -u : utilization [%]
@@ -151,6 +152,29 @@ def main():
         analyzer = a.Analyzer("0")
 
         try:
+            # TDA for each task set.
+            print("TDA.")
+            for idxx in range(len(task_sets)):
+                try:
+                    # TDA.
+                    i = 1
+                    for task in task_sets[idxx]:
+                        # Prevent WCET = 0 since the scheduler can
+                        # not handle this yet. This case can occur due to
+                        # rounding with the transformer.
+                        if task.wcet == 0:
+                            raise ValueError("WCET == 0")
+                        task.rt = analyzer.tda(task, task_sets[idxx][:(i - 1)])
+                        if task.rt > task.deadline:
+                            raise ValueError(
+                                    "TDA Result: WCRT bigger than deadline!")
+                        i += 1
+                except ValueError:
+                    # If TDA fails, remove task and chain set and continue.
+                    task_sets.remove(task_sets[idxx])
+                    ce_chains.remove(ce_chains[idxx])
+                    continue
+                
             # End-to-End Analyses.
             print("Test: Davare.")
             analyzer.davare(ce_chains)
@@ -244,7 +268,7 @@ def main():
 
     elif args.j == 2:
         """Interconnected ECU analysis.
-
+            分析多ECU
         Required arguments:
         -j2
         -u : utilization (for loading)
@@ -295,31 +319,40 @@ def main():
                 return
 
         ###
-        # Interconnected cause-effect chain generation.
+        # Interconnected cause-effect chain generation.生成关联因果链
         ###
         print("=Interconnected cause-effect chain generation.=")
-        chains_inter = []
+        chains_inter = []#存储所有生成的因果链
+        chains_inter_tsn = [] #TSN
         for j in range(0, number_interconn_ce_chains):
             chain_all = []  # sequence of all tasks (from chains + comm tasks)
             i_chain_all = []  # sequence of chains and comm_tasks
+            chain_all_tsn = []  # #TSN
+            i_chain_all_tsn = [] #TSN
 
-            # Generate communication tasks.
+            # Generate communication tasks.生成通信任务，需要改成tsn
             com_tasks = comm.generate_communication_taskset(20, 10, 1000, True)
-
+            tsn_tasks = qch.generate_tsn_taskset(20, 10, 1000, True) #TSN
+       
             # Fill chain_all and i_chain_all.
             k = 0
             for chain in list(np.random.choice(
-                    chains_single_ECU, 5, replace=False)):  # randomly choose 5
+                    chains_single_ECU, 5, replace=False)):  # randomly choose 5，选择五个单ECU的因果链
                 i_chain_all.append(chain)
+                i_chain_all_tsn.append(chain)#TSN
                 for task in chain.chain:
                     chain_all.append(task)
-                if k < 4:  # communication tasks are only added in between
+                    chain_all_tsn.append(task)#TSN
+                if k < 4:  # communication tasks are only added in between，插入通信任务，当k小于4时，就在相应位置上添加通信任务。
                     chain_all.append(com_tasks[k])
                     i_chain_all.append(com_tasks[k])
+                    chain_all_tsn.append(tsn_tasks[k])#TSN
+                    i_chain_all_tsn.append(tsn_tasks[k])#TSN
                 k += 1
 
-            chains_inter.append(c.CauseEffectChain(0, chain_all, i_chain_all))
-
+            chains_inter.append(c.CauseEffectChain(0, chain_all, i_chain_all,False))#将生成的新因果链条添加
+            chains_inter_tsn.append(c.CauseEffectChain(0, chain_all_tsn, i_chain_all_tsn,True))#TSN
+           
             # End user notification
             if j % 100 == 0:
                 print("\t", j)
@@ -341,6 +374,11 @@ def main():
         analyzer.max_age_inter_Gunzel(chains_inter, reduced=False)
         analyzer.reaction_inter_Gunzel(chains_inter)
 
+        #TSN
+        analyzer.max_age_inter_tsn(chains_inter_tsn, reduced=False)
+        analyzer.reaction_inter_tsn(chains_inter_tsn)
+
+
         ###
         # Save data.
         ###
@@ -348,7 +386,7 @@ def main():
         np.savez(
                 "./output/2interconn/chains_" + "u=" + str(utilization)
                 + "_g=" + str(gen_setting) + ".npz",
-                chains_inter=chains_inter, chains_single_ECU=chains_single_ECU)
+                chains_inter=chains_inter, chains_inter_tsn=chains_inter_tsn,chains_single_ECU=chains_single_ECU)
 
     elif args.j == 3:
         """Evaluation.
