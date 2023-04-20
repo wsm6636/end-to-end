@@ -5,7 +5,7 @@ class TSNTask:
     """A tsn task."""
 
     def __init__(self, tsntask_id, tsntask_offset, tsntask_hops, tsntask_slot, tsntask_period,
-                #  tsntask_deadline, 
+                 tsntask_deadline, 
                  priority=0, 
                 #  tsnmessage=False,
                  ):
@@ -17,7 +17,7 @@ class TSNTask:
         self.hops = tsntask_hops  #  跳数，h
         self.slot = tsntask_slot  # slot长度，d
         self.period = tsntask_period  # 间隔，p
-        # self.deadline = tsntask_deadline  # deadline
+        self.deadline = tsntask_deadline  # deadline
         self.priority = priority  # a lower value means higher priority
         # self.message = tsnmessage  # flag for communication tasks
 
@@ -34,5 +34,5 @@ class TSNTask:
                         priority=self.priority, 
                         offset=self.offset,
                         hops=self.hops, slot=self.slot, period=self.period,
-                        # deadline=self.deadline, 
+                        deadline=self.deadline, 
                         response=self.rt)

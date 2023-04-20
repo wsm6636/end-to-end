@@ -26,7 +26,7 @@ class Evaluation:
         for chain in chains:
             Gunzel.append((1-(chain.inter_Gunzel_age/chain.davare))*100)
         for chaintsn in chainstsn:
-            tsn.append((1-(chaintsn.inter_tsn_age/chain.davare))*100)
+            tsn.append((1-(chaintsn.inter_tsn_age/chain.inter_Gunzel_age))*100)
             # print(chaintsn.inter_tsn_age,chaintsn.davare,chain.davare)
 
         # Plotting.
@@ -84,7 +84,7 @@ class Evaluation:
         for chain in chains:
             Gunzel.append((1-(chain.inter_Gunzel_react/chain.davare))*100)
         for chaintsn in chainstsn:
-            tsn.append((1-(chaintsn.inter_tsn_react/chain.davare))*100)
+            tsn.append((1-(chaintsn.inter_tsn_react/chain.inter_Gunzel_age))*100)
 
         # Plotting.
         # Blue box configuration:

@@ -11,7 +11,6 @@ import argparse
 import math
 import numpy as np
 import utilities.chain as c
-import utilities.TSNchain as t
 import utilities.communication as comm
 import utilities.Qch as qch
 import utilities.generator_WATERS as waters

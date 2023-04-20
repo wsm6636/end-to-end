@@ -60,16 +60,29 @@ def generate_tsn_candidate_taskset(num_tasks, min_period, max_period,
     random.shuffle(prio)
     # Create tasks.
     for i in range(num_tasks):
-        hops = random.randint(1, 6)
+        # hops = random.randint(1, 6)
+        hops = 1
         offset = hops * slot
-        taskset.append(qchtask.TSNTask(i, offset, hops, slot, periods[i], prio[i]))
+        taskset.append(qchtask.TSNTask(i, offset, hops, slot, periods[i], periods[i], prio[i]))
     return taskset
 
 
 def qch_response_time(taskset):
     """Compute the worst-case response time of the tsn tasks."""  
+    def ddl(pivot):
+        time = (pivot.offset + pivot.hops) * pivot.slot
+        if (pivot.deadline <= time):  # stop property
+            return False
+
     for task in taskset:
         rt = task.offset + (task.hops + 1) * task.slot
-        # Set task WCRT
-        task.rt = rt
+        ddl = ddl(task)
+        if rt >= task.deadline:  # WCRT > deadline is not allowed
+            return False
+        elif ddl is False:
+            return False
+        else:
+            # Set task WCRT
+            task.rt = rt
+
     return True
