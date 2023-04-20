@@ -4,17 +4,17 @@
 class CauseEffectChain:
     """Cause-effect chain."""
 
-    def __init__(self, id, chain, interconnected=[], tsntask=False):
+    def __init__(self, id, chain, interconnected=[]):
         """Initialize a cause-effect chain."""
         self.id = id  # unique identifier
         self.chain = chain  # list of all tasks in the chain
         # List of local cause-effect chains and communication tasks. (Only in
         # the interconnected case.)
         
-        if tsntask:
-            self.tsntask = interconnected
-        else:
-            self.interconnected = interconnected
+        # if tsntask:
+        #     self.tsntask = interconnected
+        # else:
+        self.interconnected = interconnected
 
         # Analysis results: (Are added during the analysis.)
         self.davare = 0  # Davare

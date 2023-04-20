@@ -10,7 +10,7 @@ class Evaluation:
     hlines = [100, 90, 80, 70, 60, 50, 40, 30, 20, 10, 0]  # horizontal lines
     ylabel = ""  # global label for y-axis
         
-    def davare_boxplot_age_interconnected(self, chains, filename,
+    def davare_boxplot_age_interconnected(self, chains,chainstsn, filename,
                                           xaxis_label="", ylabel=None):
         """Boxplot: Interconnected ECU, maximum data age.
 
@@ -25,7 +25,9 @@ class Evaluation:
 
         for chain in chains:
             Gunzel.append((1-(chain.inter_Gunzel_age/chain.davare))*100)
-            tsn.append((1-(chain.inter_tsn_age/chain.davare))*100)
+        for chaintsn in chainstsn:
+            tsn.append((1-(chaintsn.inter_tsn_age/chain.davare))*100)
+            # print(chaintsn.inter_tsn_age,chaintsn.davare,chain.davare)
 
         # Plotting.
         # Blue box configuration:
@@ -66,7 +68,7 @@ class Evaluation:
         # Save.
         plt.savefig(filename)
 
-    def davare_boxplot_reaction_interconnected(self, chains, filename,
+    def davare_boxplot_reaction_interconnected(self, chains, chainstsn,filename,
                                                xaxis_label="", ylabel=None):
         """Boxplot: Interconnected ECU, maximum reaction time.
 
@@ -81,7 +83,8 @@ class Evaluation:
 
         for chain in chains:
             Gunzel.append((1-(chain.inter_Gunzel_react/chain.davare))*100)
-            tsn.append((1-(chain.inter_tsn_react/chain.davare))*100)
+        for chaintsn in chainstsn:
+            tsn.append((1-(chaintsn.inter_tsn_react/chain.davare))*100)
 
         # Plotting.
         # Blue box configuration:

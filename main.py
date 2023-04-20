@@ -11,6 +11,7 @@ import argparse
 import math
 import numpy as np
 import utilities.chain as c
+import utilities.TSNchain as t
 import utilities.communication as comm
 import utilities.Qch as qch
 import utilities.generator_WATERS as waters
@@ -350,8 +351,8 @@ def main():
                     i_chain_all_tsn.append(tsn_tasks[k])#TSN
                 k += 1
 
-            chains_inter.append(c.CauseEffectChain(0, chain_all, i_chain_all,False))#将生成的新因果链条添加
-            chains_inter_tsn.append(c.CauseEffectChain(0, chain_all_tsn, i_chain_all_tsn,True))#TSN
+            chains_inter.append(c.CauseEffectChain(0, chain_all, i_chain_all))#将生成的新因果链条添加
+            chains_inter_tsn.append(c.CauseEffectChain(0, chain_all_tsn, i_chain_all_tsn))#TSN
            
             # End user notification
             if j % 100 == 0:
@@ -406,6 +407,7 @@ def main():
             print("=Load data.=")
             chains_single_ECU = []
             chains_inter = []
+            chains_inter_tsn = []
             for ut in utilizations:
                 data = np.load(
                         "output/2interconn/chains_" + "u=" + str(ut)
@@ -418,6 +420,9 @@ def main():
                 # Interconnected.
                 for chain in data.f.chains_inter:
                     chains_inter.append(chain)
+
+                for chain in data.f.chains_inter_tsn:
+                    chains_inter_tsn.append(chain)
 
                 # Close data file and run the garbage collector.
                 data.close()
@@ -438,26 +443,26 @@ def main():
 
         myeva = eva.Evaluation()
 
-        # Single ECU Plot.
-        myeva.davare_boxplot_age(
-                chains_single_ECU,
-                "output/3plots/davare_single_ecu_age"
-                + "_g=" + str(args.g) + ".pdf",
-                xaxis_label="", ylabel="Latency reduction [%]")
-        myeva.davare_boxplot_reaction(
-                chains_single_ECU,
-                "output/3plots/davare_single_ecu_reaction"
-                + "_g=" + str(args.g) + ".pdf",
-                xaxis_label="", ylabel="Latency reduction [%]")
+        # # Single ECU Plot.
+        # myeva.davare_boxplot_age(
+        #         chains_single_ECU,
+        #         "output/3plots/davare_single_ecu_age"
+        #         + "_g=" + str(args.g) + ".pdf",
+        #         xaxis_label="", ylabel="Latency reduction [%]")
+        # myeva.davare_boxplot_reaction(
+        #         chains_single_ECU,
+        #         "output/3plots/davare_single_ecu_reaction"
+        #         + "_g=" + str(args.g) + ".pdf",
+        #         xaxis_label="", ylabel="Latency reduction [%]")
 
         # Interconnected ECU Plot.
         myeva.davare_boxplot_age_interconnected(
-                chains_inter,
+                chains_inter,chains_inter_tsn,
                 "output/3plots/davare_interconnected_age"
                 + "_g=" + str(args.g) + ".pdf",
                 xaxis_label="", ylabel="Latency reduction [%]")
         myeva.davare_boxplot_reaction_interconnected(
-                chains_inter,
+                chains_inter,chains_inter_tsn,
                 "output/3plots/davare_interconnected_reaction"
                 + "_g=" + str(args.g) + ".pdf",
                 xaxis_label="", ylabel="Latency reduction [%]")

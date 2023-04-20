@@ -358,14 +358,14 @@ class Analyzer:
         """
         for chain in chain_set:
             inter_tsn_react = 0  # total reaction time
-            for i in range(0, len(chain.tsntask)):
+            for i in range(0, len(chain.interconnected)):
                 # Case: i is a communication task.
-                if isinstance(chain.tsntask[i], utilities.TSNtask.TSNTask):
-                    inter_tsn_react += (chain.tsntask[i].period
-                                        + chain.tsntask[i].rt)
+                if isinstance(chain.interconnected[i], utilities.TSNtask.TSNTask):
+                    inter_tsn_react += (chain.interconnected[i].period
+                                        + chain.interconnected[i].rt)
                 # Case: i is a cause-effect chain.
                 else:
-                    inter_tsn_react += chain.tsntask[i].Gunzel_react
+                    inter_tsn_react += chain.interconnected[i].Gunzel_react
             # Store result.
             chain.inter_tsn_react = inter_tsn_react
 
@@ -380,23 +380,23 @@ class Analyzer:
         """
 
         for chain in chain_set:
-            m = len(chain.tsntask)  # chain length
+            m = len(chain.interconnected)  # chain length
             inter_tsn_age = 0  # total data age
             for i in range(0, m-1):
                 # Case: i is a communication task.
-                if isinstance(chain.tsntask[i], utilities.TSNtask.TSNTask):
-                    inter_tsn_age += (chain.tsntask[i].period
-                                            + chain.tsntask[i].rt)
+                if isinstance(chain.interconnected[i], utilities.TSNtask.TSNTask):
+                    inter_tsn_age += (chain.interconnected[i].period
+                                            + chain.interconnected[i].rt)
                     #这里改成TSN的rt，response time
                 # Case: i is a cause-effect chain.
                 else:
-                    inter_tsn_age += chain.tsntask[i].Gunzel_age
+                    inter_tsn_age += chain.interconnected[i].Gunzel_age
 
             # Handle the last cause-effect chain in the list.
             if reduced:
-                inter_tsn_age += chain.tsntask[m-1].Gunzel_red_age
+                inter_tsn_age += chain.interconnected[m-1].Gunzel_red_age
             else:
-                inter_tsn_age += chain.tsntask[m-1].Gunzel_age
+                inter_tsn_age += chain.interconnected[m-1].Gunzel_age
 
             # Store result.
             chain.inter_tsn_age = inter_tsn_age
