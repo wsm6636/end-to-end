@@ -29,6 +29,7 @@ class CauseEffectChain:
         self.kloda = 0  # Kloda
         self.inter_tsn_age = 0  # TSN 
         self.inter_tsn_react = 0 # TSN 
+        self.davare_tsn = 0 
 
     def length(self):
         """Compute the length of a cause-effect chain."""

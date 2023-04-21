@@ -25,7 +25,7 @@ else
   echo "with $var concurrent jobs"
 fi
 
-num_tries=100  # number of runs，跑多少次,原来是100
+num_tries=1  # number of runs，跑多少次,原来是100
 runs_per_screen=10  # number of runs per screen，一次跑几个screen
 
 

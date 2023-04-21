@@ -22,11 +22,14 @@ class Evaluation:
         # Analysis results.
         Gunzel = []  # reduced interconnected data age (for comparison)
         tsn = [] 
+        tsn_d = [] 
 
         for chain in chains:
             Gunzel.append((1-(chain.inter_Gunzel_age/chain.davare))*100)
         for chaintsn in chainstsn:
             tsn.append((1-(chaintsn.inter_tsn_age/chain.davare))*100)
+        for chaintsn in chainstsn:
+            tsn_d.append((1-(chaintsn.inter_tsn_age/chaintsn.davare_tsn))*100)
             # print(chaintsn.inter_tsn_age,chaintsn.davare,chain.davare)
 
         # Plotting.
@@ -50,8 +53,8 @@ class Evaluation:
         ax1.hlines(self.hlines, 0, 3, linestyles=(0, (5, 5)),
                    colors="lightgrey")
         my_plot = ax1.boxplot(
-                [ Gunzel,tsn],
-                labels=["Gunzel","tsn"],
+                [ Gunzel,tsn,tsn_d],
+                labels=["Gunzel","tsn","tsn_d"],
                 showfliers=False,
                 boxprops=boxprops,
                 medianprops=medianprops,
@@ -80,11 +83,12 @@ class Evaluation:
         # Analysis results.
         Gunzel = []
         tsn = []
-
+        tsn_d = []
         for chain in chains:
             Gunzel.append((1-(chain.inter_Gunzel_react/chain.davare))*100)
         for chaintsn in chainstsn:
             tsn.append((1-(chaintsn.inter_tsn_react/chain.davare))*100)
+
 
         # Plotting.
         # Blue box configuration:
@@ -107,8 +111,8 @@ class Evaluation:
         ax1.hlines(self.hlines, 0, 3, linestyles=(0, (5, 5)),
                    colors="lightgrey")
         my_plot = ax1.boxplot(
-                [Gunzel,tsn],
-                labels=["Gunzel","tsn"],
+                [Gunzel,tsn,tsn_d],
+                labels=["Gunzel","tsn","tsn_d"],
                 showfliers=False,
                 boxprops=boxprops,
                 medianprops=medianprops,

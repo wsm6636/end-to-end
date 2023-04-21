@@ -367,7 +367,7 @@ def main():
 
         print("Test: Davare.")
         analyzer.davare([chains_inter])
-
+        analyzer.davare_tsn([chains_inter_tsn])
         print("Test: Gunzel.")
         # Gunzel test can only be used when the single processor tests are already
         # done.

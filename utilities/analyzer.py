@@ -418,4 +418,17 @@ class Analyzer:
                     latency += task.period + task.rt
                 # Store result.
                 chain.davare = latency
+    def davare_tsn(self, chain_sets):
+        """End-to-end latency analysis from Davare.
+
+        Input: chain_sets is a list of lists of chains.
+        """
+        for chain_set in chain_sets:
+            for chain in chain_set:
+                # Compute the latency for chain.
+                latency = 0
+                for task in chain.chain:
+                    latency += task.period + task.rt
+                # Store result.
+                chain.davare_tsn = latency
 
