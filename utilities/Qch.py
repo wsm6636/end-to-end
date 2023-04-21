@@ -71,15 +71,23 @@ def qch_response_time(taskset):
     """Compute the worst-case response time of the tsn tasks."""
     def ddl_ck(pivot):
         time = (pivot.offset + pivot.hops) * pivot.slot
-        if (pivot.deadline <= time):  # stop property
+        if (pivot.deadline < time):  # stop property
+            return False
+    def offset_ck(pivot):
+        time = pivot.offset * pivot.slot
+        if (pivot.period < time):  # stop property
             return False
 
     for task in taskset:
-        rt = task.offset + (task.hops + 1) * task.slot
+        # rt = task.offset + (task.hops + 1) * task.slot
+        rt = (task.hops + 1) * task.slot
         ddl = ddl_ck(task)
-        if rt >= task.deadline:  # WCRT > deadline is not allowed
+        ock = offset_ck(task)
+        if rt > task.deadline:  # WCRT > deadline is not allowed
             return False
         elif ddl is False:
+            return False
+        elif ock is False:
             return False
         else:
             # Set task WCRT
