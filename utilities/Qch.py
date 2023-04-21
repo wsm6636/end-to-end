@@ -60,8 +60,8 @@ def generate_tsn_candidate_taskset(num_tasks, min_period, max_period,
     random.shuffle(prio)
     # Create tasks.
     for i in range(num_tasks):
-        # hops = random.randint(1, 6)
-        hops = 1#1tiao
+        hops = random.randint(1, 6)
+        # hops = 1#1tiao
         offset = hops * slot
         taskset.append(qchtask.TSNTask(i, offset, hops, slot, periods[i], periods[i], prio[i]))
     return taskset
