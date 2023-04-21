@@ -25,7 +25,7 @@ else
   echo "with $var concurrent jobs"
 fi
 
-num_tries=1  # number of runs，跑多少次,原来是100
+num_tries=100  # number of runs，跑多少次,原来是100
 runs_per_screen=10  # number of runs per screen，一次跑几个screen
 
 
@@ -46,7 +46,7 @@ do
     # start a new screen，每次都会启动一个新的screen执行main
     # 实际运行main.py 传入参数unil利用率，g执行哪个基准，n执行第几次，r几个screen
     screen -dmS ascr$i python3.7 main.py -j1 -u=$util -g0 -r$runs_per_screen -n=$i
-    
+
     numberrec=$(screen -list | grep -c ascr.*)
 
     # wait until variable is reached，并行数量到达输入的值比如10，就会等待，知道screen数量减少到10以下
