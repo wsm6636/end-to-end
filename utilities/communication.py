@@ -16,7 +16,6 @@ CAN_BUS = {
 def generate_communication_taskset(num_tasks, min_period, max_period,
                                    rounded=False, max_trials=100):
     """Generate a set of communication tasks.
-
     num_tasks: number of communication tasks in the set
     min_period: lower bound for the periods
     max_period: upper bound for the periods
@@ -30,14 +29,14 @@ def generate_communication_taskset(num_tasks, min_period, max_period,
         taskset = generate_communication_candidate_taskset(
                 num_tasks, min_period, max_period, rounded)
         taskset = sorted(taskset, key=lambda x: x.priority)
-
+        
         # Compute WCRT.
         if non_preemptive_response_time(taskset):
+            random.shuffle(taskset)
             return taskset
         trials += 1
     # The creation failed too many times.
     return False
-
 
 # Help functions
 def generate_communication_candidate_taskset(num_tasks, min_period, max_period,
@@ -51,12 +50,12 @@ def generate_communication_candidate_taskset(num_tasks, min_period, max_period,
     if rounded:  # round to nearest integer.
         periods = np.rint(periods).tolist()
     # Generate priorities.
-    prio = list(range(num_tasks))
-    random.shuffle(prio)
+    priority = list(range(num_tasks))
+    random.shuffle(priority)
     # Create tasks.
     for i in range(num_tasks):
         taskset.append(task.Task(i, 0, wcet, wcet, periods[i], periods[i],
-                                 prio[i], True))
+                                 priority[i], True))
     return taskset
 
 

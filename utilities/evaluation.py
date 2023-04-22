@@ -13,22 +13,27 @@ class Evaluation:
     def davare_boxplot_age_interconnected(self, chains,chainstsn, filename,
                                           xaxis_label="", ylabel=None):
         """Boxplot: Interconnected ECU, maximum data age.
-
         Shows the latency reduction [%] of several analyses compared to Davare.
         """
         if ylabel is None:
             ylabel = self.ylabel
 
         # Analysis results.
-        Gunzel = []  # reduced interconnected data age (for comparison)
-        tsn = [] 
+        Gunzel = []
+        tsnre = []
+        davare = []
+        tsn = []
+        gun=[]
+
 
         for chain in chains:
             Gunzel.append((1-(chain.inter_Gunzel_age/chain.davare))*100)
+            gun.append(chain.inter_Gunzel_age)
+            davare.append(chain.davare)            
         for chaintsn in chainstsn:
-            tsn.append((1-(chaintsn.inter_tsn_age/chain.davare))*100)
-            # print(chaintsn.inter_tsn_age,chaintsn.davare,chain.davare)
-
+            tsnre.append(chaintsn.inter_tsn_age)
+        for i in range(0, len(davare)):
+            tsn.append((1-(tsnre[i]/davare[i]))*100)
         # Plotting.
         # Blue box configuration:
         boxprops = dict(linewidth=4, color='blue')
@@ -71,7 +76,6 @@ class Evaluation:
     def davare_boxplot_reaction_interconnected(self, chains, chainstsn,filename,
                                                xaxis_label="", ylabel=None):
         """Boxplot: Interconnected ECU, maximum reaction time.
-
         Shows the latency reduction [%] of several analyses compared to Davare.
         """
         if ylabel is None:
@@ -79,12 +83,23 @@ class Evaluation:
 
         # Analysis results.
         Gunzel = []
+        tsnre = []
+        davare = []
         tsn = []
+        gun = []
 
         for chain in chains:
             Gunzel.append((1-(chain.inter_Gunzel_react/chain.davare))*100)
+            gun.append(chain.inter_Gunzel_react)
+            davare.append(chain.davare)            
         for chaintsn in chainstsn:
-            tsn.append((1-(chaintsn.inter_tsn_react/chain.davare))*100)
+            # tsn.append((1-(chaintsn.inter_tsn_react/chain.davare))*100)
+            tsnre.append(chaintsn.inter_tsn_react)
+        for i in range(0, len(davare)):
+            tsn.append((1-(tsnre[i]/davare[i]))*100)
+        # for i in range(10):
+        #     print(test[i],tsnre[i],davare[i])
+        #     print(Gunzel[i],tsn[i])
 
         # Plotting.
         # Blue box configuration:
@@ -107,7 +122,7 @@ class Evaluation:
         ax1.hlines(self.hlines, 0, 3, linestyles=(0, (5, 5)),
                    colors="lightgrey")
         my_plot = ax1.boxplot(
-                [Gunzel,tsn],
+                [Gunzel,tsnre],
                 labels=["Gunzel","tsn"],
                 showfliers=False,
                 boxprops=boxprops,

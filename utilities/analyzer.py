@@ -32,14 +32,12 @@ class Analyzer:
     @staticmethod
     def workload(period, wcet, time):
         """Workload function for TDA.
-
         Help function for tda().
         """
         return wcet * math.ceil(float(time) / period)
 
     def tda(self, task, hp_tasks):
         """Implementation of TDA to calculate worst-case response time.
-
         Source:
         https://github.com/kuanhsunchen/MissRateSimulator/blob/master/TDA.py
         """
@@ -63,7 +61,6 @@ class Analyzer:
     def max_age_Gunzel(self, schedule, task_set, chain, max_phase, hyper_period,
                     reduced=False):
         """Gunzel maximum data age time analysis.
-
         We construct all immediate backward augmented job chains and then
         choose the maximal length of them.
         Note: The schedule has to be build beforehand with the event scheduler.
@@ -156,7 +153,6 @@ class Analyzer:
 
     def imm_bw_jc(self, current_job, c_len, schedule, chain, key=0):
         """Compute immediate forward job chain recursively.
-
         Used as help function for max_age_Gunzel(). Returns None if the job chain
         is incomplete.
         """
@@ -195,7 +191,6 @@ class Analyzer:
 
     def reaction_Gunzel(self, schedule, task_set, chain, max_phase, hyper_period):
         """Gunzel maximum reaction time analysis.
-
         We construct all immediate forward augmented job chains and then
         choose the maximal length of them.
         Note: The schedule has to be build beforehand with the event scheduler.
@@ -264,7 +259,6 @@ class Analyzer:
 
     def imm_fw_jc(self, current_job, c_len, schedule, chain, key=0):
         """Compute immediate forward job chain recursively
-
         Used as help function for reaction_Gunzel().
         """
         # Initial case.
@@ -296,7 +290,6 @@ class Analyzer:
     def reaction_inter_Gunzel(self, chain_set):
         """Gunzel maximum reaction time analysis for interconnected cause-effect
         chains.
-
         Input: chain_set is a list of cause-effect chains with entry at
         interconnected.
         Note: The chains have to be analyzed by Gunzel single ECU maximum reaction
@@ -312,6 +305,7 @@ class Analyzer:
                 # Case: i is a cause-effect chain.
                 else:
                     inter_Gunzel_react += chain.interconnected[i].Gunzel_react
+                    
             # Store result.
             chain.inter_Gunzel_react = inter_Gunzel_react
             
@@ -319,7 +313,6 @@ class Analyzer:
     def max_age_inter_Gunzel(self, chain_set, reduced=False):
         """Gunzel reduced maximum data age analysis for interconnected
         cause-effect chains.
-
         Input: chain_set is a list of cause-effect chains with entry at
         interconnected.
         Note: The chains have to be analyzed by Gunzel single ECU maximum data age
@@ -350,7 +343,6 @@ class Analyzer:
     def reaction_inter_tsn(self, chain_set):
         """tsn maximum reaction time analysis for interconnected cause-effect
         chains.
-
         Input: chain_set is a list of cause-effect chains with entry at
         interconnected.
         Note: The chains have to be analyzed by Gunzel single ECU maximum reaction
@@ -360,19 +352,21 @@ class Analyzer:
             inter_tsn_react = 0  # total reaction time
             for i in range(0, len(chain.interconnected)):
                 # Case: i is a communication task.
-                if isinstance(chain.interconnected[i], utilities.TSNtask.TSNTask):
-                    inter_tsn_react += (chain.interconnected[i].period
-                                        + chain.interconnected[i].rt)
+                if isinstance(chain.interconnected[i], utilities.TSNtask.tsnTask):
+                    inter_tsn_react += (chain.interconnected[i].period_tsn
+                                        + chain.interconnected[i].rt_tsn)
+                    # print("rt")
+                    # print(chain.interconnected[i].rt_tsn)
                 # Case: i is a cause-effect chain.
                 else:
                     inter_tsn_react += chain.interconnected[i].Gunzel_react
+                    
             # Store result.
             chain.inter_tsn_react = inter_tsn_react
 
     def max_age_inter_tsn(self, chain_set, reduced=False):
         """Gunzel reduced maximum data age analysis for interconnected
         cause-effect chains.
-
         Input: chain_set is a list of cause-effect chains with entry at
         interconnected.
         Note: The chains have to be analyzed by Gunzel single ECU maximum data age
@@ -384,9 +378,9 @@ class Analyzer:
             inter_tsn_age = 0  # total data age
             for i in range(0, m-1):
                 # Case: i is a communication task.
-                if isinstance(chain.interconnected[i], utilities.TSNtask.TSNTask):
-                    inter_tsn_age += (chain.interconnected[i].period
-                                            + chain.interconnected[i].rt)
+                if isinstance(chain.interconnected[i], utilities.TSNtask.tsnTask):
+                    inter_tsn_age += (chain.interconnected[i].period_tsn
+                                            + chain.interconnected[i].rt_tsn)
                     #这里改成TSN的rt，response time
                 # Case: i is a cause-effect chain.
                 else:
@@ -407,7 +401,6 @@ class Analyzer:
 
     def davare(self, chain_sets):
         """End-to-end latency analysis from Davare.
-
         Input: chain_sets is a list of lists of chains.
         """
         for chain_set in chain_sets:
@@ -418,4 +411,15 @@ class Analyzer:
                     latency += task.period + task.rt
                 # Store result.
                 chain.davare = latency
-
+    def davare_tsn(self, chain_sets):
+        """End-to-end latency analysis from Davare.
+        Input: chain_sets is a list of lists of chains.
+        """
+        for chain_set in chain_sets:
+            for chain in chain_set:
+                # Compute the latency for chain.
+                latency = 0
+                for task in chain.chain:
+                    latency += task.period + task.rt
+                # Store result.
+                chain.davare_tsn = latency

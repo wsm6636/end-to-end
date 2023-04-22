@@ -21,7 +21,6 @@ QCH = {
 def generate_tsn_taskset(num_tasks, min_period, max_period,
                                    rounded=False, max_trials=100):
     """Generate a set of tsn tasks.
-
     num_tasks: number of tsn tasks in the set
     min_period: lower bound for the periods
     max_period: upper bound for the periods
@@ -56,14 +55,14 @@ def generate_tsn_candidate_taskset(num_tasks, min_period, max_period,
     if rounded:  # round to nearest integer.
         periods = np.rint(periods).tolist()
     # Generate priorities.
-    prio = list(range(num_tasks))
-    random.shuffle(prio)
+    # prio = list(range(num_tasks))
+    # random.shuffle(prio)
     # Create tasks.
     for i in range(num_tasks):
-        # hops = random.randint(1, 6)
-        hops = 1#1tiao
+        hops = random.randint(1, 6)
+        # hops = 1#1tiao
         offset = hops * slot
-        taskset.append(qchtask.TSNTask(i, offset, hops, slot, periods[i], periods[i], prio[i]))
+        taskset.append(qchtask.tsnTask(i, offset, hops, slot, periods[i], periods[i]))
     return taskset
 
 
@@ -71,18 +70,26 @@ def qch_response_time(taskset):
     """Compute the worst-case response time of the tsn tasks."""
     def ddl_ck(pivot):
         time = (pivot.offset + pivot.hops) * pivot.slot
-        if (pivot.deadline <= time):  # stop property
+        if (pivot.deadline < time):  # stop property
+            return False
+    def offset_ck(pivot):
+        time = pivot.offset * pivot.slot
+        if(pivot.period_tsn < time):
             return False
 
     for task in taskset:
-        rt = task.offset + (task.hops + 1) * task.slot
+        # rt = task.offset + (task.hops + 1) * task.slot
+        rt = (task.hops + 1) * task.slot
         ddl = ddl_ck(task)
-        if rt >= task.deadline:  # WCRT > deadline is not allowed
+        ock = offset_ck(task)
+        if rt > task.deadline:  # WCRT > deadline is not allowed
             return False
         elif ddl is False:
             return False
+        elif ock is False:
+            return False
         else:
             # Set task WCRT
-            task.rt = rt
+            task.rt_tsn = rt
 
     return True
