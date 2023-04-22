@@ -81,7 +81,7 @@ def main():
     # Interconnected ECU Plot.
     myeva.davare_boxplot_age_interconnected(
             chains_inter,chains_inter_tsn,
-            "output/3plots/test_davare_interconnected_age"
+            "test_davare_interconnected_age"
             + "_g=" + str(gen_setting) + ".pdf",
             xaxis_label="", ylabel="Latency reduction [%]")
     myeva.davare_boxplot_reaction_interconnected(
@@ -89,6 +89,7 @@ def main():
             "test_davare_interconnected_reaction"
             + "_g=" + str(gen_setting) + ".pdf",
             xaxis_label="", ylabel="Latency reduction [%]")
+    
 
 if __name__ == '__main__':
     main()

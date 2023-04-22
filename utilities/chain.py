@@ -5,6 +5,7 @@ class CauseEffectChain:
     """Cause-effect chain."""
 
     def __init__(self, id, chain, interconnected=[]):
+        # ,tsntask=False
         """Initialize a cause-effect chain."""
         self.id = id  # unique identifier
         self.chain = chain  # list of all tasks in the chain

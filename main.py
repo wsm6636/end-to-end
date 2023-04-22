@@ -324,6 +324,7 @@ def main():
         print("=Interconnected cause-effect chain generation.=")
         chains_inter = []#存储所有生成的因果链
         chains_inter_tsn = [] #TSN
+
         for j in range(0, number_interconn_ce_chains):
             chain_all = []  # sequence of all tasks (from chains + comm tasks)
             i_chain_all = []  # sequence of chains and comm_tasks
@@ -348,15 +349,17 @@ def main():
                     i_chain_all.append(com_tasks[k])
                     chain_all_tsn.append(tsn_tasks[k])#TSN
                     i_chain_all_tsn.append(tsn_tasks[k])#TSN
+                    print(com_tasks[k])
                 k += 1
-
+            # print("chain_all,chain_all_tsn")
+            # print(chain_all[3],chain_all_tsn[3])
             chains_inter.append(c.CauseEffectChain(0, chain_all, i_chain_all))#将生成的新因果链条添加
             chains_inter_tsn.append(c.CauseEffectChain(0, chain_all_tsn, i_chain_all_tsn))#TSN
-           
+            
             # End user notification
-            if j % 100 == 0:
-                print("\t", j)
-
+            # if j % 100 == 0:
+            #     print("\t", j)
+        
         ###
         # Analyses (Davare, Duerr, Gunzel).
         # Kloda is not included, since it is only for synchronized clocks.
@@ -367,7 +370,6 @@ def main():
 
         print("Test: Davare.")
         analyzer.davare([chains_inter])
-        analyzer.davare_tsn([chains_inter_tsn])
         print("Test: Gunzel.")
         # Gunzel test can only be used when the single processor tests are already
         # done.

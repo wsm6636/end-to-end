@@ -312,6 +312,7 @@ class Analyzer:
                 # Case: i is a cause-effect chain.
                 else:
                     inter_Gunzel_react += chain.interconnected[i].Gunzel_react
+                    
             # Store result.
             chain.inter_Gunzel_react = inter_Gunzel_react
             
@@ -360,12 +361,15 @@ class Analyzer:
             inter_tsn_react = 0  # total reaction time
             for i in range(0, len(chain.interconnected)):
                 # Case: i is a communication task.
-                if isinstance(chain.interconnected[i], utilities.TSNtask.TSNTask):
-                    inter_tsn_react += (chain.interconnected[i].period
-                                        + chain.interconnected[i].rt)
+                if isinstance(chain.interconnected[i], utilities.TSNtask.tsnTask):
+                    inter_tsn_react += (chain.interconnected[i].period_tsn
+                                        + chain.interconnected[i].rt_tsn)
+                    # print("rt")
+                    # print(chain.interconnected[i].rt_tsn)
                 # Case: i is a cause-effect chain.
                 else:
                     inter_tsn_react += chain.interconnected[i].Gunzel_react
+                    
             # Store result.
             chain.inter_tsn_react = inter_tsn_react
 
@@ -384,9 +388,9 @@ class Analyzer:
             inter_tsn_age = 0  # total data age
             for i in range(0, m-1):
                 # Case: i is a communication task.
-                if isinstance(chain.interconnected[i], utilities.TSNtask.TSNTask):
-                    inter_tsn_age += (chain.interconnected[i].period
-                                            + chain.interconnected[i].rt)
+                if isinstance(chain.interconnected[i], utilities.TSNtask.tsnTask):
+                    inter_tsn_age += (chain.interconnected[i].period_tsn
+                                            + chain.interconnected[i].rt_tsn)
                     #这里改成TSN的rt，response time
                 # Case: i is a cause-effect chain.
                 else:
