@@ -86,16 +86,20 @@ class Evaluation:
         tsnre = []
         davare = []
         tsn = []
-
+        test = []
 
         for chain in chains:
             Gunzel.append((1-(chain.inter_Gunzel_react/chain.davare))*100)
+            test.append(chain.inter_Gunzel_react)
             davare.append(chain.davare)            
         for chaintsn in chainstsn:
             # tsn.append((1-(chaintsn.inter_tsn_react/chain.davare))*100)
             tsnre.append(chaintsn.inter_tsn_react)
         for i in range(0, len(davare)):
             tsn.append((1-(tsnre[i]/davare[i]))*100)
+        for i in range(10):
+            print(test[i],tsnre[i],davare[i])
+            print(Gunzel[i],tsn[i])
 
         # Plotting.
         # Blue box configuration:
@@ -118,7 +122,7 @@ class Evaluation:
         ax1.hlines(self.hlines, 0, 3, linestyles=(0, (5, 5)),
                    colors="lightgrey")
         my_plot = ax1.boxplot(
-                [Gunzel,tsn],
+                [test,tsnre],
                 labels=["Gunzel","tsn"],
                 showfliers=False,
                 boxprops=boxprops,
