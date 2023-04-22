@@ -39,7 +39,6 @@ def generate_communication_taskset(num_tasks, min_period, max_period,
     # The creation failed too many times.
     return False
 
-
 # Help functions
 def generate_communication_candidate_taskset(num_tasks, min_period, max_period,
                                              rounded=False):
