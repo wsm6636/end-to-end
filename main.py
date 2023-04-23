@@ -174,7 +174,7 @@ def main():
                     task_sets.remove(task_sets[idxx])
                     ce_chains.remove(ce_chains[idxx])
                     continue
-                
+
             # End-to-End Analyses.
             print("Test: Davare.")
             analyzer.davare(ce_chains)
@@ -237,7 +237,7 @@ def main():
                     print("Test: Gunzel Reaction Time.")
                     analyzer.reaction_Gunzel(schedule, task_set, chain, max_phase,
                                           hyper_period)
-                    
+
                 i += 1
         except Exception as e:
             print(e)
@@ -334,7 +334,7 @@ def main():
             # Generate communication tasks.生成通信任务，需要改成tsn
             com_tasks = comm.generate_communication_taskset(20, 10, 1000, True)
             tsn_tasks = qch.generate_tsn_taskset(20, 10, 1000, True) #TSN
-       
+
             # Fill chain_all and i_chain_all.
             k = 0
             for chain in list(np.random.choice(
@@ -355,11 +355,11 @@ def main():
             # print(chain_all[3],chain_all_tsn[3])
             chains_inter.append(c.CauseEffectChain(0, chain_all, i_chain_all))#将生成的新因果链条添加
             chains_inter_tsn.append(c.CauseEffectChain(0, chain_all_tsn, i_chain_all_tsn))#TSN
-            
+
             # End user notification
             # if j % 100 == 0:
             #     print("\t", j)
-        
+
         ###
         # Analyses (Davare, Duerr, Gunzel).
         # Kloda is not included, since it is only for synchronized clocks.
@@ -370,6 +370,7 @@ def main():
 
         print("Test: Davare.")
         analyzer.davare([chains_inter])
+        analyzer.davare_tsn([chains_inter_tsn])
         print("Test: Gunzel.")
         # Gunzel test can only be used when the single processor tests are already
         # done.

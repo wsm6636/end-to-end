@@ -305,10 +305,10 @@ class Analyzer:
                 # Case: i is a cause-effect chain.
                 else:
                     inter_Gunzel_react += chain.interconnected[i].Gunzel_react
-                    
+
             # Store result.
             chain.inter_Gunzel_react = inter_Gunzel_react
-            
+
 
     def max_age_inter_Gunzel(self, chain_set, reduced=False):
         """Gunzel reduced maximum data age analysis for interconnected
@@ -360,7 +360,7 @@ class Analyzer:
                 # Case: i is a cause-effect chain.
                 else:
                     inter_tsn_react += chain.interconnected[i].Gunzel_react
-                    
+
             # Store result.
             chain.inter_tsn_react = inter_tsn_react
 
@@ -420,6 +420,9 @@ class Analyzer:
                 # Compute the latency for chain.
                 latency = 0
                 for task in chain.chain:
-                    latency += task.period + task.rt
+                    if isinstance(task, utilities.TSNtask.tsnTask):
+                        latency += task.period_tsn + task.rt_tsn
+                    else:
+                        latency += task.period + task.rt
                 # Store result.
                 chain.davare_tsn = latency
